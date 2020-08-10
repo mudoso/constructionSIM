@@ -68,8 +68,8 @@ function verifyAssigned() {
 
 //SEND THE WROKER(OR SERVICE) BACK AND DEDUCE COST
 function sendBackWorkerOrService(workerOrServiceStored) {
-    stateGame[currentClient].money -= workerOrServiceStored.price
-    stateGame[currentClient].costPerHour -= workerOrServiceStored.price
+    stateGame.clients[currentClient].money -= workerOrServiceStored.price
+    stateGame.clients[currentClient].costPerHour -= workerOrServiceStored.price
     workerOrServiceStored.price
     workerOrServiceStored.count--
     updateGame()

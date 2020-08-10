@@ -15,7 +15,7 @@ let extraShift = ""
 function timeRules() {
     //UPDATE MONEY FROM STATEGAME
     ownMoneyDOM.innerHTML = stateGame.ownCompany.money
-    clientMoneyDOM.innerHTML = stateGame[currentClient].money
+    clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
 
     min++
     checkCostPerHour() //CHECK AND DEDUCE COST PER HOUR
@@ -38,7 +38,6 @@ function timeRules() {
     verifyAssigned()
 }
 setInterval(timeRules, 100); //START CLOCK
-
 
 
 function checkCostPerHour() {
@@ -75,25 +74,25 @@ function checkCostPerHour() {
                     let workersCostPerHour = totalWorkersCount * workersOnSite.price
 
                     //TAKE OWN MONEY IF CLIENT ONE REACHES ZERO
-                    if (stateGame[currentClient].money < workersCostPerHour) {
-                        stateGame[currentClient].money -= workersCostPerHour
-                        stateGame.ownCompany.money += stateGame[currentClient].money
-                        stateGame[currentClient].money = 0
+                    if (stateGame.clients[currentClient].money < workersCostPerHour) {
+                        stateGame.clients[currentClient].money -= workersCostPerHour
+                        stateGame.ownCompany.money += stateGame.clients[currentClient].money
+                        stateGame.clients[currentClient].money = 0
                         endOfWorkTime()
                     } else {
-                        stateGame[currentClient].money -= workersCostPerHour
+                        stateGame.clients[currentClient].money -= workersCostPerHour
                         console.log(workersCostPerHour)
                         ownMoneyDOM.innerHTML = stateGame.ownCompany.money
-                        clientMoneyDOM.innerHTML = stateGame[currentClient].money
+                        clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
                     }
                 }
             }
         }
     }
     //TOTAL PER HOUR
-    stateGame[currentClient].costPerHour = totalCostPerHour
+    stateGame.clients[currentClient].costPerHour = totalCostPerHour
     let costPerHourValueDOM = document.getElementById("costperhour-value")
-    costPerHourValueDOM.innerHTML = stateGame[currentClient].costPerHour
+    costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
 }
 
 
@@ -103,7 +102,7 @@ function endOfWorkTime() {
         for (let constructionSiteElement of constructionSiteStage) {
             for (let workerNeeded of constructionSiteElement.workersNeeded) {
                 workerNeeded.assigned = false
-                stateGame[currentClient].costPerHour = 0
+                stateGame.clients[currentClient].costPerHour = 0
             }
         }
     }

@@ -1,11 +1,20 @@
 
 
-//RESPOSIBLE FOR DEFINE ALL GLOBAL VARIABLES (BUT TIME ONES)
-//RESPOSIBLE FOR DEFINE ALL PATHS
 //RESPOSIBLE FOR UPDATE TASKS AND BUTTONS
 //START THE GAME AFTER ALL CODE IS LOADED
 
 
+
+
+function selectClient() {
+    currentClient++
+    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
+        currentClient
+        return updateGame()
+    }
+    currentClient = 0
+    updateGame()
+}
 
 
 
@@ -19,9 +28,9 @@ function updateGame() {
     */
 
     //UPDATE CLIENT
-    clientSelectedButtonDOM.innerHTML = currentClient
-    clientLeftArrowButtonDOM.onclick = () => {};
-    clientRightArrowButtonDOM.onclick = () => {};
+    clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
+    clientLeftArrowButtonDOM.onclick = () => {selectClient()};
+    clientRightArrowButtonDOM.onclick = () => {selectClient()};
 
 
     //UPDATE CATEGORY CATALOG BUTTONS
@@ -74,8 +83,8 @@ function updateGame() {
     costPerHourDOM.innerHTML = ""
     let button = document.createElement('button');
     button.innerHTML =
-    `Total Cost $<span id="costperhour-value">${stateGame[currentClient].costPerHour}</span>/hour ${extraShift}`
-    button.setAttribute('id', `${Object.keys(stateGame[currentClient].costPerHour)}`);
+    `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour ${extraShift}`
+    button.setAttribute('id', `${Object.keys(stateGame.clients[currentClient].costPerHour)}`);
     button.setAttribute('class', `btn-darkblue`);
     button.onclick = () => {};
     costPerHourDOM.appendChild(button);

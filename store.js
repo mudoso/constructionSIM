@@ -50,19 +50,19 @@ function buyItem(itemBought, categoryItem) {
     let moneySpent = countBought * itemBought.price
 
     if (itemBought === null || getCount === null || getCount < 1) return console.log("DEU TILT")
-    if (stateGame[currentClient].money <= moneySpent) {
-        if (stateGame[currentClient].money == 0) {return}
-        stateGame[currentClient].money -= moneySpent
-        stateGame.ownCompany.money += stateGame[currentClient].money
-        stateGame[currentClient].money = 0
+    if (stateGame.clients[currentClient].money <= moneySpent) {
+        if (stateGame.clients[currentClient].money == 0) {return}
+        stateGame.clients[currentClient].money -= moneySpent
+        stateGame.ownCompany.money += stateGame.clients[currentClient].money
+        stateGame.clients[currentClient].money = 0
         return endOfWorkTime()
     } 
-    stateGame[currentClient].money -= moneySpent;  //SUBTRACT MONEY FROM CLIENT
+    stateGame.clients[currentClient].money -= moneySpent;  //SUBTRACT MONEY FROM CLIENT
 
     // CHECK IF IT IS AN ITEM OR A SERVICE
-    let warehouseOrWorkersContainer = stateGame[currentClient].warehouse
+    let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
     if (itemBought.service) {
-        warehouseOrWorkersContainer = stateGame[currentClient].workers
+        warehouseOrWorkersContainer = stateGame.clients[currentClient].workers
     }
 
     //SEND TO STATEGAME
@@ -79,7 +79,7 @@ function buyItem(itemBought, categoryItem) {
         for (let itemStored of warehouseOrWorkersContainer) {
             if (itemStored.name === itemBought.name) {
                 if (itemBought.service && countBought > 0) {
-                stateGame[currentClient].costPerHour += itemBought.price
+                stateGame.clients[currentClient].costPerHour += itemBought.price
                 }
                 itemStored.count = itemStored.count + countBought;
                 break; //Stop this loop, we found it!

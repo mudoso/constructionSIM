@@ -7,7 +7,7 @@
 //DEFINE ALL GLOBAL PATHS
 
 //==========NAV CLIENT PATH=============
-let currentClient = "client1"
+let currentClient = 0
 const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
 const clientSelectedButtonDOM = document.getElementById("btn-clients")
 const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
@@ -16,7 +16,7 @@ const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
 const currentDateDOM = document.getElementById("current-date")
 const ownMoneyDOM = document.getElementById("own-money")
 
-let clientMoney = stateGame[currentClient].money
+let clientMoney = stateGame.clients[currentClient].money
 const clientMoneyDOM = document.getElementById("client-money")
 
 const costPerHourDOM = document.getElementById("cost-per-hour")
@@ -30,13 +30,13 @@ const storeBuyContainerDOM = document.getElementById("store-buy-items")
 
 //==========NAV INVENTOR / WORKERS-SERVICES / WAREHOUSE PATH=============
 const warehouseContainerDOM = document.getElementById("warehosue-container")
-const statsInventoryWarehouse = stateGame[currentClient].warehouse
+const statsInventoryWarehouse = stateGame.clients[currentClient].warehouse
 
 const workersAndServicesContainerDOM = document.getElementById("workers-services")
-const statsWorkersAndServices = stateGame[currentClient].workers
+const statsWorkersAndServices = stateGame.clients[currentClient].workers
 
-const statsCostPerHour = stateGame[currentClient].costPerHour
+const statsCostPerHour = stateGame.clients[currentClient].costPerHour
 
 //==========NAV CONSTUCTION  PATH=============
 const constructionContainerDOM = document.getElementById("construction-container")
-const statsConstructionSite = stateGame[currentClient].construction
+const statsConstructionSite = stateGame.clients[currentClient].construction
