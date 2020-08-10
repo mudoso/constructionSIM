@@ -74,8 +74,9 @@ stateGame = {
                     "index": 0,
                     "progress": 0,
                     "workersNeeded": [
-                        {"type": "Excavator", "count": 1, "assigned": false},
-                        {"type": "Builder", "count": 1, "assigned": false}
+                        {"type": "Builder", "count": 1, "assigned": false},
+                        {"type": "Carpenter", "count": 1, "assigned": false},
+                        {"type": "Excavator", "count": 1, "assigned": false}
                         ]
                     },
                     {
@@ -108,6 +109,6 @@ stateGame = {
                 ],
                 []
             ],
-        }
-    ]
+        },
+    ],
 }

@@ -56,7 +56,8 @@ function buyItem(itemBought, categoryItem) {
         stateGame.ownCompany.money += stateGame.clients[currentClient].money
         stateGame.clients[currentClient].money = 0
         return endOfWorkTime()
-    } 
+    }
+    
     stateGame.clients[currentClient].money -= moneySpent;  //SUBTRACT MONEY FROM CLIENT
 
     // CHECK IF IT IS AN ITEM OR A SERVICE
@@ -78,9 +79,9 @@ function buyItem(itemBought, categoryItem) {
     function addCountToItemStored( itemBought, countBought ) {
         for (let itemStored of warehouseOrWorkersContainer) {
             if (itemStored.name === itemBought.name) {
-                if (itemBought.service && countBought > 0) {
-                stateGame.clients[currentClient].costPerHour += itemBought.price
-                }
+                // if (itemBought.service && countBought > 0) {
+                // stateGame.clients[currentClient].costPerHour += itemBought.price
+                // }
                 itemStored.count = itemStored.count + countBought;
                 break; //Stop this loop, we found it!
             }

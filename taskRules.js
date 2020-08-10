@@ -3,20 +3,21 @@
 //RESPOSIBLE FOR ALL TASKS FUNCTIONS RULES RELATED
 
 //START THE TASK IF ALL CONDITIONS ARE TRUE
-function startTask(constructionSiteElement) {
+function startTask(constructionSiteElement, targetClient) {
     if (constructionSiteElement == undefined) {
         console.log("ERROR")
     }
     if (constructionSiteElement.progress < 100) {
-        
+
         constructionSiteElement.progress++ //PROGRESS RULE
-        const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}-progress`)
-        cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+        const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
+        if (cardTaskPercentage == undefined || cardTaskPercentage == null) {return}
+        else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
 
         // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
         if (constructionSiteElement.progress >= 100) {
             for (let workerAssigned of constructionSiteElement.workersNeeded) {
-                for (let workersOnSite of statsWorkersAndServices) {
+                for (let workersOnSite of stateGame.clients[currentClient].workers) {
                     if (workerAssigned.type == workersOnSite.name) {
                         workersOnSite.count += workerAssigned.count
                         workerAssigned.count = 0
@@ -31,36 +32,38 @@ function startTask(constructionSiteElement) {
 
 // VERIFYER ASSIGNED MATERIAL OR WORKER
 function verifyAssigned() {
-    for (let constructionSiteStage of statsConstructionSite) {
-        constructionSiteStage.forEach(constructionSiteElement => {
-    
-            //VERIFY IF ALL WORKERS (OR SERVICES) WERE ASSIGNED TO THE JOB TO START THE TASK
-            if (constructionSiteElement.workersNeeded != undefined){
-                let isWorkersNeededTrue = constructionSiteElement.workersNeeded.every(function (workersNeeded) {
-                    return workersNeeded.assigned;
-                });
-                //VERIFY IF ALL MATERIALS WERE ASSIGNED TO THE JOB TO START THE TASK
-                if (constructionSiteElement.materialNeeded != undefined){
-                    let = isMaterialNeededTrue = constructionSiteElement.materialNeeded.every(function (materialNeeded) {
-                        return materialNeeded.assigned;
+    for (let targetClient of stateGame.clients) {
+        for (let constructionSiteStage of targetClient.construction) {
+            constructionSiteStage.forEach(constructionSiteElement => {
+        
+                //VERIFY IF ALL WORKERS (OR SERVICES) WERE ASSIGNED TO THE JOB TO START THE TASK
+                if (constructionSiteElement.workersNeeded != undefined){
+                    let isWorkersNeededTrue = constructionSiteElement.workersNeeded.every(function (workersNeeded) {
+                        return workersNeeded.assigned;
                     });
-                    // START PROGRESS IF ALL WORKERS AND MATERIALS ARE ASSIGNED
-                    if (isWorkersNeededTrue && isMaterialNeededTrue) {
-                        return startTask(constructionSiteElement)
+                    //VERIFY IF ALL MATERIALS WERE ASSIGNED TO THE JOB TO START THE TASK
+                    if (constructionSiteElement.materialNeeded != undefined){
+                        let = isMaterialNeededTrue = constructionSiteElement.materialNeeded.every(function (materialNeeded) {
+                            return materialNeeded.assigned;
+                        });
+                        // START PROGRESS IF ALL WORKERS AND MATERIALS ARE ASSIGNED
+                        if (isWorkersNeededTrue && isMaterialNeededTrue) {
+                            return startTask(constructionSiteElement, targetClient)
+                        }
+                    }
+                    // START PROGRESS IF ALL WORKERS ARE ASSIGNED AND THERE IS NO MATERIALS TO TAKS 
+                    if (isWorkersNeededTrue && constructionSiteElement.materialNeeded == undefined) {
+                        return startTask(constructionSiteElement, targetClient)
                     }
                 }
-                // START PROGRESS IF ALL WORKERS ARE ASSIGNED AND THERE IS NO MATERIALS TO TAKS 
-                if (isWorkersNeededTrue && constructionSiteElement.materialNeeded == undefined) {
-                    return startTask(constructionSiteElement)
-                }
+            })
+            let condition = constructionSiteStage.every((constructionSiteElement) => {
+                return constructionSiteElement.progress >= 100
+            });
+            if (condition == false){
+                //console.log("break")
+                break
             }
-        })
-        let condition = constructionSiteStage.every((constructionSiteElement) => {
-            return constructionSiteElement.progress >= 100
-        });
-        if (condition == false){
-            //console.log("break")
-            break
         }
     }
 }
@@ -78,7 +81,8 @@ function sendBackWorkerOrService(workerOrServiceStored) {
 
 //ASSIGN (OR UNASSIGN) WORKER TO A TASK
 function assignWorkerOrService(workersNeeded, idButton) {
-    for (let workersOnSite of statsWorkersAndServices) {
+    
+    for (let workersOnSite of stateGame.clients[currentClient].workers) {
         //ASSIGN WORKER TO A TASK
         if (workersOnSite.name == workersNeeded.type &&
             workersOnSite.count >= workersNeeded.count) {
@@ -99,7 +103,7 @@ function assignWorkerOrService(workersNeeded, idButton) {
 
 //ASSIGN MATERIAL TO A TASK
 function assignMaterial(materialNeeded, idButton) {
-    for (let materialOnWarehouse of statsInventoryWarehouse) {
+    for (let materialOnWarehouse of stateGame.clients[currentClient].warehouse) {
         if (materialOnWarehouse.name == materialNeeded.name &&
             materialOnWarehouse.count >= materialNeeded.count) {
             //ASSIGN MATERIAL TO A TASK

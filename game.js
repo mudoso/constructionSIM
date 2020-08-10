@@ -6,7 +6,7 @@
 
 
 
-function selectClient() {
+function selectClientRight() {
     currentClient++
     if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
         currentClient
@@ -16,7 +16,15 @@ function selectClient() {
     updateGame()
 }
 
-
+function selectClientLeft() {
+    currentClient--
+    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
+        currentClient
+        return updateGame()
+    }
+    currentClient = stateGame.clients.length - 1
+    updateGame()
+}
 
 // UPDATE ALL THE BUTTONS, CARDS AND THEIR RESPECTIVE .onclick CALLOUTS
 function updateGame() {
@@ -29,8 +37,8 @@ function updateGame() {
 
     //UPDATE CLIENT
     clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
-    clientLeftArrowButtonDOM.onclick = () => {selectClient()};
-    clientRightArrowButtonDOM.onclick = () => {selectClient()};
+    clientLeftArrowButtonDOM.onclick = () => {selectClientLeft()};
+    clientRightArrowButtonDOM.onclick = () => {selectClientRight()};
 
 
     //UPDATE CATEGORY CATALOG BUTTONS
@@ -49,7 +57,7 @@ function updateGame() {
 
     //UPDATE WAREHOUSE BUTTONS
     warehouseContainerDOM.innerHTML = ""
-    statsInventoryWarehouse.forEach(itemStored => {
+    stateGame.clients[currentClient].warehouse.forEach(itemStored => {
         if (itemStored.count > 0) {
             let button = document.createElement('button');
             button.innerHTML =
@@ -65,7 +73,7 @@ function updateGame() {
     
     //UPDATE WORKERS AND SERVICES BUTTONS
     workersAndServicesContainerDOM.innerHTML = ""
-    statsWorkersAndServices.forEach(workerOrServiceStored => {
+    stateGame.clients[currentClient].workers.forEach(workerOrServiceStored => {
         if (workerOrServiceStored.count > 0) {
             let button = document.createElement('button');
             button.innerHTML =
@@ -92,7 +100,7 @@ function updateGame() {
 
     //UPDATE CONSTRUCTION SITE CARD TASKS
     constructionContainerDOM.innerHTML = ""
-    for (let constructionSiteStage of statsConstructionSite) {
+    for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
         constructionSiteStage.forEach(constructionSiteElement => {
 
             //TRACK PROGRESS AND DRAW CARD
@@ -103,7 +111,7 @@ function updateGame() {
                 `<span id="${constructionSiteElement.stage}-${constructionSiteElement.index}">
                 (${constructionSiteElement.stage})
                 </span>
-                <span id="${constructionSiteElement.stage}-${constructionSiteElement.index}-progress">
+                <span id="${constructionSiteElement.stage}-${currentClient}-${constructionSiteElement.index}-progress">
                 ${constructionSiteElement.progress} %
                 </span> <br>`
                 div.setAttribute('id', `${constructionSiteElement.stage}-${constructionSiteElement.index}`);
