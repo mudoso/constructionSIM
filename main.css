@@ -99,15 +99,20 @@ body::before {
     justify-content: space-between;
 }
 
+/* ==============CHANGE CLIENT============== */
 
 .nav-stats-client {
     display: flex;
     justify-content: space-between;
     align-content: center;
 
-    width: 20rem;
-    margin: 2rem 0;
+    width: 22rem;
+    margin: 2.5rem 0;
     gap: .5rem;
+}
+
+#btn-clients {
+    width: 100%;
 }
 
 .nav-stats div {

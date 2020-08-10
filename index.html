@@ -6,9 +6,13 @@
     <title>Construction SIM</title>
     <link rel="stylesheet" type="text/css" href="./main.css">
     <script defer type="text/javascript" src="./state.js"></script>
+    <script defer type="text/javascript" src="./storeInventory.js"></script>
+    <script defer type="text/javascript" src="./globalVariables.js"></script>
+    <script defer type="text/javascript" src="./clock.js"></script>
+    <script defer type="text/javascript" src="./taskRules.js"></script>
     <script defer type="text/javascript" src="./store.js"></script>
     <script defer type="text/javascript" src="./game.js"></script>
-
+    
 </head>
 <body>
     <header class="header">
@@ -27,9 +31,9 @@
         </nav>
 
         <nav class="nav-stats-client">
-            <button class="btn btn-clients-leaf">&#9664;</button>
-            <button class="btn btn-clients">CLIENT 1</button>
-            <button class="btn btn-clients-leaf">&#9658;</button>
+            <button id="btn-clients-left" class="btn">&#9664;</button>
+            <button id="btn-clients" class="btn">CLIENT 1</button>
+            <button id="btn-clients-right" class="btn">&#9658;</button>
         </nav>
 
     </header>
