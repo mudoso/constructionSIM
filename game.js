@@ -1,4 +1,5 @@
 let setClient = "client1"
+"teste2"
 
 //==========NAV STATS PATH=============
 const currentDateDOM = document.getElementById("current-date")
