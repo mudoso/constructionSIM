@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction SIM</title>
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <script defer type="text/javascript" src="./state.js"></script>
+    <script defer type="text/javascript" src="./store.js"></script>
+    <script defer type="text/javascript" src="./game.js"></script>
+
+</head>
+<body>
+    <header class="header">
+
+        <nav class="nav-stats">  
+            <h1 class="logo">Cs</h1>
+            <ul>
+                <li><header>DATE:</header><p><span id="current_date">01/01/2020</span></p></li>
+                <li><header>OWN MONEY:</header><p>$<span id="own-money">0</span></p></li>
+                <li><header>CLIENT MONEY:</header><p>$<span id="client-money">0</span></p></li>
+            </ul>
+            <div id="clock" class="clock">
+                Day <span id="day">1</span><br>
+                Time <span id="time">1:00</span>
+            </div>
+        </nav>
+
+        <nav class="nav-stats-client">
+            <button class="btn btn-clients-leaf">&#9664;</button>
+            <button class="btn btn-clients">CLIENT 1</button>
+            <button class="btn btn-clients-leaf">&#9658;</button>
+        </nav>
+
+    </header>
+
+    <section class="container">
+
+        <div class="layout-site-construction layout">
+            <h2 class="side-menu-title center">CONSTRUCTION SITE TASKS</h2>
+
+            <div id="cost-per-hour" class="side-menu-services">
+                <!-- <button  class="btn-darkblue"> Total Cost $22/hour</button> -->
+            </div>
+
+            <div id="workers-services" class="side-menu-services">
+                <!-- <button class="btn-darkblue"> 3 Worker(s)</button>
+                <button class="btn-darkblue"> 1 Excavator</button> -->
+            </div>
+            <div id="construction-container">
+                <!-- <canvas class="canvas" height="400" width="300"></canvas> -->
+            </div>
+        </div>
+
+
+        <div class="layout side-menu">
+
+            <h2 class="side-menu-title center">MARKET / STORE</h2>
+            <div id="store-category" class="side-menu-itens">
+                <!-- <button class="btn">Masonary</button>
+                <button class="btn">Concrete</button>-->
+            </div>
+
+            <ul id="store-buy-items" class="side-menu-buy">
+                <!-- <li>
+                    <header>Tijolo Furado</header>
+                    <section><div><input class="form" type="number" name="quantitie" id="number" min="0" max="100" placeholder=""></div>
+                    <button class="btn">$5</button></section>
+                </li>-->
+            </ul>
+            
+        </div>
+    </section>
+
+    <div class="layout-warehouse">
+
+        <h2 class="side-menu-title center">WAREHOUSE</h2>
+        <div id="warehosue-container" class="warehosue">
+                <button class="btn">Alvenaria</button>
+                <button class="btn">Alvenaria</button>
+                <button class="btn">Alvenaria</button>
+        </div>
+
+    </div>
+
+</body>
+</html>
