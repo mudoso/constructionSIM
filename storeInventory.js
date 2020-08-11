@@ -30,6 +30,13 @@ store = {
             "price": 260,
             "unit": "hour"
         },
+        {
+            "name": "Dumpster",
+            "service": true,
+            "timer": 0,
+            "price": 230,
+            "unit": "hour"
+        },
         {   
             "name": "Mixer Truck",
             "service": true,
@@ -67,9 +74,14 @@ store = {
             "unit": "un."
         },
         {
+            "name": "Ceramic Roof Tile",
+            "price": 3,
+            "unit": "un."
+        },
+        {
             "name": "Mortar",
-            "price": 1,
-            "unit": "kg"
+            "price": 9,
+            "unit": "25kg"
         }
     ],
     "Concrete": [
@@ -82,12 +94,34 @@ store = {
             "price": 120,
             "unit": "m³"
         }, {
+            "name": "Grout",
+            "price": 140,
+            "unit": "m³"
+        }, {
             "name": "Asphalt Concrete",
             "price": 130,
             "unit": "m³"
         }
-    ]
-    ,
+    ],
+    "Rebar": [
+        {
+            "name": "Straight Rebar #10",
+            "price": 10,
+            "unit": "12m"
+        }, {
+            "name": "Straight Rebar #15",
+            "price": 16,
+            "unit": "12m"
+        }, {
+            "name": "Straight Rebar #20",
+            "price": 25,
+            "unit": "12m"
+        }, {
+            "name": "Galvanized Steel Wire",
+            "price": 1,
+            "unit": "kg"
+        }
+    ],
     "Wood": [
         {
             "name": "Stud 2x4 in.",
@@ -101,6 +135,10 @@ store = {
             "name": "Stud 2x8 in.",
             "price": 27,
             "unit": "m"
+        }, {
+            "name": "OSB Board",
+            "price": 2,
+            "unit": "m²"
         }
     ]
 }

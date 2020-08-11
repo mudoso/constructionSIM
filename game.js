@@ -29,11 +29,8 @@ function selectClientLeft() {
 // UPDATE ALL THE BUTTONS, CARDS AND THEIR RESPECTIVE .onclick CALLOUTS
 function updateGame() {
 
-    /*
-    clientLeftArrowButtonDOM
-    clientSelectedButtonDOM
-    clientRightArrowButtonDOM
-    */
+    ownMoneyDOM.innerHTML = stateGame.ownCompany.money
+    clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
 
     //UPDATE CLIENT
     clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name

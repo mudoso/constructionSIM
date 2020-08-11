@@ -25,7 +25,7 @@ function itemList(categoryItem) {
 
         //THAN DRAW </button> tag + click function
         let button = document.createElement('button');
-        button.innerHTML = item.price
+        button.innerHTML = `$${item.price}`
         button.setAttribute('id', item.name);
         button.setAttribute('class', 'btn btn-buy');
         button.setAttribute('value', item.price);
@@ -50,17 +50,18 @@ function buyItem(itemBought, categoryItem) {
     let moneySpent = countBought * itemBought.price
 
     if (itemBought === null || getCount === null || getCount < 1) return console.log("DEU TILT")
+    //IF TOTAL COST IS LESS OR EQUAL TO 
     if (stateGame.clients[currentClient].money <= moneySpent) {
-        if (stateGame.clients[currentClient].money == 0) {return}
+        if (stateGame.clients[currentClient].money < moneySpent) {return}
         stateGame.clients[currentClient].money -= moneySpent
         stateGame.ownCompany.money += stateGame.clients[currentClient].money
         stateGame.clients[currentClient].money = 0
         return endOfWorkTime()
     }
-    
+
     stateGame.clients[currentClient].money -= moneySpent;  //SUBTRACT MONEY FROM CLIENT
 
-    // CHECK IF IT IS AN ITEM OR A SERVICE
+    //CHECK IF IT IS AN ITEM OR A SERVICE
     let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
     if (itemBought.service) {
         warehouseOrWorkersContainer = stateGame.clients[currentClient].workers
@@ -76,7 +77,7 @@ function buyItem(itemBought, categoryItem) {
     }
     //ADD TO EXISTING
     addCountToItemStored(itemBought, countBought)
-    function addCountToItemStored( itemBought, countBought ) {
+    function addCountToItemStored(itemBought, countBought) {
         for (let itemStored of warehouseOrWorkersContainer) {
             if (itemStored.name === itemBought.name) {
                 // if (itemBought.service && countBought > 0) {

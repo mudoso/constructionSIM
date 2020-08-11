@@ -4,31 +4,32 @@
 
 //START THE TASK IF ALL CONDITIONS ARE TRUE
 function startTask(constructionSiteElement, targetClient) {
-    if (constructionSiteElement == undefined) {
-        console.log("ERROR")
-    }
+    if (constructionSiteElement == undefined) {console.log("ERROR")}
+
     if (constructionSiteElement.progress < 100) {
 
         constructionSiteElement.progress++ //PROGRESS RULE
         const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
         if (cardTaskPercentage == undefined || cardTaskPercentage == null) {return}
         else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+    }
+    // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
+    if (constructionSiteElement.progress >= 100) {
 
-        // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
-        if (constructionSiteElement.progress >= 100) {
-            for (let workerAssigned of constructionSiteElement.workersNeeded) {
-                for (let workersOnSite of stateGame.clients[currentClient].workers) {
-                    if (workerAssigned.type == workersOnSite.name) {
-                        workersOnSite.count += workerAssigned.count
-                        workerAssigned.count = 0
-                        updateGame()
-                    }
-                }  
-                updateGame()
-            }
+        for (let workerAssigned of constructionSiteElement.workersNeeded) {
+            for (let workersOnSite of targetClient.workers) {
+                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
+                    workersOnSite.count += workerAssigned.count
+                    workerAssigned.count = 0
+                    workerAssigned.assigned = false
+                    console.log("teste")
+                    updateGame()
+                }
+            }  
         }
     }
 }
+
 
 // VERIFYER ASSIGNED MATERIAL OR WORKER
 function verifyAssigned() {
