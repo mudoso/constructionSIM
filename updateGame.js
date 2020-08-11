@@ -1,11 +1,11 @@
 
-
+//======================================================================================//
 //RESPOSIBLE FOR UPDATE TASKS AND BUTTONS
 //START THE GAME AFTER ALL CODE IS LOADED
+//======================================================================================//
 
 
-
-
+//UPDATE TO PREVIOUS CLIENT
 function selectClientRight() {
     currentClient++
     if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
@@ -16,6 +16,7 @@ function selectClientRight() {
     updateGame()
 }
 
+//UPDATE TO NEXT CLIENT
 function selectClientLeft() {
     currentClient--
     if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
@@ -25,6 +26,7 @@ function selectClientLeft() {
     currentClient = stateGame.clients.length - 1
     updateGame()
 }
+
 
 // UPDATE ALL THE BUTTONS, CARDS AND THEIR RESPECTIVE .onclick CALLOUTS
 function updateGame() {

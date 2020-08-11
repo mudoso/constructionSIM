@@ -55,7 +55,7 @@ stateGame = {
                         {"name": "Stud 2x8 in.", "count" : 44, "assigned": false},
                         {"name": "Straight Rebar #10", "count" : 200, "assigned": false},
                         {"name": "Galvanized Steel Wire", "count" : 15, "assigned": false},
-                        {"name": "Normal Strength Concrete", "count" : 26, "assigned": false}
+                        {"name": "Normal Str. Concrete", "count" : 26, "assigned": false}
                         ]
                     }
                 ],
