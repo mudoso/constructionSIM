@@ -3,22 +3,24 @@
 //RESPOSIBLE FOR DEFINE ALL GLOBAL VARIABLES (BUT TIME ONES)
 //======================================================================================//
 
-//DEFINE ALL GLOBAL PATHS
-
-//==========NAV CLIENT PATH=============
+//DEFINE ALL GLOBAL VARIABLES
 let currentClient = 0
+
+//DEFINE ALL GLOBAL PATHS
+//==========NAV CLIENT PATH=============
 const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
 const clientSelectedButtonDOM = document.getElementById("btn-clients")
 const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
 
 //==========NAV STATS PATH=============
+const companyNameDOM = document.getElementById("own-company-name")
 const currentDateDOM = document.getElementById("current-date")
 const ownMoneyDOM = document.getElementById("own-money")
 const clientMoneyDOM = document.getElementById("client-money")
 const costPerHourDOM = document.getElementById("cost-per-hour")
 
 //==========NAV STORE PATH=============
-const storeItems = Object.keys(store)
+// const storeItems = Object.keys(store)
 const storeCategoryContainerDOM = document.getElementById("store-category")
 const storeBuyContainerDOM = document.getElementById("store-buy-items")
 
@@ -33,7 +35,6 @@ const statsCostPerHour = stateGame.clients[currentClient].costPerHour
 //==========NAV CONSTUCTION  PATH=============
 const constructionContainerDOM = document.getElementById("construction-container")
 const statsConstructionSite = stateGame.clients[currentClient].construction
-
 //======================================================================================//
 
 
@@ -53,6 +54,7 @@ let extraShift = ""
 // CLOCK FUNCTION
 function timeRules() {
     //UPDATE MONEY FROM STATEGAME
+    companyNameDOM.innerHTML = stateGame.ownCompany.name
     ownMoneyDOM.innerHTML = stateGame.ownCompany.money
     clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
 
@@ -63,7 +65,7 @@ function timeRules() {
         hour++
     }
     if (hour == 16) { //SET END OF WORK HOUR
-        hour = 8
+        hour = 0
         day++
         endOfWorkTime() //CALL END OF WORKTIME FUNCTION
     }
@@ -76,11 +78,11 @@ function timeRules() {
     stateGame.clock.day = day
     verifyAssigned()
 }
-setInterval(timeRules, 100); //START CLOCK
+setInterval(timeRules, 200); //START CLOCK
+
 
 
 function checkCostPerHour() {
-    let totalCostPerHour = 0 //SET COST PER HOUR TO ZERO AT THE FUNCTION BEGINING
     //LOOK FOR ALL THE ASSIGN WORKERS FOR EACH TYPE
     for (let targetClient of stateGame.clients) {
         targetClient.costPerHour = 0
@@ -240,8 +242,14 @@ function verifyAssigned() {
 
 //SEND THE WROKER(OR SERVICE) BACK AND DEDUCE COST
 function sendBackWorkerOrService(workerOrServiceStored) {
-    stateGame.clients[currentClient].money -= workerOrServiceStored.price
     stateGame.clients[currentClient].costPerHour -= workerOrServiceStored.price
+
+    remainingCost = workerOrServiceStored.timer / 60
+    // remainingCost = remainingCost * workerOrServiceStored.price
+    console.log(workerOrServiceStored.timer)
+    stateGame.clients[currentClient].money -= workerOrServiceStored.price
+
+
     workerOrServiceStored.price
     workerOrServiceStored.count--
     updateGame()
@@ -297,7 +305,7 @@ function assignMaterial(materialNeeded, idButton) {
 //CREATE THE ITEMS LIST OF A CATEGORY WHEN BUTTON IS CLICKED
 function itemList(categoryItem) {
     storeBuyContainerDOM.innerHTML = ""
-    store[categoryItem].forEach(item => {
+        categoryItem.stock.forEach(item => {
         
         //DRAW </li> tag First
         let li = document.createElement('li');
@@ -325,8 +333,9 @@ function itemList(categoryItem) {
         const buttonOnBuyList = document.getElementById(spanId)
         buttonOnBuyList.appendChild(button);
         return
-    })
-}
+        })
+    }
+
 
 //ADD ITEMS TO WAREHOUSE(IF ITS A MATERIAL) OR SITE(IF ITS A WORKER/SERVICE)
 function buyItem(itemBought, categoryItem) {
@@ -371,9 +380,6 @@ function buyItem(itemBought, categoryItem) {
     function addCountToItemStored(itemBought, countBought) {
         for (let itemStored of warehouseOrWorkersContainer) {
             if (itemStored.name === itemBought.name) {
-                // if (itemBought.service && countBought > 0) {
-                // stateGame.clients[currentClient].costPerHour += itemBought.price
-                // }
                 itemStored.count = itemStored.count + countBought;
                 break; //Stop this loop, we found it!
             }

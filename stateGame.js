@@ -5,7 +5,7 @@ stateGame = {
         "minute": 0
     },
     "ownCompany": {
-        "name": "Teste",
+        "name": "TERNERO",
         "money": 20000
     },
     "clients": [
@@ -147,7 +147,7 @@ stateGame = {
                         {"type": "Mixer Truck", "count": 2, "assigned": false}
                         ],
                     "materialNeeded": [
-                        {"name": "Normal Strength Concrete", "count" : 11, "assigned": false}
+                        {"name": "Normal Str. Concrete", "count" : 11, "assigned": false}
                         ]
                     }
                 ],

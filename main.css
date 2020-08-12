@@ -1,5 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:200i,400&display=swap');
 
+:root {
+    --first-color: #fca311;
+    --first-color-hover: #fabe5d;
+    --sec-color: #14213d;
+    --sec-color-hover: #253d72;
+    --layout-bg-color: #e5e5e5;
+    --card-bg-color: #ffffff;
+    --text-base-color: #000000;
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
@@ -12,12 +22,12 @@
     animation: ease-in-out;
     transition: 500ms;
     text-decoration: none;
-    color: #000000;
+    color: var(--text-base-color);
 }
 
 *:focus{
     outline: none;
-    box-shadow: 0 0 5px #14213d;
+    /* box-shadow: 0 0 5px #14213d; */
 }
 
 .center {
@@ -30,9 +40,15 @@
     justify-self: center;
 }
 
+.flex-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 body {
     font-weight: 400;
-    margin: 1rem 10%;
+    margin: 1rem 5%;
 }
 
 
@@ -60,7 +76,7 @@ body::before {
 /*==========HEADER============*/
 
 .logo {
-    color: #14213d;
+    color: var(--sec-color);
     font-size: 3rem;
     margin-top: 1rem;
 }
@@ -69,6 +85,7 @@ body::before {
     font-size: inherit;
     display: flex;
     justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .header p,
@@ -99,6 +116,36 @@ body::before {
     justify-content: space-between;
 }
 
+/* .transfer-money {
+
+}
+.transfer-money::after {
+    position: fixed;
+    font-size: .8rem;
+    min-width: 5rem;
+    padding: 0.1rem 1rem;
+    transition: 200ms;
+    background: var(--first-color);
+    color: inherit;
+    border-radius: 5px;
+    cursor: pointer;
+    content: "Transfer";
+}
+
+.transfer-money:hover::after {
+    position: fixed;
+    font-size: .8rem;
+    min-width: 5rem;
+    padding: 0.1rem 1rem;
+    transition: 200ms;
+    background: #fca311;
+    color: inherit;
+    border-radius: 5px;
+    cursor: pointer;
+} */
+
+
+
 /* ==============CHANGE CLIENT============== */
 
 .nav-stats-client {
@@ -107,7 +154,7 @@ body::before {
     align-content: center;
 
     width: 22rem;
-    margin: 2.5rem 0;
+    /* margin: 2.5rem 0; */
     gap: .5rem;
 }
 
@@ -117,7 +164,7 @@ body::before {
 
 .nav-stats div {
     padding: 0 .5rem;
-    border-left: 2px dotted #1d3557;
+    border-left: 2px dotted var(--sec-color);
 }
 
 .nav-clients header {
@@ -128,49 +175,39 @@ body::before {
 
 
 
-/* ==============SIDE MENU============== */
+/* ==============LAYOUT============== */
 
 .layout {
     /* display: flex; */
     /* align-items: center; */
     justify-content: center;
-    background: #e5e5e5;
+    background: var(--layout-bg-color);
     border-radius: 3px;
     padding: 1rem;
     margin: 0;
-    min-height: 82vh;
 }
 
 .container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    grid-gap: 1rem;    
+    grid-gap: 1rem;   
+    height: 76vh;
 }
 
-
-/* ==============WAREHOUSE============== */
-
-.layout-site-construction {
-    /* display: grid;
-    grid-template-rows: repeat(auto-fit, minmax(2rem, 10rem));
-    grid-gap: 1rem; */
-    display: block;
-    flex-direction: column;
-}
 
 /* ==============WAREHOUSE============== */
 
 .layout-warehouse {
     position: fixed;
-    background: #e5e5e5;
+    background: var(--layout-bg-color);
     border-radius: 3px;
-    width: 80%;
+    width: 27rem;
     padding: 1rem;
-    margin: 0 10%;
+    margin: 0 0%;
     transition:
         ease-out 200ms;
-    left: 0;
-    top: 97%;
+    left: 5%;
+    top: 93%;
     bottom: 0;
 
     z-index: 1;
@@ -181,6 +218,8 @@ body::before {
     transition:
         ease-out 200ms;
     box-shadow: 0 0 3rem 1rem rgba(122, 122, 122, 0.3);
+    left: 5%;
+    width: 90%;
     top: 70%;
     bottom: 0;
 }
@@ -201,7 +240,7 @@ body::before {
 /* ==============CANVAS============== */
 
 .canvas {
-    background-color: #d5e5e6;
+    background-color: var(--layout-bg-color);
 
     /* transform: rotate3d(1, 0, 1, 45deg); */
 }
@@ -209,19 +248,71 @@ body::before {
 
 /* ==============SIDE MENU============== */
 
+.layout-site-construction {
+    /* display: grid;
+    grid-template-rows: repeat(auto-fit, minmax(2rem, 10rem));
+    grid-gap: 1rem; */
+    position: fixed;
+    display: block;
+    left: 5%;
+    width: 27rem;
+    max-height: 47rem;
+    flex-direction: column;
+}
+
 h2 {
     font-size: 1.5rem;
 }
 
 .side-menu {
+    position: fixed;
     display: block;
+    width: 40rem;
+    flex-direction: column;
 }
+
+/* ==============SIDE MENU HOVER============== */
+
+.side-menu {
+    right: -37rem;
+    padding-left: 5rem;
+    transition:
+    ease-out 200ms;
+    min-height: 20rem;
+
+}
+.side-menu:hover {
+    right: 0%;
+    padding-left: 1rem;
+    transition:
+    ease-out 200ms;
+
+}
+.title-move {
+    position: fixed;
+    width: 20rem;
+    transform: rotate(-90deg) translate(-7rem, -13rem);
+    transition:
+    ease-out 200ms;
+}
+.side-menu:hover>.title-move {
+    width: 100%;
+    transform: rotate(0deg);
+    position: relative;
+    right: 0;
+    transition:
+    ease-out 200ms;
+}
+
+
+
+
+
 
 .side-menu-title,
 .side-menu-itens {
-    display: block;
     padding: 1rem;
-    border-bottom: 2px solid #1d3557;
+    border-bottom: 2px solid var(--sec-color-hover);
 }
 
 .side-menu h2,
@@ -266,6 +357,8 @@ h2 {
     margin: 0 1rem;
 }
 
+
+
 /* ==============BUTTONS / CARDS============== */
 
 span {
@@ -281,29 +374,34 @@ span {
 
     transition: 200ms;
 
-    background: #fca311;
+    background: var(--first-color);
     color: inherit;
 
     border-radius: 5px;
     cursor: pointer;
     border: 0;
 }
-.btn:hover {
-    background: #fabe5d;
+.btn:hover, .btn:focus {
+    background: var(--first-color-hover);
 }
 
 .btn-darkblue {
-    background: #14213d;
-    color: #ffffff;
+    background: var(--sec-color);
+    color: var(--card-bg-color);
 }
-.btn-darkblue:hover {
-    background: #253d72;
+.btn-darkblue:hover, .btn-darkblue:focus {
+    background: var(--sec-color-hover);
+}
+
+
+input:focus {
+    box-shadow: 0 0 5px var(--sec-color);
 }
 
 
 .btn-sendback::after {
     font-size: inherit;
-    position: absolute;
+    position: fixed;
     margin-top: -1px;
     margin-left: 1rem;
     content: attr(btn-sudocontent);
@@ -315,42 +413,14 @@ span {
         left ease-out 200ms;
 }
 .btn-sendback:hover::after {
-    position: absolute;
+    position: fixed;
     transform: scale(1);
-    background: #fca311;
+    background: var(--first-color);
     padding: 0.1rem .5rem;
     border-radius: 5px;
     margin-bottom: 1.5rem;
 }
 
-
-
-
-.btn-gray {
-    background: #797979;  
-}
-.btn-gray:hover {
-    background: #474747;
-}
-.btn-gray::after {
-    font-size: inherit;
-    position: absolute;
-    margin-top: -1px;
-    margin-left: 2.5rem;
-    content: attr(btn-sudocontent);
-    transform: scale(0);
-    transition:
-        ease-out 200ms,
-        left ease-out 200ms;
-}
-.btn-gray:hover::after {
-    /* position: absolute; */
-    transform: scale(1);
-    background: #fca311;
-    padding: 0.1rem .5rem;
-    border-radius: 5px;
-    margin-bottom: 1.5rem;
-}
 
 
 
@@ -380,7 +450,7 @@ span {
 }
 .btn-clear:hover::after {
     transform: scale(1);
-    background: #fca311;
+    background: var(--first-color);
     padding: 0.1rem .5rem;
     border-radius: 5px;
     margin-left: 1.5rem;
@@ -413,7 +483,7 @@ span {
     padding: 0.5rem .5rem;
     margin: 0.5rem 0;
 
-    background: #ffffff;
+    background: var(--card-bg-color);
     color: inherit;
 
     animation-name: cards;
@@ -424,6 +494,11 @@ span {
     border: 0;
     box-shadow: 0 0 20px 5px rgba(122, 122, 122, 0.3);
 }
+.card:hover {
+    box-shadow: 0 0 10px var(--sec-color);
+    animation-duration: 1000ms;
+}
+
 
 .card button{
     position: relative;
