@@ -5,6 +5,7 @@ store = [
         "stock": [
             {
                 "name": "Builder",
+                "stage": ["clearing", "excavation", "fundation", "structure-concrete", "walls", "roof"],
                 "service": true,
                 "timer": 0,
                 "price": 22,
@@ -12,6 +13,7 @@ store = [
             },
             {   
                 "name": "Carpenter",
+                "stage": ["fundation", "structure-concrete", "walls"],
                 "service": true,
                 "timer": 0,
                 "price": 30,
@@ -19,6 +21,15 @@ store = [
             },
             {
                 "name": "Roofer",
+                "stage": ["roof"],
+                "service": true,
+                "timer": 0,
+                "price": 40,
+                "unit": "hour"
+            },
+            {
+                "name": "Welder",
+                "stage": ["structure-steel"],
                 "service": true,
                 "timer": 0,
                 "price": 40,
@@ -32,6 +43,7 @@ store = [
         "stock": [
             {
                 "name": "Dumpster",
+                "stage": ["clearing", "excavation", "fundation", "structure-concrete", "walls", "roof"],
                 "service": true,
                 "timer": 0,
                 "price": 230,
@@ -39,6 +51,7 @@ store = [
             },
             {   
                 "name": "Concrete Pump",
+                "stage": ["fundation", "structure-concrete", "slab"],
                 "service": true,
                 "timer": 0,
                 "price": 120,
@@ -66,6 +79,7 @@ store = [
         "stock": [
             {
                 "name": "Excavator",
+                "stage": ["clearing", "excavation", "fundation", "retain-wall"],
                 "service": true,
                 "timer": 0,
                 "price": 260,
@@ -73,6 +87,7 @@ store = [
             },
             {   
                 "name": "Skid Loader",
+                "stage": ["clearing", "excavation", "fundation", "retain-wall"],
                 "service": true,
                 "timer": 0,
                 "price": 120,
@@ -80,6 +95,7 @@ store = [
             },
             {   
                 "name": "Articulated truck",
+                "stage": ["structure-concrete", "slab"],
                 "service": true,
                 "timer": 0,
                 "price": 170,
@@ -87,6 +103,7 @@ store = [
             },
             {   
                 "name": "Mixer Truck",
+                "stage": ["fundation", "structure-concrete", "slab"],
                 "service": true,
                 "timer": 0,
                 "price": 180,

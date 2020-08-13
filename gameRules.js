@@ -65,7 +65,7 @@ function timeRules() {
         hour++
     }
     if (hour == 16) { //SET END OF WORK HOUR
-        hour = 0
+        hour = 8
         day++
         endOfWorkTime() //CALL END OF WORKTIME FUNCTION
     }
@@ -133,10 +133,12 @@ function checkCostPerHour() {
                 }
             }
         }
-    // //TOTAL PER HOUR
-    // targetClient.costPerHour = totalCostPerHour
     }
-
+    // DEDUCE OWN MONEY IF CLIENT MONEY < 0
+    if (stateGame.clients[currentClient].money < 0) {
+        stateGame.ownCompany.money += stateGame.clients[currentClient].money
+        stateGame.clients[currentClient].money = 0
+    }
 
     let costPerHourValueDOM = document.getElementById("costperhour-value")
     costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
@@ -159,15 +161,22 @@ function endOfWorkTime() {
         for (let constructionSiteStage of targetClient.construction) {
             for (let constructionSiteElement of constructionSiteStage) {
                 for (let workerNeeded of constructionSiteElement.workersNeeded) {
-                    workerNeeded.assigned = false
-                    targetClient.costPerHour = 0
+                    for (let workersOnSite of targetClient.workers) {
+                        if (workerNeeded.assigned == true && workerNeeded.type == workersOnSite.name) {
+                            workersOnSite.count += workerNeeded.count
+                            console.log(workersOnSite.name+" "+workersOnSite.count)
+                            workerNeeded.assigned = false
+                        }
+                    }
                 }
             }
         }
         for (let workersOnSite of targetClient.workers) {
+            stateGame.clients[currentClient].money -= workersOnSite.price * workersOnSite.count
+            console.log(workersOnSite.name+" "+workersOnSite.price)
             workersOnSite.count = 0
-        }
         updateGame()
+        }
     }
 }
 
@@ -248,9 +257,6 @@ function sendBackWorkerOrService(workerOrServiceStored) {
     // remainingCost = remainingCost * workerOrServiceStored.price
     console.log(workerOrServiceStored.timer)
     stateGame.clients[currentClient].money -= workerOrServiceStored.price
-
-
-    workerOrServiceStored.price
     workerOrServiceStored.count--
     updateGame()
 }
@@ -343,23 +349,34 @@ function buyItem(itemBought, categoryItem) {
     const inputCountId = `${itemBought.name}-buyinput`
     const getCount = document.getElementById(inputCountId);
 
+    //CONDITION TO PREVENT BREAK CODE IF INPUT IS IN WRONG FORMAT
+    if (itemBought === null || getCount === null || getCount < 1) return console.log("DEU TILT")
     if (getCount.value == undefined || getCount.value == null) {
         getCount.value = 1
     }
-    countBought = parseInt(getCount.value)  //GET THE count BOUGHT
+
+    //GET THE count BOUGHT
+    countBought = parseInt(getCount.value)  
     let moneySpent = countBought * itemBought.price
 
-    if (itemBought === null || getCount === null || getCount < 1) return console.log("DEU TILT")
-    //IF TOTAL COST IS LESS OR EQUAL TO 
+
+    //DEDUCE (CLIENT MONEY + OWN MONEY) IF CLIENT MONEY IS LESS moneySpent
     if (stateGame.clients[currentClient].money <= moneySpent) {
-        if (stateGame.clients[currentClient].money < moneySpent) {return}
         stateGame.clients[currentClient].money -= moneySpent
         stateGame.ownCompany.money += stateGame.clients[currentClient].money
         stateGame.clients[currentClient].money = 0
         return endOfWorkTime()
     }
+    else if (stateGame.clients[currentClient].money == 0) {return}
 
-    stateGame.clients[currentClient].money -= moneySpent;  //SUBTRACT MONEY FROM CLIENT
+
+    //SUBTRACT MONEY FROM CLIENT IMMEDIATELY IF NOT A SERVICE
+    if (itemBought.service) {
+    }
+    else {
+        stateGame.clients[currentClient].money -= moneySpent;  
+    }
+    
 
     //CHECK IF IT IS AN ITEM OR A SERVICE
     let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
@@ -373,7 +390,7 @@ function buyItem(itemBought, categoryItem) {
     if (itemStored === undefined) {
         itemBought.count = 0
         itemBought.category = categoryItem
-        warehouseOrWorkersContainer.push(itemBought)
+        warehouseOrWorkersContainer.unshift(itemBought)
     }
     //ADD TO EXISTING
     addCountToItemStored(itemBought, countBought)

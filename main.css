@@ -5,7 +5,9 @@
     --first-color-hover: #fabe5d;
     --sec-color: #14213d;
     --sec-color-hover: #253d72;
-    --layout-bg-color: #e5e5e5;
+    --ter-color: #5f3c4b;
+    --ter-color-hover: #946277;
+    --layout-bg-color: #e6e6e6d9;
     --card-bg-color: #ffffff;
     --text-base-color: #000000;
 }
@@ -158,6 +160,10 @@ body::before {
     gap: .5rem;
 }
 
+.client-container {
+    width: 27rem;
+}
+
 #btn-clients {
     width: 100%;
 }
@@ -185,6 +191,8 @@ body::before {
     border-radius: 3px;
     padding: 1rem;
     margin: 0;
+
+    /* backdrop-filter: blur(2px); */
 }
 
 .container {
@@ -199,15 +207,15 @@ body::before {
 
 .layout-warehouse {
     position: fixed;
-    background: var(--layout-bg-color);
-    border-radius: 3px;
+    /* background: var(--layout-bg-color);
+    border-radius: 3px; */
     width: 27rem;
     padding: 1rem;
     margin: 0 0%;
     transition:
         ease-out 200ms;
-    left: 5%;
-    top: 93%;
+    right: 5%;
+    top: 86%;
     bottom: 0;
 
     z-index: 1;
@@ -218,7 +226,7 @@ body::before {
     transition:
         ease-out 200ms;
     box-shadow: 0 0 3rem 1rem rgba(122, 122, 122, 0.3);
-    left: 5%;
+    right: 5%;
     width: 90%;
     top: 70%;
     bottom: 0;
@@ -256,9 +264,13 @@ body::before {
     display: block;
     left: 5%;
     width: 27rem;
-    max-height: 47rem;
+    height: 47rem;
     flex-direction: column;
+
+    overflow: auto;
+    /* resize: vertical; */
 }
+
 
 h2 {
     font-size: 1.5rem;
@@ -267,18 +279,18 @@ h2 {
 .side-menu {
     position: fixed;
     display: block;
-    width: 40rem;
+    width: 50rem;
     flex-direction: column;
 }
 
 /* ==============SIDE MENU HOVER============== */
 
 .side-menu {
-    right: -37rem;
+    right: -47rem;
     padding-left: 5rem;
     transition:
     ease-out 200ms;
-    min-height: 20rem;
+    min-height: 40rem;
 
 }
 .side-menu:hover {
@@ -291,17 +303,15 @@ h2 {
 .title-move {
     position: fixed;
     width: 20rem;
-    transform: rotate(-90deg) translate(-7rem, -13rem);
+    transform: rotate(-90deg) translate(-16rem, -13rem);
     transition:
-    ease-out 200ms;
+    ease-out 000ms;
 }
 .side-menu:hover>.title-move {
     width: 100%;
     transform: rotate(0deg);
     position: relative;
     right: 0;
-    transition:
-    ease-out 200ms;
 }
 
 
@@ -399,6 +409,15 @@ input:focus {
 }
 
 
+
+
+.btn-sendback {
+    background: var(--ter-color);
+    color: var(--card-bg-color);
+}
+.btn-sendback:hover, .btn-sendback:focus {
+    background: var(--ter-color-hover);
+}
 .btn-sendback::after {
     font-size: inherit;
     position: fixed;

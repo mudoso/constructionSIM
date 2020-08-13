@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="./main.css">
     <script defer type="text/javascript" src="./stateGame.js"></script>
     <script defer type="text/javascript" src="./store.js"></script>
+    <script defer type="text/javascript" src="./clientCreator.js"></script>
     <script defer type="text/javascript" src="./gameRules.js"></script>
     <script defer type="text/javascript" src="./updateGame.js"></script>
     
@@ -27,7 +28,7 @@
             </div>
         </nav>
 
-        <div class="layout flex-col">
+        <div class="layout flex-col center client-container">
             <p>CURRENT CLIENT:</p>
             <nav class="nav-stats-client">
                 <button id="btn-clients-left" class="btn">&#9664;</button>
@@ -61,7 +62,7 @@
 
         <div class="layout side-menu">
 
-            <h2 class="side-menu-title center title-move layout">MARKET / STORE</h2>
+            <h2 class="side-menu-title center title-move">MARKET / STORE</h2>
             <div id="store-category" class="side-menu-itens">
                 <!-- <button class="btn">Masonary</button>
                 <button class="btn">Concrete</button>-->
@@ -78,7 +79,7 @@
         </div>
     <!-- </section> -->
 
-    <div class="layout-warehouse">
+    <div class="layout-warehouse layout">
 
         <h2 class="side-menu-title center">WAREHOUSE</h2>
         <div id="warehosue-container" class="warehosue">
