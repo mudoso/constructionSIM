@@ -7,8 +7,8 @@ function createClient (clientname) {
         "workers": [],
         "construction": [
             [
-                createStageItem("Land Clearing", "clearing"),
-                createStageItem("Excavation", "excavation")
+                fundationStageItem("Land Clearing", "clearing"),
+                fundationStageItem("Excavation", "excavation")
             ],
         ]
     }
@@ -30,91 +30,96 @@ function constructionStage() {
 
 
 
-function createStageItem(stageItemName, stage) {
-    let createStageItem = {
+function fundationStageItem(stageItemName, stageItemType) {
+    let fundationStageItem = {
         "stage": stageItemName,
         "index": 0,
         "progress": 0,
-        "workersNeeded": createServiceNeed(stage),
-        "materialNeeded": []
+        "workersNeeded": serviceNeed(stageItemType)
     }
-    return createStageItem
+    return fundationStageItem
 }
 
 
 
-function createServiceNeed(stage) {
-    let serviceNeeded = [] //FINAL SERVICES ARRAY
-    let calledStage = [] //CALLED SERVICES RELATED TO STAGE
-    //PREVENT INFINITE LOOP
-    if(stage == undefined || stage == null) {return []}
-    //LOOK FOR ITEMS IN THE STORE THAT MATCH CALLED STAGE
+
+
+function serviceNeed(stage) {
+    let serviceNeeded = []
+    let fundationServices = []
+    
     for (let storeCategory of store) {
         if (storeCategory.service == true) {
             for (let itemOnStock of storeCategory.stock) {
                 if (itemOnStock.stage != undefined && itemOnStock.stage.includes(stage) == true) {
-                    calledStage.push(itemOnStock.name)
+                    fundationServices.push(itemOnStock.name)
                 }                         
             }
         }
     }
-    //FOR EACH SERVICE COMPATIBLE WITH CALLEDSTAGE MAKE A RANDOM COUNT AND ADD TO FINAL ARRAY
-    for (let singleService of calledStage) {
-
+    for (let singleService of fundationServices) {
         let countNumber = randomCount(2) // DEFAULT 0 < countNumber < 1
-        //SPECIAL RULES
+
         if (stage == "excavation") {countNumber = randomCount(2)+1} // 1 < countNumber < 2
-        if (stage == "clearing" && singleService == "Dumpster") {countNumber = randomCount(2)+1} // 1 < countNumber < 2
-        //ADD TO FINAL ARRAY IF > 0
+
+         
+        console.log(countNumber)
         if (countNumber > 0) {
             singleService = {"type": singleService, "count": countNumber, "assigned": false}
             serviceNeeded.push(singleService)
         }
     }
-    //IF NO SERVICE (EMPTY ARRAY) REDO THE FUNCTION
+    console.log(serviceNeeded)
+
     if (serviceNeeded.length == 0) {
-        createServiceNeed(stage)
+        console.log("tenta de novo")
+        serviceNeed(stage)
     }
-    else return serviceNeeded
-}
-
-
-
-function createMaterialNeed(stage) {
-    let materialNeeded = [] //FINAL MATERIAL ARRAY
-    let calledStage = [] //CALLED MATERIALS RELATED TO STAGE
-    //PREVENT INFINITE LOOP
-    if(stage == undefined || stage == null) {return []}
-    //LOOK FOR ITEMS IN THE STORE THAT MATCH CALLED STAGE
-    for (let storeCategory of store) {
-        if (storeCategory.service != true || storeCategory.service == undefined) {
-            for (let itemOnStock of storeCategory.stock) {
-                if (itemOnStock.stage != undefined && itemOnStock.stage.includes(stage) == true) {
-                    calledStage.push(itemOnStock.name)
-                }                         
-            }
-        }
-    }
-    //FOR EACH MATERIAL COMPATIBLE WITH CALLEDSTAGE MAKE A RANDOM COUNT AND ADD TO FINAL ARRAY
-    for (let singleMaterial of calledStage) {
-
-        let countNumber = randomCount(2) // DEFAULT 0 < countNumber < 1
-        //SPECIAL RULES
-        if (stage == "excavation") {countNumber = randomCount(2)+1} // 1 < countNumber < 2
-        if (stage == "clearing") {countNumber = randomCount(2)+1} // 1 < countNumber < 2
-         
-        if (countNumber > 0) {
-            singleMaterial = {"name": singleMaterial, "count" : countNumber, "assigned": false},
-            serviceNeeded.push(singleMaterial)
-        }
-    }
-    //IF NO SERVICE (EMPTY ARRAY) REDO THE FUNCTION
-    if (serviceNeeded.length == 0) {
-        createServiceNeed(stage)
-    }
-    else return serviceNeeded
+    return serviceNeeded
 }
 
 
 
 
+
+
+
+
+
+
+
+/*
+{
+    "name": "Jarbas",
+    "money": 40000,
+    "enoughMoney": true,
+    "costPerHour": 0,
+    "warehouse": [],
+    "workers": [],
+    "construction": [
+        // STAGE 1
+        [
+            {
+            "stage": "Land Clearing",
+            "index": 0,
+            "progress": 0,
+            "workersNeeded": [
+                {"type": "Excavator", "count": 1, "assigned": false},
+                {"type": "Dumpster", "count": 1, "assigned": false},
+                {"type": "Builder", "count": 1, "assigned": false}
+                ]
+            },
+            {
+            "stage": "Excavation",
+            "index": 1,
+            "progress": 0,
+            "workersNeeded": [
+                {"type": "Excavator", "count": 1, "assigned": false},
+                {"type": "Builder", "count": 1, "assigned": false}
+                ]
+            },
+
+        ],
+    ]
+}
+*/

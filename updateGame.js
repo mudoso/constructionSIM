@@ -55,6 +55,8 @@ function updateGame() {
     }
 
 
+
+
     //UPDATE WAREHOUSE BUTTONS
     warehouseContainerDOM.innerHTML = ""
     stateGame.clients[currentClient].warehouse.forEach(itemStored => {
@@ -71,10 +73,9 @@ function updateGame() {
         }
     })
     
-
     //UPDATE WORKERS AND SERVICES BUTTONS
     workersAndServicesContainerDOM.innerHTML = ""
-    for (let workerOrServiceStored of stateGame.clients[currentClient].workers) {
+    stateGame.clients[currentClient].workers.forEach(workerOrServiceStored => {
         if (workerOrServiceStored.count > 0) {
             let button = document.createElement('button');
             button.innerHTML =
@@ -85,8 +86,8 @@ function updateGame() {
             button.onclick = () => {sendBackWorkerOrService(workerOrServiceStored)};
             workersAndServicesContainerDOM.appendChild(button);
         }
-    }
 
+    })
     
     //UPDATE COST PER HOUR
     costPerHourDOM.innerHTML = ""

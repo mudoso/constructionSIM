@@ -201,6 +201,7 @@ function startTask(constructionSiteElement, targetClient) {
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
+                    console.log("teste")
                     updateGame()
                 }
             }  
