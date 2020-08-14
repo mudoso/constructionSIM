@@ -9,7 +9,6 @@
 function selectClientRight() {
     currentClient++
     if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
-        currentClient
         return updateGame()
     }
     currentClient = 0
@@ -20,7 +19,6 @@ function selectClientRight() {
 function selectClientLeft() {
     currentClient--
     if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
-        currentClient
         return updateGame()
     }
     currentClient = stateGame.clients.length - 1

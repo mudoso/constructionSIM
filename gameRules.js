@@ -195,10 +195,12 @@ function startTask(constructionSiteElement, targetClient) {
     // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
     if (constructionSiteElement.progress >= 100) {
 
+        
         for (let workerAssigned of constructionSiteElement.workersNeeded) {
             for (let workersOnSite of targetClient.workers) {
                 if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
                     workersOnSite.count += workerAssigned.count
+                    console.log("startTask -> workersOnSite.count", workersOnSite)
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
                     updateGame()
@@ -213,7 +215,7 @@ function startTask(constructionSiteElement, targetClient) {
 function verifyAssigned() {
     for (let targetClient of stateGame.clients) {
         for (let constructionSiteStage of targetClient.construction) {
-            constructionSiteStage.forEach(constructionSiteElement => {
+            for (let constructionSiteElement of constructionSiteStage) {
         
                 //VERIFY IF ALL WORKERS (OR SERVICES) WERE ASSIGNED TO THE JOB TO START THE TASK
                 if (constructionSiteElement.workersNeeded != undefined){
@@ -235,7 +237,7 @@ function verifyAssigned() {
                         return startTask(constructionSiteElement, targetClient)
                     }
                 }
-            })
+            }
             let condition = constructionSiteStage.every((constructionSiteElement) => {
                 return constructionSiteElement.progress >= 100
             });
@@ -370,12 +372,9 @@ function buyItem(itemBought, categoryItem) {
 
 
     //SUBTRACT MONEY FROM CLIENT IMMEDIATELY IF NOT A SERVICE
-    if (itemBought.service) {
-    }
-    else {
-        stateGame.clients[currentClient].money -= moneySpent;  
-    }
-    
+    if (itemBought.service) {}
+    else {stateGame.clients[currentClient].money -= moneySpent;}
+
 
     //CHECK IF IT IS AN ITEM OR A SERVICE
     let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
@@ -387,20 +386,28 @@ function buyItem(itemBought, categoryItem) {
     let itemStored = warehouseOrWorkersContainer.find(itemStored => itemStored.name === itemBought.name);
     //VERIFY IF ITEM EXISTS
     if (itemStored === undefined) {
-        itemBought.count = 0
-        itemBought.category = categoryItem
-        warehouseOrWorkersContainer.unshift(itemBought)
+        console.log(itemStored)
+        itemStored = {   
+            "name": itemBought.name,
+            "count": 0,
+            "service": itemBought.service,
+            "timer": 0,
+            "price": itemBought.price,
+            "unit": itemBought.unit
+        }
+        console.log(itemStored)
+
+        warehouseOrWorkersContainer.unshift(itemStored)
     }
+    
     //ADD TO EXISTING
-    addCountToItemStored(itemBought, countBought)
-    function addCountToItemStored(itemBought, countBought) {
-        for (let itemStored of warehouseOrWorkersContainer) {
-            if (itemStored.name === itemBought.name) {
-                itemStored.count = itemStored.count + countBought;
-                break; //Stop this loop, we found it!
-            }
+    for (let itemStored of warehouseOrWorkersContainer) {
+        if (itemStored.name === itemBought.name) {
+            itemStored.count = itemStored.count + countBought;
+            break; //Stop this loop, we found it!
         }
     }
+    
     updateGame()
 }
 
