@@ -1,6 +1,6 @@
 
 //======================================================================================//
-//RESPOSIBLE FOR UPDATE TASKS AND BUTTONS
+//RESPONSIBLE FOR UPDATE TASKS AND BUTTONS
 //START THE GAME AFTER ALL CODE IS LOADED
 //======================================================================================//
 
@@ -34,8 +34,8 @@ function updateGame() {
 
     //UPDATE CLIENT
     clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
-    clientLeftArrowButtonDOM.onclick = () => {selectClientLeft()};
-    clientRightArrowButtonDOM.onclick = () => {selectClientRight()};
+    clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
+    clientRightArrowButtonDOM.onclick = () => { selectClientRight() };
 
 
     //UPDATE CATEGORY CATALOG BUTTONS
@@ -48,7 +48,7 @@ function updateGame() {
             button.setAttribute('class', 'btn-darkblue');
         }
         else button.setAttribute('class', 'btn');
-        button.onclick = () => {itemList(categoryItem)};
+        button.onclick = () => { itemList(categoryItem) };
         storeCategoryContainerDOM.appendChild(button);
     }
 
@@ -59,16 +59,16 @@ function updateGame() {
         if (itemStored.count > 0) {
             let button = document.createElement('button');
             button.innerHTML =
-            `${itemStored.name} <span id="${itemStored.name}">
+                `${itemStored.name} <span id="${itemStored.name}">
             ${itemStored.count}
             </span>${itemStored.unit}`
             button.setAttribute('id', itemStored.name);
             button.setAttribute('class', `btn`);
-            button.onclick = () => {};
+            button.onclick = () => { };
             warehouseContainerDOM.appendChild(button);
         }
     })
-    
+
 
     //UPDATE WORKERS AND SERVICES BUTTONS
     workersAndServicesContainerDOM.innerHTML = ""
@@ -76,24 +76,24 @@ function updateGame() {
         if (workerOrServiceStored.count > 0) {
             let button = document.createElement('button');
             button.innerHTML =
-            `${workerOrServiceStored.count} ${workerOrServiceStored.name} $${workerOrServiceStored.price}/${workerOrServiceStored.unit}`
+                `${workerOrServiceStored.count} ${workerOrServiceStored.name} $${workerOrServiceStored.price}/${workerOrServiceStored.unit} (Idle)`
             button.setAttribute('id', workerOrServiceStored.name);
             button.setAttribute('class', `btn-darkblue btn-sendback btn-${workerOrServiceStored.category}`);
             button.setAttribute('btn-sudocontent', `Send Back $${workerOrServiceStored.price}`);
-            button.onclick = () => {sendBackWorkerOrService(workerOrServiceStored)};
+            button.onclick = () => { sendBackWorkerOrService(workerOrServiceStored) };
             workersAndServicesContainerDOM.appendChild(button);
         }
     }
 
-    
+
     //UPDATE COST PER HOUR
     costPerHourDOM.innerHTML = ""
     let button = document.createElement('button');
     button.innerHTML =
-    `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour ${extraShift}`
+        `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour ${extraShift}`
     button.setAttribute('id', `${Object.keys(stateGame.clients[currentClient].costPerHour)}`);
     button.setAttribute('class', `btn-darkblue`);
-    button.onclick = () => {};
+    button.onclick = () => { };
     costPerHourDOM.appendChild(button);
 
 
@@ -107,7 +107,7 @@ function updateGame() {
                 //CREATE </div> TAG FIRST
                 let div = document.createElement('div');
                 div.innerHTML =
-                `<span id="${constructionSiteElement.stage}-${constructionSiteElement.index}">
+                    `<span id="${constructionSiteElement.stage}-${constructionSiteElement.index}">
                 (${constructionSiteElement.stage})
                 </span>
                 <span id="${constructionSiteElement.stage}-${currentClient}-${constructionSiteElement.index}-progress">
@@ -130,12 +130,12 @@ function updateGame() {
                             button.setAttribute('id', `${idButton}-assigned`);
                             button.setAttribute('btn-sudocontent', 'Unassign');
                             button.setAttribute('class', 'btn-darkblue btn-clear');
-                            button.onclick = () => {assignWorkerOrService(workersNeeded, idButton)};
+                            button.onclick = () => { assignWorkerOrService(workersNeeded, idButton) };
                             button.innerHTML = `${workersNeeded.count} ${workersNeeded.type} Assigned`
                         }
                         else {
                             button.setAttribute('id', idButton);
-                            button.onclick = () => {assignWorkerOrService(workersNeeded, idButton)};
+                            button.onclick = () => { assignWorkerOrService(workersNeeded, idButton) };
                             button.innerHTML = `${workersNeeded.count} ${workersNeeded.type} Needed`
                         }
                         const buttonWorkersNeeded = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}`)
@@ -156,10 +156,10 @@ function updateGame() {
                         if (materialNeeded.assigned == true) {
                             button.setAttribute('btn-sudocontent', 'Used');
                             button.setAttribute('class', 'btn-darkblue btn-clear');
-                            button.onclick = () => {};
+                            button.onclick = () => { };
                             button.innerHTML = `${materialNeeded.count} ${materialNeeded.name}`
                         }
-                        button.onclick = () => {assignMaterial(materialNeeded, idButton)};
+                        button.onclick = () => { assignMaterial(materialNeeded, idButton) };
                         const buttonMaterialsNeeded = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}`)
                         buttonMaterialsNeeded.appendChild(button);
                     })
@@ -170,7 +170,7 @@ function updateGame() {
         let condition = constructionSiteStage.every((constructionSiteElement) => {
             return constructionSiteElement.progress >= 100
         });
-        if (condition == false){
+        if (condition == false) {
             //console.log("break")
             break
         }

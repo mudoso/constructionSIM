@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,17 +11,26 @@
     <script defer type="text/javascript" src="./clientCreator.js"></script>
     <script defer type="text/javascript" src="./gameRules.js"></script>
     <script defer type="text/javascript" src="./updateGame.js"></script>
-    
+
 </head>
+
 <body>
     <header class="header">
 
-        <nav class="nav-stats">  
+        <nav class="nav-stats">
             <h1 class="logo">Cs</h1>
             <ul>
-                <li><p><span id="own-company-name">NOME</span>'S COMPANY</p></li>
-                <li><header>OWN MONEY:</header><p>$<span id="own-money">0</span></p></li>
-                <li><header>CLIENT BUDGET:</header><p class="transfer-money">$<span id="client-money">0</span></p></li>
+                <li>
+                    <p><span id="own-company-name">NOME</span>'S COMPANY</p>
+                </li>
+                <li>
+                    <header>OWN MONEY:</header>
+                    <p>$<span id="own-money">0</span></p>
+                </li>
+                <li>
+                    <header>CLIENT BUDGET:</header>
+                    <p class="transfer-money">$<span id="client-money">0</span></p>
+                </li>
             </ul>
             <div id="clock" class="clock">
                 Day <span id="day">1</span><br>
@@ -42,53 +52,54 @@
 
     <!-- <section class="container"> -->
 
-        <div class="layout-site-construction layout">
-            <h2 class="side-menu-title center">CONSTRUCTION SITE TASKS</h2>
+    <div class="layout-site-construction layout">
+        <h2 class="side-menu-title center">CONSTRUCTION SITE TASKS</h2>
 
-            <div id="cost-per-hour" class="side-menu-services">
-                <!-- <button  class="btn-darkblue"> Total Cost $22/hour</button> -->
-            </div>
-            <p class="center">Workers / Machines (Idle)</p>
+        <div id="cost-per-hour" class="side-menu-services">
+            <!-- <button  class="btn-darkblue"> Total Cost $22/hour</button> -->
+        </div>
+        <p class="center">Workers / Machines (Idle)</p>
 
-            <div id="workers-services" class="side-menu-services">
-                <!-- <button class="btn-darkblue"> 3 Worker(s)</button>
+        <div id="workers-services" class="side-menu-services">
+            <!-- <button class="btn-darkblue"> 3 Worker(s)</button>
                 <button class="btn-darkblue"> 1 Excavator</button> -->
-            </div>
-            <div id="construction-container">
-                <!-- <canvas class="canvas" height="400" width="300"></canvas> -->
-            </div>
+        </div>
+        <div id="construction-container">
+            <!-- <canvas class="canvas" height="400" width="300"></canvas> -->
+        </div>
+    </div>
+
+
+    <div class="layout side-menu">
+
+        <h2 class="side-menu-title center title-move">MARKET / STORE</h2>
+        <div id="store-category" class="side-menu-items">
+            <!-- <button class="btn">Masonry</button>
+                <button class="btn">Concrete</button>-->
         </div>
 
-
-        <div class="layout side-menu">
-
-            <h2 class="side-menu-title center title-move">MARKET / STORE</h2>
-            <div id="store-category" class="side-menu-itens">
-                <!-- <button class="btn">Masonary</button>
-                <button class="btn">Concrete</button>-->
-            </div>
-
-            <ul id="store-buy-items" class="side-menu-buy">
-                <!-- <li>
-                    <header>Tijolo Furado</header>
-                    <section><div><input class="form" type="number" name="quantitie" id="number" min="0" max="100" placeholder=""></div>
+        <ul id="store-buy-items" class="side-menu-buy">
+            <!-- <li>
+                    <header></header>
+                    <section><div><input class="form" type="number" name="quantities" id="number" min="0" max="100" placeholder=""></div>
                     <button class="btn">$5</button></section>
                 </li>-->
-            </ul>
-            
-        </div>
+        </ul>
+
+    </div>
     <!-- </section> -->
 
     <div class="layout-warehouse layout">
 
         <h2 class="side-menu-title center">WAREHOUSE</h2>
-        <div id="warehosue-container" class="warehosue">
-                <button class="btn">Alvenaria</button>
-                <button class="btn">Alvenaria</button>
-                <button class="btn">Alvenaria</button>
+        <div id="warehouse-container" class="warehouse">
+            <button class="btn"></button>
+            <button class="btn"></button>
+            <button class="btn"></button>
         </div>
 
     </div>
 
 </body>
+
 </html>

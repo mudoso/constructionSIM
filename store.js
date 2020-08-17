@@ -5,15 +5,28 @@ store = [
         "stock": [
             {
                 "name": "Builder",
-                "stage": ["clearing", "excavation", "fundation", "structure-concrete", "walls", "roof"],
+                "stage": ["clearing", "excavation", "foundation", "structure-concrete", "walls", "roof", "slab"],
                 "service": true,
                 "timer": 0,
                 "price": 22,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Carpenter",
-                "stage": ["fundation", "structure-concrete", "walls"],
+                "stage": ["foundation", "structure-concrete", "walls", "retain-wall", "structure-concrete",
+                    "walls-s2x4", "walls-s2x6", "walls-s2x8"],
+                "service": true,
+                "timer": 0,
+                "price": 30,
+                "unit": "hour"
+            },
+            {
+                "name": "Bricklayer",
+                "stage": [
+                    "walls-clayBrick", "foundation-clayBlock", "structure-clayBlock", "walls-clayBlock",
+                    "foundation-concreteBrick", "structure-concreteBrick", "walls-concreteBrick",
+                    "foundation-concreteBlock", "structure-concreteBlock", "walls-concreteBlock",
+                    "roof-ceramic"],
                 "service": true,
                 "timer": 0,
                 "price": 30,
@@ -21,7 +34,7 @@ store = [
             },
             {
                 "name": "Roofer",
-                "stage": ["roof"],
+                "stage": ["roof", "roof-ceramic"],
                 "service": true,
                 "timer": 0,
                 "price": 40,
@@ -43,31 +56,31 @@ store = [
         "stock": [
             {
                 "name": "Dumpster",
-                "stage": ["clearing", "excavation", "fundation", "structure-concrete", "walls", "roof"],
+                "stage": ["clearing", "excavation", "foundation"],
                 "service": true,
                 "timer": 0,
                 "price": 230,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Concrete Pump",
-                "stage": ["fundation", "structure-concrete", "slab"],
+                "stage": ["foundation", "structure-concrete", "slab", "retain-wall"],
                 "service": true,
                 "timer": 0,
                 "price": 120,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Water Pump",
-                "stage": ["excavation", "fundation"],
+                "stage": ["excavation", "foundation"],
                 "service": true,
                 "timer": 0,
                 "price": 40,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Oil Motor",
-                "stage": ["fundation"],
+                "stage": ["foundation"],
                 "service": true,
                 "timer": 0,
                 "price": 70,
@@ -81,31 +94,31 @@ store = [
         "stock": [
             {
                 "name": "Excavator",
-                "stage": ["clearing", "excavation", "fundation", "retain-wall"],
+                "stage": ["clearing", "excavation", "foundation", "retain-wall"],
                 "service": true,
                 "timer": 0,
                 "price": 260,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Skid Loader",
-                "stage": ["clearing", "excavation", "fundation", "retain-wall"],
+                "stage": ["clearing", "excavation", "foundation", "retain-wall"],
                 "service": true,
                 "timer": 0,
                 "price": 120,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Articulated truck",
-                "stage": ["structure-concrete", "slab"],
+                "stage": ["clearing", "foundation", "structure-concrete", "slab", "retain-wall"],
                 "service": true,
                 "timer": 0,
                 "price": 170,
                 "unit": "hour"
             },
-            {   
+            {
                 "name": "Mixer Truck",
-                "stage": ["fundation", "structure-concrete", "slab"],
+                "stage": ["foundation", "structure-concrete", "slab"],
                 "service": true,
                 "timer": 0,
                 "price": 180,
@@ -114,30 +127,30 @@ store = [
         ]
     },
     {
-        "name": "Masonary",
+        "name": "Masonry",
         "service": false,
         "stock": [
             {
                 "name": "Clay Bricks",
-                "stage": ["walls-claybrick"],
+                "stage": ["walls-clayBrick"],
                 "price": 1,
                 "unit": "un."
             },
-            {   
+            {
                 "name": "Clay Block",
-                "stage": ["fundation-clayblock", "structure-clayblock", "walls-clayblock"],
+                "stage": ["foundation-clayBlock", "structure-clayBlock", "walls-clayBlock"],
                 "price": 3,
                 "unit": "un."
             },
             {
                 "name": "Concrete Bricks",
-                "stage": ["fundation-concretebrick", "structure-concretebrick", "walls-concretebrick"],
+                "stage": ["foundation-concreteBrick", "structure-concreteBrick", "walls-concreteBrick"],
                 "price": 2,
                 "unit": "un."
             },
             {
                 "name": "Concrete Block",
-                "stage": ["fundation-concreteblock", "structure-concreteblock", "walls-concreteblock"],
+                "stage": ["foundation-concreteBlock", "structure-concreteBlock", "walls-concreteBlock"],
                 "price": 4,
                 "unit": "un."
             },
@@ -149,11 +162,11 @@ store = [
             },
             {
                 "name": "Mortar",
-                "stage": ["walls-claybrick",
-                "fundation-clayblock", "structure-clayblock", "walls-clayblock",
-                "fundation-concretebrick", "structure-concretebrick", "walls-concretebrick",
-                "fundation-concreteblock", "structure-concreteblock", "walls-concreteblock",
-                "roof-ceramic"],
+                "stage": [
+                    "walls-clayBrick", "foundation-clayBlock", "structure-clayBlock", "walls-clayBlock",
+                    "foundation-concreteBrick", "structure-concreteBrick", "walls-concreteBrick",
+                    "foundation-concreteBlock", "structure-concreteBlock", "walls-concreteBlock",
+                    "roof-ceramic"],
                 "price": 9,
                 "unit": "25kg"
             }
@@ -165,24 +178,24 @@ store = [
         "stock": [
             {
                 "name": "Normal Str. Concrete",
-                "stage": ["fundation-concrete", "retain-wall", "structure-concrete", "slab"],
+                "stage": ["foundation-concrete", "retain-wall", "structure-concrete", "slab"],
                 "price": 100,
                 "unit": "m³"
             }, {
                 "name": "High Str. Concrete",
-                "stage": ["fundation-concrete", "retain-wall", "structure-concrete", "slab"],
+                "stage": ["foundation-concrete", "retain-wall", "structure-concrete", "slab"],
                 "price": 120,
                 "unit": "m³"
             }, {
                 "name": "Grout",
                 "stage": [
-                    "fundation-clayblock", "structure-clayblock", "walls-clayblock",
-                    "fundation-concreteblock", "structure-concreteblock", "walls-concreteblock"],
+                    "foundation-clayBlock", "structure-clayBlock", "walls-clayBlock",
+                    "foundation-concreteBlock", "structure-concreteBlock", "walls-concreteBlock"],
                 "price": 140,
                 "unit": "m³"
             }, {
                 "name": "Asphalt Concrete",
-                "stage": ["fundation", "retain-wall", "slab"],
+                "stage": ["asphalt-foundation"],
                 "price": 130,
                 "unit": "m³"
             }
@@ -194,19 +207,20 @@ store = [
         "stock": [
             {
                 "name": "Straight Rebar #10",
-                "stage": ["fundation", "retain-wall", "structure-concrete"],
+                "stage": ["foundation", "retain-wall", "structure-concrete", "slab", "structure-concreteBlock",
+                    "foundation-clayBlock"],
                 "price": 10,
-                "unit": "12m"
+                "unit": "m"
             }, {
                 "name": "Straight Rebar #15",
-                "stage": ["fundation", "retain-wall", "structure-concrete"],
+                "stage": ["foundation", "retain-wall", "structure-concrete", "slab"],
                 "price": 16,
-                "unit": "12m"
+                "unit": "m"
             }, {
                 "name": "Straight Rebar #20",
-                "stage": ["fundation", "retain-wall", "structure-concrete"],
+                "stage": ["foundation", "retain-wall", "structure-concrete", "slab"],
                 "price": 25,
-                "unit": "12m"
+                "unit": "m"
             }
         ],
     },
@@ -216,23 +230,23 @@ store = [
         "stock": [
             {
                 "name": "Stud 2x4 in.",
-                "stage": ["retain-wall", "structure-concrete", "walls-s2x4", "roof"],
+                "stage": ["retain-wall", "structure-concrete", "walls-s2x4", "roof", "roof-ceramic"],
                 "price": 12,
                 "unit": "m"
             }, {
                 "name": "Stud 2x6 in.",
-                "stage": ["retain-wall", "structure-concrete", "walls-s2x6", "roof"],
+                "stage": ["retain-wall", "structure-concrete", "walls-s2x6", "roof", "roof-ceramic"],
                 "price": 20,
                 "unit": "m"
             }, {
                 "name": "Stud 2x8 in.",
-                "stage": ["retain-wall", "structure-concrete", "walls-s2x8", "roof"],
+                "stage": ["retain-wall", "structure-concrete", "walls-s2x8", "roof", "roof-ceramic"],
                 "price": 27,
                 "unit": "m"
             }, {
                 "name": "OSB Board",
                 "stage": ["retain-wall", "structure-concrete", "roof",
-                "walls-s2x4", "walls-s2x6", "walls-s2x8"],
+                    "walls-s2x4", "walls-s2x6", "walls-s2x8"],
                 "price": 2,
                 "unit": "m²"
             }
