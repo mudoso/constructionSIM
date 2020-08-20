@@ -21,7 +21,7 @@
     list-style: none;
     line-height: 1.8rem;
     letter-spacing: .15rem;
-    animation: ease-in-out;
+    /* animation: ease-in-out; */
     transition: 500ms;
     text-decoration: none;
     color: var(--text-base-color);
@@ -249,8 +249,12 @@ body::before {
 
 .canvas {
     background-color: var(--layout-bg-color);
-
-    /* transform: rotate3d(1, 0, 1, 45deg); */
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
 }
 
 
