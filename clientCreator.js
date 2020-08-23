@@ -14,7 +14,7 @@ class Client {
 
 
 // function createClient(clientName) {
-//     let clientCreated = {
+//     return {
 //         "name": clientName,
 //         "money": 35000,
 //         "area": randomCount(150) + 50,
@@ -28,7 +28,6 @@ class Client {
 //             ],
 //         ]
 //     }
-//     return clientCreated
 // }
 
 
@@ -52,14 +51,11 @@ function constructionStage(level, area) {
                 createStageItem("Slab Foundation", "slab", area)
             ],
             [
-                createStageItem("Foundation Finishes", "clearing", area)
+                createStageItem("Structural Wood Walls", "walls-s2x6", area),
+                createStageItem("Non-Structural Wood Walls", "walls-s2x4", area)
             ],
             [
-                createStageItem("Structural Walls", "walls-s2x6", area),
-                createStageItem("Non-Structural Walls", "walls-s2x4", area)
-            ],
-            [
-                createStageItem("Structural Trusses", "walls-s2x6", area),
+                createStageItem("Structural Wood Trusses", "walls-s2x6", area),
                 createStageItem("Brick Finishes Outer Walls", "walls-clayBrick", area)
             ],
             [
@@ -136,7 +132,6 @@ function createServiceNeed(stage, area) {
         if (stage == "clearing" && singleService == "Dumpster") { countNumber = 1 }
         if (stage == "slab" && singleService == "Builder") { countNumber = randomCount(minimum) + 1 }
         if (stage == "roof" || stage == "roof-ceramic") { countNumber = randomCount(minimum) + 1 }
-
 
 
         //======================================================================================//

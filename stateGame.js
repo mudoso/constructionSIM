@@ -44,7 +44,7 @@ stateGame = {
                 // STAGE 2
                 [
                     {
-                        "stage": "Foundation Concrete Slab",
+                        "stage": "Slab Foundation",
                         "index": 0,
                         "progress": 0,
                         "workersNeeded": [
@@ -62,7 +62,7 @@ stateGame = {
                 // STAGE 3
                 [
                     {
-                        "stage": "Outer Walls",
+                        "stage": "Structural Wood Walls",
                         "index": 0,
                         "progress": 0,
                         "workersNeeded": [
@@ -77,7 +77,7 @@ stateGame = {
                         ]
                     },
                     {
-                        "stage": "Inner Walls",
+                        "stage": "Non-Structural Wood Walls",
                         "index": 1,
                         "progress": 0,
                         "workersNeeded": [
@@ -92,7 +92,7 @@ stateGame = {
                 // STAGE 4
                 [
                     {
-                        "stage": "Roofing Frame",
+                        "stage": "Structural Wood Trusses",
                         "index": 0,
                         "progress": 0,
                         "workersNeeded": [
@@ -105,7 +105,7 @@ stateGame = {
                         ]
                     },
                     {
-                        "stage": "External Wall Finish",
+                        "stage": "Brick Finishes Outer Walls",
                         "index": 1,
                         "progress": 0,
                         "workersNeeded": [

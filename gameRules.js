@@ -61,7 +61,6 @@ function timeRules() {
     clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
     dayDom.innerHTML = stateGame.clock.day
 
-
     min++
     checkCostPerHour() //CHECK AND DEDUCE COST PER HOUR
     if (min >= 60) { //SET END OF AN HOUR
@@ -191,7 +190,7 @@ function startTask(constructionSiteElement, targetClient) {
 
     if (constructionSiteElement.progress < 100) {
 
-        constructionSiteElement.progress++ //PROGRESS RULE
+        constructionSiteElement.progress += 10 //PROGRESS RULE
         const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
         if (cardTaskPercentage == undefined || cardTaskPercentage == null) { return }
         else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
