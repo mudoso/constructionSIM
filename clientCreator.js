@@ -4,7 +4,7 @@ class Client {
         this.name = clientName
         this.level = 1
         this.money = 35000
-        this.area = randomCount(150) + 50
+        this.area = randomCount(1) + 51
         this.costPerHour = 0
         this.warehouse = []
         this.workers = []
@@ -125,7 +125,7 @@ function createServiceNeed(stage, area) {
     for (let singleService of calledStage) {
         let minimum = area / 50
         let countNumber = randomCount(minimum) // DEFAULT
-        console.log(countNumber);
+        console.log(singleService, countNumber);
         //SPECIAL RULES
         //======================================================================================//
         if (stage == "excavation") { countNumber = randomCount(minimum) + 1 }
@@ -140,6 +140,7 @@ function createServiceNeed(stage, area) {
         if (countNumber > 0) {
             singleService = { "type": singleService, "count": countNumber, "assigned": false }
             serviceNeeded.push(singleService)
+            console.log("createServiceNeed -> singleService", singleService)
         }
         if (countNumber == undefined || countNumber == null) { return console.log(singleService, countNumber, "error") }
     }

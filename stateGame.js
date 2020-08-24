@@ -139,7 +139,7 @@ stateGame = {
                         ]
                     },
                     {
-                        "stage": "Foundation Concrete Slab",
+                        "stage": "Slab Foundation",
                         "index": 1,
                         "progress": 0,
                         "workersNeeded": [
