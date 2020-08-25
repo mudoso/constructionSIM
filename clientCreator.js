@@ -4,7 +4,7 @@ class Client {
         this.name = clientName
         this.level = 1
         this.money = 35000
-        this.area = randomCount(1) + 51
+        this.area = randomCount(50) + 50
         this.costPerHour = 0
         this.warehouse = []
         this.workers = []
@@ -56,38 +56,45 @@ function constructionStage(level, area) {
             ],
             [
                 createStageItem("Structural Wood Trusses", "walls-s2x6", area),
+                createStageItem("Sheathing", "sheathing", area)
+            ],
+            [
+                createStageItem("Windows and Doors", "door/window", area),
+                createStageItem("Drywall", "drywall", area),
+                createStageItem("Flooring", "floor", area),
                 createStageItem("Brick Finishes Outer Walls", "walls-clayBrick", area)
             ],
             [
-                createStageItem("Finishes Inner Walls", "walls", area),
+                createStageItem("Deck", "walls-s2x4", area),
                 createStageItem("Finishes Roof", "roof", area)
             ]
-        ],
-        [
-            //SMALL MASONRY HOUSE
-            [
-                createStageItem("Land Clearing", "clearing", area),
-                createStageItem("Pile Excavation", "excavation", area)
-            ],
-            [
-                createStageItem("Structural Pile", "structure-concrete", area)
-            ],
-            [
-                createStageItem("Slab Foundation", "slab", area)
-            ],
-            [
-                createStageItem("Masonry Walls", "walls-clayBlock", area),
-                createStageItem("Concrete Pillars", "structure-concrete", area)
-            ],
-            [
-                createStageItem("Wooden Trusses", "walls-s2x6", area),
-                createStageItem("Brick Finishes Outer Walls", "walls", area)
-            ],
-            [
-                createStageItem("Finishes Inner Walls", "walls", area),
-                createStageItem("Ceramic Roof", "roof-ceramic", area)
-            ]
         ]
+        // ,
+        // [
+        //     //SMALL MASONRY HOUSE
+        //     [
+        //         createStageItem("Land Clearing", "clearing", area),
+        //         createStageItem("Pile Excavation", "excavation", area)
+        //     ],
+        //     [
+        //         createStageItem("Structural Pile", "structure-concrete", area)
+        //     ],
+        //     [
+        //         createStageItem("Slab Foundation", "slab", area)
+        //     ],
+        //     [
+        //         createStageItem("Masonry Walls", "walls-clayBlock", area),
+        //         createStageItem("Concrete Pillars", "structure-concrete", area)
+        //     ],
+        //     [
+        //         createStageItem("Wooden Trusses", "walls-s2x6", area),
+        //         createStageItem("Brick Finishes Outer Walls", "walls", area)
+        //     ],
+        //     [
+        //         createStageItem("Finishes Inner Walls", "walls", area),
+        //         createStageItem("Ceramic Roof", "roof-ceramic", area)
+        //     ]
+        // ]
     ])
 }
 
@@ -128,7 +135,18 @@ function createServiceNeed(stage, area) {
         console.log(singleService, countNumber);
         //SPECIAL RULES
         //======================================================================================//
-        if (stage == "excavation") { countNumber = randomCount(minimum) + 1 }
+
+        if (stage == "excavation") {
+            if (singleService == "Excavator") { countNumber = 1 }
+            if (singleService == "Articulated truck") { countNumber = 0 }
+        }
+        if (singleService == "Builder" ||
+            singleService == "Carpenter" ||
+            singleService == "Bricklayer" ||
+            singleService == "Roofer" ||
+            singleService == "Welder") {
+            countNumber = randomCount(minimum) + 1
+        }
         if (stage == "clearing" && singleService == "Dumpster") { countNumber = 1 }
         if (stage == "slab" && singleService == "Builder") { countNumber = randomCount(minimum) + 1 }
         if (stage == "roof" || stage == "roof-ceramic") { countNumber = randomCount(minimum) + 1 }
@@ -146,11 +164,10 @@ function createServiceNeed(stage, area) {
     }
 
     //IF NO SERVICE (EMPTY ARRAY) REDO THE FUNCTION
-    if (serviceNeeded.length == 0 || serviceNeeded == undefined) {
-        console.log("test");
+    if (serviceNeeded.length < 1 || serviceNeeded == undefined) {
         createServiceNeed(stage, area)
     }
-    else ("ERROR, SERVICE CANNOT GET AT LEAST VALUE OF 1")
+    else (console.log("ERROR, SERVICE CANNOT GET AT LEAST VALUE OF 1", stage))
     return serviceNeeded
 }
 
@@ -178,43 +195,50 @@ function createMaterialNeed(stage, area) {
         //SPECIAL RULES
         //======================================================================================//
 
-        if (singleMaterial == "Clay Bricks") { countNumber = (randomCount(41) + 40 * area) } // 40 < countNumber < 80
-        if (singleMaterial == "Clay Block") { countNumber = (randomCount(31) + 30 * area) } // 30 < countNumber < 60
-        if (singleMaterial == "Concrete Bricks") { countNumber = (randomCount(41) + 40 * area) } // 40 < countNumber < 80
-        if (singleMaterial == "Concrete Block") { countNumber = (randomCount(31) + 30) * area } // 30 < countNumber < 60
+        if (singleMaterial == "Clay Bricks") { countNumber = Math.floor((randomCount(41) + 40 * (Math.random() + 1) / 1.5 * area)) } // 40 < countNumber < 80
+        if (singleMaterial == "Clay Block") { countNumber = Math.floor((randomCount(31) + 30 * (Math.random() + 1) / 1.5 * area)) } // 30 < countNumber < 60
+        if (singleMaterial == "Concrete Bricks") { countNumber = Math.floor((randomCount(41) + 40 * (Math.random() + 1) / 1.5 * area)) } // 40 < countNumber < 80
+        if (singleMaterial == "Concrete Block") { countNumber = Math.floor((randomCount(31) + 30) * (Math.random() + 1) / 1.5 * area) } // 30 < countNumber < 60
 
-        if (singleMaterial == "Mortar") { countNumber = (randomCount(3) + 3) * area } // 3 < countNumber < 5
+        if (singleMaterial == "Mortar") { countNumber = Math.floor((randomCount(3) + 3) * (Math.random() + 1) / 1.5 * area) } // 3 < countNumber < 5
 
         if (singleMaterial == "Ceramic Roof Tile") { countNumber = (randomCount(5) + 14) * area } // 14 < countNumber < 18
 
         if (stage == "foundation-concrete" || stage == "slab" || stage == "retain-wall" || stage == "structure-concrete") {
-            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(0.05 * area) }
+            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(0.15 * (Math.random() + 1) / 1.5 * area) }
         } else {
-            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(randomCount(2) * 0.05 * area) }
-            if (singleMaterial == "High Str. Concrete") { countNumber = Math.floor(randomCount(2) * 0.05 * area) }
-            if (singleMaterial == "Grout") { countNumber = Math.floor(randomCount(2) * 0.04 * area) }
-            if (singleMaterial == "Asphalt Concrete") { countNumber = Math.floor(randomCount(2) * 0.1 * area) }
+            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
+            if (singleMaterial == "High Str. Concrete") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
+            if (singleMaterial == "Grout") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
+            if (singleMaterial == "Asphalt Concrete") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
         }
 
-        if (singleMaterial == "Straight Rebar #10") { countNumber = Math.floor(1.6 * area) }
-        if (singleMaterial == "Straight Rebar #15") { countNumber = Math.floor(randomCount(2) * 1.3 * area) }
-        if (singleMaterial == "Straight Rebar #20") { countNumber = Math.floor(randomCount(2) * 0.9 * area) }
+        if (singleMaterial == "Straight Rebar #10") { countNumber = Math.floor(1.6 * Math.random() * area) }
+        if (singleMaterial == "Straight Rebar #15") { countNumber = Math.floor(randomCount(2) * Math.random() * 1.3 * area) }
+        if (singleMaterial == "Straight Rebar #20") { countNumber = Math.floor(randomCount(2) * Math.random() * 0.9 * area) }
 
         if (stage == "walls-s2x4" || stage == "roof") {
-            if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(3.5 * area) }
+            if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(3.5 * (Math.random() + 1) / 1.5 * area) }
         }
         else if (stage == "walls-s2x6") {
-            if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(3.5 * area) }
+            if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(3.5 * (Math.random() + 1) / 1.5 * area) }
         }
         else if (stage == "walls-s2x8") {
-            if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(2.4 * area) }
+            if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(2.4 * (Math.random() + 1) / 1.5 * area) }
         }
         else {
-            if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(randomCount(2) * 3.5 * area) }
-            if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(randomCount(2) * 3.5 * area) }
-            if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(randomCount(2) * 3.5 * area) }
+            if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
+            if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
+            if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
         }
-        if (singleMaterial == "OSB Board") { countNumber = Math.floor(1.4 * area) }
+        if (singleMaterial == "OSB Board") { countNumber = Math.floor(1.4 * (Math.random() + 1) / 1.5 * area) }
+        if (singleMaterial == "Hardwood Floor") { countNumber = Math.floor(1.1 * (Math.random() + 1) / 1.5 * area) }
+
+        if (singleMaterial == "Drywall Panels") { countNumber = Math.floor(0.7 * (Math.random() + 1) / 1.5 * area) }
+        if (singleMaterial == "Plaster") { countNumber = Math.floor(.5 * (Math.random() + 1) / 1.5 * area) }
+        if (singleMaterial == "Insulation") { countNumber = Math.floor(1.6 * (Math.random() + 1) / 1.5 * area) }
+
+        if (stage == "door/window") { countNumber = Math.floor(0.07 * (Math.random() + 1) / 1.5 * area) }
 
 
         //======================================================================================//

@@ -17,7 +17,7 @@ function main() {
     const scene = new THREE.Scene();
 
     renderer.setClearColor("#bed2ab"); // BACKGROUND COLOR
-    renderer.setPixelRatio(window.devicePixelRatio * 1); // CONTROLS RESOLUTION
+    renderer.setPixelRatio(window.devicePixelRatio * .9); // CONTROLS RESOLUTION
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     //OUTLINE EFFECT ON RENDERER
@@ -159,6 +159,26 @@ function main() {
         stats.update();
     }
 
+
+    // function cameraSwitch() {
+    //     //CLIENT CAMERA FORMULA
+    //     clientX = 0
+    //     clientCameraX = 50 + 100 * currentClient
+    //     camera.position.set(clientCameraX, 50, 50);
+    //     controls.target.set(clientCameraX - 50 - 12, 0, -10);
+
+    //     for (let client of stateGame.clients) {
+    //         //ADD CAMERA POINT TO CLIENT
+    //         if (client.pointOnModel == undefined) {
+    //             console.log("CREATE pointOnModel");
+    //             clientX = 100 * stateGame.clients.indexOf(client)
+    //             client.pointOnModel = { x: clientX, y: 0, z: 0 }
+    //         }
+    //     }
+    //     effect.render(scene, camera);
+    // }
+
+
     function render(time) {
         time *= 0.001;  // convert time to seconds
 
@@ -240,6 +260,11 @@ function main() {
                         return item.name.replace(/_/g, " ") == `${constructionSiteElement.stage}Done`
                     })
 
+                    //CATCH THREE.JS MODELS ERRORS
+                    if (THREEConstructionElementDone == undefined) {
+                        console.log(constructionSiteElement.stage, "NO THREE JS ###########");
+                    }
+
                     //ADD CURRENT CONSTRUCTION TASK WHEN 0% < PROGRESS < 100%
                     if ((constructionSiteElement.progress > 0 && constructionSiteElement.progress < 100) &&
                         THREEConstructionElementInProgress.visible != true) {
@@ -267,12 +292,9 @@ function main() {
             //RENDER THE SCENE
             effect.render(scene, camera);
             // renderer.render(scene, camera);
-
-            //UPDATES FRAMES PER SECOND
-            // stats.update();
         }
     }
-    setInterval(render, 1000)
+    setInterval(render, 2000)
     fps()
 }
 main();

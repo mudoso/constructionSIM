@@ -5,7 +5,8 @@ store = [
         "stock": [
             {
                 "name": "Builder",
-                "stage": ["clearing", "excavation", "foundation", "structure-concrete", "walls", "roof", "slab"],
+                "stage": ["clearing", "excavation", "foundation", "structure-concrete", "walls", "roof", "slab",
+                    "sheathing", "floor", "drywall", "door/window"],
                 "service": true,
                 "timer": 0,
                 "price": 22,
@@ -14,7 +15,7 @@ store = [
             {
                 "name": "Carpenter",
                 "stage": ["foundation", "structure-concrete", "walls", "retain-wall", "structure-concrete",
-                    "walls-s2x4", "walls-s2x6", "walls-s2x8"],
+                    "walls-s2x4", "walls-s2x6", "walls-s2x8", "sheathing", "floor", "drywall", "door/window"],
                 "service": true,
                 "timer": 0,
                 "price": 30,
@@ -230,7 +231,7 @@ store = [
         "stock": [
             {
                 "name": "Stud 2x4 in.",
-                "stage": ["retain-wall", "structure-concrete", "walls-s2x4", "roof", "roof-ceramic"],
+                "stage": ["retain-wall", "structure-concrete", "walls-s2x4", "roof", "roof-ceramic", "drywall"],
                 "price": 12,
                 "unit": "m"
             }, {
@@ -246,9 +247,65 @@ store = [
             }, {
                 "name": "OSB Board",
                 "stage": ["retain-wall", "structure-concrete", "roof",
-                    "walls-s2x4", "walls-s2x6", "walls-s2x8"],
+                    "walls-s2x4", "walls-s2x6", "walls-s2x8", "sheathing"],
                 "price": 2,
                 "unit": "m²"
+            }, {
+                "name": "Hardwood Floor",
+                "stage": ["floor"],
+                "price": 4,
+                "unit": "m²"
+            }
+        ]
+    },
+    {
+        "name": "Drywall",
+        "service": false,
+        "stock": [
+            {
+                "name": "Drywall Panels",
+                "stage": ["drywall"],
+                "price": 15,
+                "unit": "un."
+            }, {
+                "name": "Plaster",
+                "stage": ["drywall"],
+                "price": 18,
+                "unit": "25kg"
+            }, {
+                "name": "Insulation",
+                "stage": ["drywall"],
+                "price": 10,
+                "unit": "m²"
+            }
+        ]
+    },
+    {
+        "name": "Doors",
+        "service": false,
+        "stock": [
+            {
+                "name": "Regular Door",
+                "stage": ["door/window"],
+                "price": 1200,
+                "unit": "un."
+            }
+        ]
+    },
+    {
+        "name": "Windows",
+        "service": false,
+        "stock": [
+            {
+                "name": "Regular Window",
+                "stage": ["door/window"],
+                "price": 850,
+                "unit": "un."
+            }, {
+                "name": "Small Window",
+                "stage": ["door/window"],
+                "price": 700,
+                "unit": "un."
             }
         ]
     }
