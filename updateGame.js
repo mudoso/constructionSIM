@@ -33,10 +33,10 @@ function updateGame() {
     clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
 
     //UPDATE CLIENT
+    menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
     clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
     clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
     clientRightArrowButtonDOM.onclick = () => { selectClientRight() };
-
 
     //UPDATE CATEGORY CATALOG BUTTONS
     storeCategoryContainerDOM.innerHTML = ""
@@ -51,7 +51,6 @@ function updateGame() {
         button.onclick = () => { itemList(categoryItem) };
         storeCategoryContainerDOM.appendChild(button);
     }
-
 
     //UPDATE WAREHOUSE BUTTONS
     warehouseContainerDOM.innerHTML = ""
@@ -69,7 +68,6 @@ function updateGame() {
         }
     })
 
-
     //UPDATE WORKERS AND SERVICES BUTTONS
     workersAndServicesContainerDOM.innerHTML = ""
     for (let workerOrServiceStored of stateGame.clients[currentClient].workers) {
@@ -85,7 +83,6 @@ function updateGame() {
         }
     }
 
-
     //UPDATE COST PER HOUR
     costPerHourDOM.innerHTML = ""
     let button = document.createElement('button');
@@ -96,6 +93,60 @@ function updateGame() {
     button.onclick = () => { };
     costPerHourDOM.appendChild(button);
 
+    //MENU CLIENTS ON COMPANY MENU
+    menuOwnClients.innerHTML = ""
+    for (let clients of stateGame.clients) {
+        let button = document.createElement('li');
+        button.innerHTML = clients.name
+        button.setAttribute('id', clients.name);
+        button.setAttribute('class', "btn");
+        button.onclick = () => { };
+        menuOwnClients.appendChild(button);
+    }
+
+    //MENU CURRENT CLIENT TASKS
+    menuClientStages.innerHTML = ""
+    menuClientMaterialsNeeded.innerHTML = ""
+    const menuMaterialsArray = []
+    for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
+        let button = document.createElement('ul');
+        let stageArray = stateGame.clients[currentClient].construction
+        button.innerHTML = `STAGE ${stageArray.indexOf(constructionSiteStage) + 1}:`
+        button.setAttribute('id', `stage-${stageArray.indexOf(constructionSiteStage)}`);
+        button.setAttribute('class', "margin");
+        menuClientStages.appendChild(button);
+
+        for (let constructionSiteElement of constructionSiteStage) {
+            let button = document.createElement('li');
+            button.innerHTML = `${constructionSiteElement.stage}`
+            button.setAttribute('class', "btn");
+            if (constructionSiteElement.progress >= 100) {
+                button.setAttribute('class', "btn btn-clear");
+                button.setAttribute('btn-sudocontent', 'Task Done');
+            }
+            document.getElementById(`stage-${stageArray.indexOf(constructionSiteStage)}`).appendChild(button);
+
+            //UPDATE menuMaterialsArray WITH REMAINING NEEDED MATERIALS IN CLIENT MENU
+            if (constructionSiteElement.progress < 100) {
+                for (let materialNeeded of constructionSiteElement.materialNeeded) {
+
+                    let materialFound = menuMaterialsArray.find(material => material[0] == materialNeeded.name)
+                    if (materialFound != undefined) {
+                        materialFound[1] += materialNeeded.count
+                    } else {
+                        menuMaterialsArray.push([materialNeeded.name, materialNeeded.count])
+                    }
+                }
+            }
+        }
+    }
+    //UPDATE REMAINING NEEDED MATERIALS IN CLIENT MENU
+    for (let materialArray of menuMaterialsArray) {
+        let button = document.createElement('button');
+        button.innerHTML = `${materialArray[0]} (${materialArray[1]})`
+        button.setAttribute('class', "btn");
+        menuClientMaterialsNeeded.appendChild(button);
+    }
 
     //UPDATE CONSTRUCTION SITE CARD TASKS
     constructionContainerDOM.innerHTML = ""

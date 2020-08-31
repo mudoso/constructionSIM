@@ -6,6 +6,22 @@
 //DEFINE ALL GLOBAL VARIABLES
 let currentClient = 0
 
+//OWN COMPANY WINDOW ON/OFF
+const menuOwnCompanyButton = document.getElementById('menu-own-company');
+const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
+menuOwnCompanyButton.onclick = () => { menuCompanyOn() };
+function menuCompanyOn() { menuOwnCompanyButtonOut.style.display = "block" }
+menuOwnCompanyButtonOut.onclick = () => { menuCompanyOff() };
+function menuCompanyOff() { menuOwnCompanyButtonOut.style.display = "none" }
+
+const menuClientButton = document.getElementById('btn-clients');
+const menuClientButtonOut = document.getElementById('menu-client-block');
+menuClientButton.onclick = () => { menuClientOn() };
+function menuClientOn() { menuClientButtonOut.style.display = "block" }
+menuClientButtonOut.onclick = () => { menuClientOff() };
+function menuClientOff() { menuClientButtonOut.style.display = "none" }
+
+
 //DEFINE ALL GLOBAL PATHS
 //==========NAV CLIENT PATH=============
 const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
@@ -15,9 +31,13 @@ const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
 //==========NAV STATS PATH=============
 const companyNameDOM = document.getElementById("own-company-name")
 const currentDateDOM = document.getElementById("current-date")
-const ownMoneyDOM = document.getElementById("own-money")
-const clientMoneyDOM = document.getElementById("client-money")
+const ownMoneyDOM = document.querySelectorAll(".own-money")
+const clientMoneyDOM = document.querySelectorAll(".client-money")
 const costPerHourDOM = document.getElementById("cost-per-hour")
+const menuOwnClients = document.querySelector(".menu-own-company-clients")
+const menuClientName = document.getElementById("menu-client-name")
+const menuClientStages = document.getElementById('menu-client-stages')
+const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
 const dayDom = document.getElementById("day")
 
 
@@ -37,8 +57,6 @@ const statsCostPerHour = stateGame.clients[currentClient].costPerHour
 //==========NAV CONSTRUCTION PATH=============
 const constructionContainerDOM = document.getElementById("construction-container")
 const statsConstructionSite = stateGame.clients[currentClient].construction
-//======================================================================================//
-
 
 
 //======================================================================================//
@@ -57,8 +75,8 @@ let extraShift = ""
 function timeRules() {
     //UPDATE MONEY FROM STATEGAME
     companyNameDOM.innerHTML = stateGame.ownCompany.name
-    ownMoneyDOM.innerHTML = stateGame.ownCompany.money
-    clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
+    ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
+    clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
     dayDom.innerHTML = stateGame.clock.day
 
     min++
@@ -112,8 +130,6 @@ function checkCostPerHour() {
 
                     //ADD TO THE TOTAL PER HOUR
                     targetClient.costPerHour += CostPerHourPerType
-                    // totalCostPerHour = CostPerHourPerType + totalCostPerHour
-
 
                     //DEDUCE COST PER HOUR OR WHEN JOB TIME FINISH
                     if (workersOnSite.timer >= 60 || hour == 16) {
@@ -344,7 +360,6 @@ function itemList(categoryItem) {
 
 //ADD ITEMS TO WAREHOUSE(IF ITS A MATERIAL) OR SITE(IF ITS A WORKER/SERVICE)
 function buyItem(itemBought, categoryItem) {
-    // console.log(itemBought)
     const inputCountId = `${itemBought.name}-buyinput`
     const getCount = document.getElementById(inputCountId);
 

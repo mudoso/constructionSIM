@@ -1,103 +1,72 @@
+//======================================================================================//
+//CLIENT AND CONSTRUCTION CREATOR
+//======================================================================================//
+
 class Client {
     constructor(clientName) {
         console.log(this);
         this.name = clientName
-        this.level = 1
-        this.money = 35000
         this.area = randomCount(50) + 50
+        this.money = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * this.area)
         this.costPerHour = 0
         this.warehouse = []
         this.workers = []
-        this.construction = constructionStage(this.level, this.area)
+        this.constructionType = buildTypeList()
+        //CALLS THE FUNCTION THAT CONSTRUCT THE BUILDING
+        this.construction = eval(`${this.constructionType}( ${this.area} )`)
     }
 }
 
 
-// function createClient(clientName) {
-//     return {
-//         "name": clientName,
-//         "money": 35000,
-//         "area": randomCount(150) + 50,
-//         "costPerHour": 0,
-//         "warehouse": [],
-//         "workers": [],
-//         "construction": [
-//             [
-//                 createStageItem("Land Clearing", "clearing"),
-//                 createStageItem("Slab", "structure-concrete", 126)
-//             ],
-//         ]
-//     }
-// }
+//BUILD CONSTRUCTOR TYPE LIST
+//======================================================================================//
+
+function buildTypeList() {
+    return randomIndex([
+        "SmallWoodFrameHouse_01"
+    ])
+}
+
+function SmallWoodFrameHouse_01(area) {
+    return [
+        [
+            createStageItem("Land Clearing", "clearing", area),
+            createStageItem("Excavation", "excavation", area)
+        ],
+        [
+            createStageItem("Slab Foundation", "slab", area)
+        ],
+        [
+            createStageItem("Structural Wood Walls", "walls-s2x6", area),
+            createStageItem("Non-Structural Wood Walls", "walls-s2x4", area)
+        ],
+        [
+            createStageItem("Structural Wood Trusses", "walls-s2x6", area),
+            createStageItem("Sheathing", "sheathing", area)
+        ],
+        [
+            createStageItem("Windows and Doors", "door/window", area),
+            createStageItem("Drywall", "drywall", area),
+            createStageItem("Flooring", "floor", area),
+            createStageItem("Brick Finishes Outer Walls", "walls-clayBrick", area)
+        ],
+        [
+            createStageItem("Deck", "walls-s2x4", area),
+            createStageItem("Exterior Finishes", "clearing", area),
+            createStageItem("Finishes Roof", "roof", area)
+        ]
+    ]
+}
+
+//======================================================================================//
 
 
 function randomIndex(targetArray) {
     return targetArray[Math.floor(Math.random() * targetArray.length)]
 }
-
 function randomCount(countRange) {
     return Math.floor(Math.random() * countRange)
 }
-
-function constructionStage(level, area) {
-    return randomIndex([
-        [
-            //SMALL WOOD-FRAME HOUSE
-            [
-                createStageItem("Land Clearing", "clearing", area),
-                createStageItem("Excavation", "excavation", area)
-            ],
-            [
-                createStageItem("Slab Foundation", "slab", area)
-            ],
-            [
-                createStageItem("Structural Wood Walls", "walls-s2x6", area),
-                createStageItem("Non-Structural Wood Walls", "walls-s2x4", area)
-            ],
-            [
-                createStageItem("Structural Wood Trusses", "walls-s2x6", area),
-                createStageItem("Sheathing", "sheathing", area)
-            ],
-            [
-                createStageItem("Windows and Doors", "door/window", area),
-                createStageItem("Drywall", "drywall", area),
-                createStageItem("Flooring", "floor", area),
-                createStageItem("Brick Finishes Outer Walls", "walls-clayBrick", area)
-            ],
-            [
-                createStageItem("Deck", "walls-s2x4", area),
-                createStageItem("Finishes Roof", "roof", area)
-            ]
-        ]
-        // ,
-        // [
-        //     //SMALL MASONRY HOUSE
-        //     [
-        //         createStageItem("Land Clearing", "clearing", area),
-        //         createStageItem("Pile Excavation", "excavation", area)
-        //     ],
-        //     [
-        //         createStageItem("Structural Pile", "structure-concrete", area)
-        //     ],
-        //     [
-        //         createStageItem("Slab Foundation", "slab", area)
-        //     ],
-        //     [
-        //         createStageItem("Masonry Walls", "walls-clayBlock", area),
-        //         createStageItem("Concrete Pillars", "structure-concrete", area)
-        //     ],
-        //     [
-        //         createStageItem("Wooden Trusses", "walls-s2x6", area),
-        //         createStageItem("Brick Finishes Outer Walls", "walls", area)
-        //     ],
-        //     [
-        //         createStageItem("Finishes Inner Walls", "walls", area),
-        //         createStageItem("Ceramic Roof", "roof-ceramic", area)
-        //     ]
-        // ]
-    ])
-}
-
 
 
 function createStageItem(stageItemName, stage, area) {
@@ -110,7 +79,6 @@ function createStageItem(stageItemName, stage, area) {
     }
     return createStageItem
 }
-
 
 
 function createServiceNeed(stage, area) {
@@ -132,7 +100,6 @@ function createServiceNeed(stage, area) {
     for (let singleService of calledStage) {
         let minimum = area / 50
         let countNumber = randomCount(minimum) // DEFAULT
-        console.log(singleService, countNumber);
         //SPECIAL RULES
         //======================================================================================//
 
@@ -158,7 +125,6 @@ function createServiceNeed(stage, area) {
         if (countNumber > 0) {
             singleService = { "type": singleService, "count": countNumber, "assigned": false }
             serviceNeeded.push(singleService)
-            console.log("createServiceNeed -> singleService", singleService)
         }
         if (countNumber == undefined || countNumber == null) { return console.log(singleService, countNumber, "error") }
     }
@@ -167,10 +133,9 @@ function createServiceNeed(stage, area) {
     if (serviceNeeded.length < 1 || serviceNeeded == undefined) {
         createServiceNeed(stage, area)
     }
-    else (console.log("ERROR, SERVICE CANNOT GET AT LEAST VALUE OF 1", stage))
+    // else (console.log("ERROR, SERVICE CANNOT GET AT LEAST VALUE OF 1", stage))
     return serviceNeeded
 }
-
 
 
 function createMaterialNeed(stage, area) {
@@ -217,20 +182,10 @@ function createMaterialNeed(stage, area) {
         if (singleMaterial == "Straight Rebar #15") { countNumber = Math.floor(randomCount(2) * Math.random() * 1.3 * area) }
         if (singleMaterial == "Straight Rebar #20") { countNumber = Math.floor(randomCount(2) * Math.random() * 0.9 * area) }
 
-        if (stage == "walls-s2x4" || stage == "roof") {
-            if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(3.5 * (Math.random() + 1) / 1.5 * area) }
-        }
-        else if (stage == "walls-s2x6") {
-            if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(3.5 * (Math.random() + 1) / 1.5 * area) }
-        }
-        else if (stage == "walls-s2x8") {
-            if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(2.4 * (Math.random() + 1) / 1.5 * area) }
-        }
-        else {
-            if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
-            if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
-            if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
-        }
+        if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
+        if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
+        if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
+
         if (singleMaterial == "OSB Board") { countNumber = Math.floor(1.4 * (Math.random() + 1) / 1.5 * area) }
         if (singleMaterial == "Hardwood Floor") { countNumber = Math.floor(1.1 * (Math.random() + 1) / 1.5 * area) }
 
@@ -257,9 +212,3 @@ function createMaterialNeed(stage, area) {
     }
     return materialNeeded
 }
-
-
-
-
-
-

@@ -15,43 +15,102 @@
 
 </head>
 
+<div id="menu-own-company-block">
+    <div class="menu-own-company layout">
+
+        <h2 class="side-menu-title center">COMPANY'S STATS</h2>
+        <div class="grid-row">
+
+            <div class="money-div layout">
+                <header>OWN MONEY:&nbsp;</header>
+                <p>$<span class="own-money">0</span></p>
+            </div>
+
+            <div class="layout">CLIENTS:
+                <ul class="menu-own-company-clients">
+                    <li class="layout btn">
+                        Client 1
+                    </li>
+                    <li class="layout btn">
+                        Client 1
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="menu-client-block">
+    <div class="menu-client layout-blueprint">
+        <h2 class="center margin"><span id="menu-client-name">CLIENT-NAME</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
+        <div class="grid-row">
+
+            <section class="margin">
+                <div class="money-div">
+                    <header>CLIENT BUDGET:&nbsp;</header>
+                    <p class="transfer-money">$<span class="client-money">0</span></p>
+                </div>
+            </section>
+
+
+            <section class="margin">
+                <header>MATERIALS NEEDED:</header>
+                <div id="menu-client-materials">
+                    <button class="btn">MATERIALS</button>
+                </div>
+            </section>
+
+            <section id="menu-client-stages">
+                <ul class="grid-row">
+                    <li class="layout btn">
+                        TASK 1
+                    </li>
+                    <li class="layout btn">
+                        TASK 2
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+
 <body>
     <header class="header">
 
-        <nav class="nav-stats">
-            <h1 class="logo">Cs</h1>
-            <ul>
-                <li>
-                    <p><span id="own-company-name">NOME</span>'S COMPANY</p>
-                </li>
-                <li>
-                    <header>OWN MONEY:</header>
-                    <p>$<span id="own-money">0</span></p>
-                </li>
-                <li>
-                    <header>CLIENT BUDGET:</header>
-                    <p class="transfer-money">$<span id="client-money">0</span></p>
-                </li>
-            </ul>
+        <div class="layout nav-flex">
+            <div>
+                <p>OWN COMPANY:</p>
+                <button id="menu-own-company" class="btn"><span id="own-company-name">NONE</span>'S COMPANY</button>
+                <div class="money-div">
+                    <header>OWN MONEY:&nbsp;</header>
+                    <p>$<span class="own-money">0</span></p>
+                </div>
+            </div>
+
             <div id="clock" class="clock">
                 Day <span id="day">1</span><br>
                 Time <span id="time">1:00</span>
             </div>
-        </nav>
-
-        <div class="layout flex-col center client-container">
-            <p>CURRENT CLIENT:</p>
-            <nav class="nav-stats-client">
-                <button id="btn-clients-left" class="btn">&#9664;</button>
-                <button id="btn-clients" class="btn">CLIENT 1</button>
-                <button id="btn-clients-right" class="btn">&#9658;</button>
-            </nav>
         </div>
 
+        <div class="layout">
+            <p>CLIENT:</p>
+            <nav class="nav-stats-client">
+                <button id="btn-clients-left" class="btn">&#9664;</button>
+                <button id="btn-clients" class="btn">NONE</button>
+                <button id="btn-clients-right" class="btn">&#9658;</button>
+            </nav>
+
+            <div class="money-div">
+                <header>CLIENT BUDGET:&nbsp;</header>
+                <p class="transfer-money">$<span class="client-money">0</span></p>
+            </div>
+        </div>
 
     </header>
-
-    <!-- <section class="container"> -->
 
     <div class="layout-site-construction layout">
         <h2 class="side-menu-title center">CONSTRUCTION SITE TASKS</h2>
@@ -62,8 +121,7 @@
         <p class="center">Workers / Machines (Idle)</p>
 
         <div id="workers-services" class="side-menu-services">
-            <!-- <button class="btn-darkblue"> 3 Worker(s)</button>
-                <button class="btn-darkblue"> 1 Excavator</button> -->
+            <!-- <button class="btn-darkblue"> 3 Worker(s)</button> -->
         </div>
         <div id="construction-container">
         </div>
@@ -74,8 +132,7 @@
 
         <h2 class="side-menu-title center title-move">MARKET / STORE</h2>
         <div id="store-category" class="side-menu-items">
-            <!-- <button class="btn">Masonry</button>
-                <button class="btn">Concrete</button>-->
+            <!-- <button class="btn">Masonry</button> -->
         </div>
 
         <ul id="store-buy-items" class="side-menu-buy">
@@ -87,7 +144,6 @@
         </ul>
 
     </div>
-    <!-- </section> -->
 
     <div class="layout-warehouse layout">
 
