@@ -135,7 +135,7 @@ function main() {
 
             if (client.site == undefined) {
                 //CREATE ROAD FOR NEW CLIENT
-                new ColladaLoader(loadingManager).load(`models/roadSite.dae`, (collada) => {
+                new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`, (collada) => {
                     console.log(`CREATE roadSite (${client.name})`)
                     client.site = collada.scene
                     client.site.position.set(0, 0, 0);

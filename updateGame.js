@@ -3,6 +3,7 @@
 //START THE GAME AFTER ALL CODE IS LOADED
 //======================================================================================//
 
+
 //DEFINE ALL GLOBAL PATHS
 //==========NAV CLIENT PATH=============
 const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
@@ -28,34 +29,13 @@ const workersAndServicesContainerDOM = document.getElementById("workers-services
 const constructionContainerDOM = document.getElementById("construction-container")
 
 
-//UPDATE TO PREVIOUS CLIENT
-function selectClientRight() {
-    currentClient++
-    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
-        return updateGame()
-    }
-    currentClient = 0
-    updateGame()
-}
-
-//UPDATE TO NEXT CLIENT
-function selectClientLeft() {
-    currentClient--
-    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
-        return updateGame()
-    }
-    currentClient = stateGame.clients.length - 1
-    updateGame()
-}
-
-
 // UPDATE ALL THE BUTTONS, CARDS AND THEIR RESPECTIVE .onclick CALLOUTS
 function updateGame() {
 
     ownMoneyDOM.innerHTML = stateGame.ownCompany.money
     clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
 
-    //UPDATE CLIENT
+    //UPDATE NAV CLIENT
     menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
     clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
     clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
@@ -256,6 +236,27 @@ updateGame() //CALL UPDATE FUNCTION AFTER ALL CODE IS LOADED
 //======================================================================================//
 
 
+//UPDATE TO PREVIOUS CLIENT
+function selectClientRight() {
+    currentClient++
+    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
+        return updateGame()
+    }
+    currentClient = 0
+    updateGame()
+}
+
+//UPDATE TO NEXT CLIENT
+function selectClientLeft() {
+    currentClient--
+    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
+        return updateGame()
+    }
+    currentClient = stateGame.clients.length - 1
+    updateGame()
+}
+
+
 //CREATE THE ITEMS LIST OF A CATEGORY WHEN BUTTON IS CLICKED
 function itemList(categoryItem) {
     storeBuyContainerDOM.innerHTML = ""
@@ -294,6 +295,7 @@ function itemList(categoryItem) {
 function displayMenu() {
     const menuOwnCompanyButton = document.getElementById('menu-own-company');
     const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
+
     menuOwnCompanyButton.onclick = () => { menuCompanyOn() };
     function menuCompanyOn() { menuOwnCompanyButtonOut.style.display = "block" }
     menuOwnCompanyButtonOut.onclick = () => { menuCompanyOff() };
@@ -301,6 +303,7 @@ function displayMenu() {
 
     const menuClientButton = document.getElementById('btn-clients');
     const menuClientButtonOut = document.getElementById('menu-client-block');
+
     menuClientButton.onclick = () => { menuClientOn() };
     function menuClientOn() { menuClientButtonOut.style.display = "block" }
     menuClientButtonOut.onclick = () => { menuClientOff() };
