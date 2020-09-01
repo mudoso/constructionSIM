@@ -1,62 +1,18 @@
-
 //======================================================================================//
-//RESPONSIBLE FOR DEFINE ALL GLOBAL VARIABLES (BUT TIME ONES)
+//RESPONSIBLE FOR DEFINE ALL GAME RULES
 //======================================================================================//
 
 //DEFINE ALL GLOBAL VARIABLES
 let currentClient = 0
 
-//OWN COMPANY WINDOW ON/OFF
-const menuOwnCompanyButton = document.getElementById('menu-own-company');
-const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
-menuOwnCompanyButton.onclick = () => { menuCompanyOn() };
-function menuCompanyOn() { menuOwnCompanyButtonOut.style.display = "block" }
-menuOwnCompanyButtonOut.onclick = () => { menuCompanyOff() };
-function menuCompanyOff() { menuOwnCompanyButtonOut.style.display = "none" }
-
-const menuClientButton = document.getElementById('btn-clients');
-const menuClientButtonOut = document.getElementById('menu-client-block');
-menuClientButton.onclick = () => { menuClientOn() };
-function menuClientOn() { menuClientButtonOut.style.display = "block" }
-menuClientButtonOut.onclick = () => { menuClientOff() };
-function menuClientOff() { menuClientButtonOut.style.display = "none" }
-
 
 //DEFINE ALL GLOBAL PATHS
-//==========NAV CLIENT PATH=============
-const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
-const clientSelectedButtonDOM = document.getElementById("btn-clients")
-const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
-
 //==========NAV STATS PATH=============
 const companyNameDOM = document.getElementById("own-company-name")
-const currentDateDOM = document.getElementById("current-date")
 const ownMoneyDOM = document.querySelectorAll(".own-money")
 const clientMoneyDOM = document.querySelectorAll(".client-money")
-const costPerHourDOM = document.getElementById("cost-per-hour")
-const menuOwnClients = document.querySelector(".menu-own-company-clients")
-const menuClientName = document.getElementById("menu-client-name")
-const menuClientStages = document.getElementById('menu-client-stages')
-const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
+const timeSpan = document.getElementById('time');
 const dayDom = document.getElementById("day")
-
-
-//==========NAV STORE PATH=============
-// const storeItems = Object.keys(store)
-const storeCategoryContainerDOM = document.getElementById("store-category")
-const storeBuyContainerDOM = document.getElementById("store-buy-items")
-
-
-//==========NAV INVENTOR / WORKERS-SERVICES / WAREHOUSE PATH=============
-const warehouseContainerDOM = document.getElementById("warehouse-container")
-const statsInventoryWarehouse = stateGame.clients[currentClient].warehouse
-const workersAndServicesContainerDOM = document.getElementById("workers-services")
-const statsWorkersAndServices = stateGame.clients[currentClient].workers
-const statsCostPerHour = stateGame.clients[currentClient].costPerHour
-
-//==========NAV CONSTRUCTION PATH=============
-const constructionContainerDOM = document.getElementById("construction-container")
-const statsConstructionSite = stateGame.clients[currentClient].construction
 
 
 //======================================================================================//
@@ -64,7 +20,6 @@ const statsConstructionSite = stateGame.clients[currentClient].construction
 //======================================================================================//
 
 // SET TIME
-const span = document.getElementById('time');
 let min = 0
 let hour = 8
 let day = 1
@@ -93,7 +48,7 @@ function timeRules() {
     let min00 = ("0" + min).slice(-2);
     // let date = new Date();
     // let h = date.getHours();
-    span.textContent = hour + ":" + min00;
+    timeSpan.textContent = hour + ":" + min00;
     stateGame.clock.minute = min00
     stateGame.clock.hour = hour
     stateGame.clock.day = day
@@ -144,7 +99,6 @@ function checkCostPerHour() {
                             endOfWorkTime()
                         } else {
                             targetClient.money -= workersCostPerHour
-                            console.log(targetClient.name + " -$" + workersCostPerHour)
                             ownMoneyDOM.innerHTML = stateGame.ownCompany.money
                             clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
                         }
@@ -216,8 +170,6 @@ function startTask(constructionSiteElement, targetClient) {
         for (let workerAssigned of constructionSiteElement.workersNeeded) {
             for (let workersOnSite of targetClient.workers) {
                 if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
-                    console.log("startTask -> workersOnSite", workersOnSite)
-                    console.log("startTask -> workerAssigned", workerAssigned)
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
@@ -324,39 +276,7 @@ function assignMaterial(materialNeeded, idButton) {
 //RESPONSIBLE FOR ALL STORE FUNCTIONS RULES RELATED
 //======================================================================================//
 
-//CREATE THE ITEMS LIST OF A CATEGORY WHEN BUTTON IS CLICKED
-function itemList(categoryItem) {
-    storeBuyContainerDOM.innerHTML = ""
-    categoryItem.stock.forEach(item => {
 
-        //DRAW </li> tag First
-        let li = document.createElement('li');
-        li.innerHTML =
-            `<header>${item.name}</header>
-            <section>
-                <div>
-                    <input id="${item.name}-buyinput" type="number" class="form"
-                    min="1" max="9999" placeholder="" step="1"
-                    value=1>
-                </div>
-                <span id="${item.name}-buylist"></span>
-                <div class="unit">/${item.unit}</div>
-            </section>`
-        storeBuyContainerDOM.appendChild(li);
-
-        //THAN DRAW </button> tag + click function
-        let button = document.createElement('button');
-        button.innerHTML = `$${item.price}`
-        button.setAttribute('id', item.name);
-        button.setAttribute('class', 'btn btn-buy');
-        button.setAttribute('value', item.price);
-        button.onclick = () => { buyItem(item, categoryItem) };
-        const spanId = `${item.name}-buylist`
-        const buttonOnBuyList = document.getElementById(spanId)
-        buttonOnBuyList.appendChild(button);
-        return
-    })
-}
 
 //ADD ITEMS TO WAREHOUSE(IF ITS A MATERIAL) OR SITE(IF ITS A WORKER/SERVICE)
 function buyItem(itemBought, categoryItem) {

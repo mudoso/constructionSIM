@@ -136,7 +136,7 @@ function main() {
             if (client.site == undefined) {
                 //CREATE ROAD FOR NEW CLIENT
                 new ColladaLoader(loadingManager).load(`models/roadSite.dae`, (collada) => {
-                    console.log("CREATE roadSite")
+                    console.log(`CREATE roadSite (${client.name})`)
                     client.site = collada.scene
                     client.site.position.set(0, 0, 0);
                     client.site.name = `${client.name}-roadSite`
@@ -144,7 +144,7 @@ function main() {
                 })
                 //CREATE THREE MODEL FOR NEW CLIENT
                 new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
-                    console.log("CREATE THREEmodel")
+                    console.log(`CREATE THREEmodel (${client.name})`)
                     client.THREEmodel = collada.scene
                     client.THREEmodel.position.set(0, 0, 0);
                     client.THREEmodel.name = `${client.name}`

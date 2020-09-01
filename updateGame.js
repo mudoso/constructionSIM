@@ -1,8 +1,31 @@
-
 //======================================================================================//
 //RESPONSIBLE FOR UPDATE TASKS AND BUTTONS
 //START THE GAME AFTER ALL CODE IS LOADED
 //======================================================================================//
+
+//DEFINE ALL GLOBAL PATHS
+//==========NAV CLIENT PATH=============
+const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
+const clientSelectedButtonDOM = document.getElementById("btn-clients")
+const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
+const menuClientName = document.getElementById("menu-client-name")
+const menuClientStages = document.getElementById('menu-client-stages')
+const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
+
+//==========NAV STATS PATH=============
+const costPerHourDOM = document.getElementById("cost-per-hour")
+const menuOwnClients = document.querySelector(".menu-own-company-clients")
+
+//==========NAV STORE PATH=============
+const storeCategoryContainerDOM = document.getElementById("store-category")
+const storeBuyContainerDOM = document.getElementById("store-buy-items")
+
+//==========NAV INVENTOR / WORKERS-SERVICES / WAREHOUSE PATH=============
+const warehouseContainerDOM = document.getElementById("warehouse-container")
+const workersAndServicesContainerDOM = document.getElementById("workers-services")
+
+//==========NAV CONSTRUCTION PATH=============
+const constructionContainerDOM = document.getElementById("construction-container")
 
 
 //UPDATE TO PREVIOUS CLIENT
@@ -228,5 +251,59 @@ function updateGame() {
 
     }
 }
-
+//======================================================================================//
 updateGame() //CALL UPDATE FUNCTION AFTER ALL CODE IS LOADED
+//======================================================================================//
+
+
+//CREATE THE ITEMS LIST OF A CATEGORY WHEN BUTTON IS CLICKED
+function itemList(categoryItem) {
+    storeBuyContainerDOM.innerHTML = ""
+    categoryItem.stock.forEach(item => {
+        //DRAW </li> FIRST
+        let li = document.createElement('li');
+        li.innerHTML =
+            `<header>${item.name}</header>
+            <section>
+                <div>
+                    <input id="${item.name}-buyinput" type="number" class="form"
+                    min="1" max="9999" placeholder="" step="1"
+                    value=1>
+                </div>
+                <span id="${item.name}-buylist"></span>
+                <div class="unit">/${item.unit}</div>
+            </section>`
+        storeBuyContainerDOM.appendChild(li);
+
+        //THAN DRAW </button>
+        let button = document.createElement('button');
+        button.innerHTML = `$${item.price}`
+        button.setAttribute('id', item.name);
+        button.setAttribute('class', 'btn btn-buy');
+        button.setAttribute('value', item.price);
+        button.onclick = () => { buyItem(item, categoryItem) };
+        const spanId = `${item.name}-buylist`
+        const buttonOnBuyList = document.getElementById(spanId)
+        buttonOnBuyList.appendChild(button);
+        return
+    })
+}
+
+
+//OWN COMPANY WINDOW ON/OFF
+function displayMenu() {
+    const menuOwnCompanyButton = document.getElementById('menu-own-company');
+    const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
+    menuOwnCompanyButton.onclick = () => { menuCompanyOn() };
+    function menuCompanyOn() { menuOwnCompanyButtonOut.style.display = "block" }
+    menuOwnCompanyButtonOut.onclick = () => { menuCompanyOff() };
+    function menuCompanyOff() { menuOwnCompanyButtonOut.style.display = "none" }
+
+    const menuClientButton = document.getElementById('btn-clients');
+    const menuClientButtonOut = document.getElementById('menu-client-block');
+    menuClientButton.onclick = () => { menuClientOn() };
+    function menuClientOn() { menuClientButtonOut.style.display = "block" }
+    menuClientButtonOut.onclick = () => { menuClientOff() };
+    function menuClientOff() { menuClientButtonOut.style.display = "none" }
+}
+displayMenu()
