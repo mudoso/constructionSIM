@@ -143,7 +143,8 @@ function main() {
                     scene.add(client.site)
                 })
                 //CREATE THREE MODEL FOR NEW CLIENT
-                new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
+                // new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
+                new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
                     console.log(`CREATE THREEmodel (${client.name})`)
                     client.THREEmodel = collada.scene
                     client.THREEmodel.position.set(0, 0, 0);
