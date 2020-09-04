@@ -10,7 +10,7 @@
     <script defer type="text/javascript" src="./clientCreator.js"></script>
     <script defer type="text/javascript" src="./stateGame.js"></script>
     <script defer type="text/javascript" src="./gameRules.js"></script>
-    <script defer type="text/javascript" src="./updateGame.js"></script>
+    <script defer type="text/javascript" src="./renderDOM.js"></script>
     <script defer type="module" src="./canvas3D.js"></script>
 
 </head>
@@ -43,13 +43,23 @@
 
 <div id="menu-client-block">
     <div class="menu-client layout-blueprint">
-        <h2 class="center margin"><span id="menu-client-name">CLIENT-NAME</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
+        <div class="margin">
+            <h2 class="center"><span id="menu-client-name">CLIENT-NAME</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
+            <button id="menu-client-close" class="btn">Close</button>
+        </div>
+
+
         <div class="grid-row">
 
-            <section class="margin">
+            <section class="margin flex-between">
                 <div class="money-div">
                     <header>CLIENT BUDGET:&nbsp;</header>
                     <p class="transfer-money">$<span class="client-money">0</span></p>
+                </div>
+                <div class="send-money">
+                    <input class="form money-div" type="number" name="send-own-money" id="send-own-money" min="0"
+                        max="10000" placeholder="0" step="100">
+                    <button class="btn">Send Money</button>
                 </div>
             </section>
 
@@ -57,18 +67,15 @@
             <section class="margin">
                 <header>MATERIALS NEEDED:</header>
                 <div id="menu-client-materials">
-                    <button class="btn">MATERIALS</button>
+                    <!-- <button class="btn">MATERIALS</button> -->
                 </div>
             </section>
 
             <section id="menu-client-stages">
                 <ul class="grid-row">
-                    <li class="layout btn">
+                    <!-- <li class="layout btn">
                         TASK 1
-                    </li>
-                    <li class="layout btn">
-                        TASK 2
-                    </li>
+                    </li> -->
                 </ul>
             </section>
 

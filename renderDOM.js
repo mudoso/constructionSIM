@@ -30,7 +30,7 @@ const constructionContainerDOM = document.getElementById("construction-container
 
 
 // UPDATE ALL THE BUTTONS, CARDS AND THEIR RESPECTIVE .onclick CALLOUTS
-function updateGame() {
+function renderDOM() {
 
     ownMoneyDOM.innerHTML = stateGame.ownCompany.money
     clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
@@ -166,10 +166,10 @@ function updateGame() {
                 </span>
                 <span id="${constructionSiteElement.stage}-${currentClient}-${constructionSiteElement.index}-progress">
                 ${constructionSiteElement.progress} %
-                </span> <br>`
+                </span>
+                <br>`
                 div.setAttribute('id', `${constructionSiteElement.stage}-${constructionSiteElement.index}`);
                 div.setAttribute('class', `card center`);
-                // div.onclick = () => {};
                 constructionContainerDOM.appendChild(div);
 
                 //THAN DRAW </button> TAG FOR ==WORKERS (OR SERVICES) NEEDED
@@ -221,39 +221,53 @@ function updateGame() {
             }
         })
 
-        let condition = constructionSiteStage.every((constructionSiteElement) => {
-            return constructionSiteElement.progress >= 100
-        });
-        if (condition == false) {
-            //console.log("break")
+        let stageIsCompleted = constructionSiteStage.every(constructionSiteElement => constructionSiteElement.progress >= 100);
+        if (!stageIsCompleted) break
+
+        let allStagesAreCompleted = stateGame.clients[currentClient].construction
+            .every(constructionSiteStage => constructionSiteStage
+                .every(constructionSiteElement => constructionSiteElement.progress >= 100))
+
+        if (allStagesAreCompleted) {
+            //DRAW FINISH CLIENT CARD
+            let div = document.createElement('div');
+            div.innerHTML = `${stateGame.clients[currentClient].name.toUpperCase()}'s CONSTRUCTION COMPLETED`
+            div.setAttribute('id', `${stateGame.clients[currentClient]}-completed`);
+            div.setAttribute('class', `card flex-col center`);
+            constructionContainerDOM.appendChild(div);
+
+            let button = document.createElement('button');
+            button.setAttribute('class', 'btn center');
+            button.setAttribute('id', ``);
+            button.onclick = () => { completeClientConstruction() };
+            button.innerHTML = `CLAIM <b>$${stateGame.clients[currentClient].money}</b>`
+            const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[currentClient]}-completed`)
+            buttonWorkersNeeded.appendChild(button);
             break
         }
-
     }
+
+
 }
 //======================================================================================//
-updateGame() //CALL UPDATE FUNCTION AFTER ALL CODE IS LOADED
+renderDOM() //CALL UPDATE FUNCTION AFTER ALL CODE IS LOADED
 //======================================================================================//
 
 
 //UPDATE TO PREVIOUS CLIENT
 function selectClientRight() {
     currentClient++
-    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
-        return updateGame()
-    }
+    if (stateGame.clients[currentClient] != null) return renderDOM()
     currentClient = 0
-    updateGame()
+    renderDOM()
 }
 
 //UPDATE TO NEXT CLIENT
 function selectClientLeft() {
     currentClient--
-    if (stateGame.clients[currentClient] != undefined || stateGame.clients[currentClient] != null) {
-        return updateGame()
-    }
+    if (stateGame.clients[currentClient] != null) return renderDOM()
     currentClient = stateGame.clients.length - 1
-    updateGame()
+    renderDOM()
 }
 
 
@@ -302,11 +316,28 @@ function displayMenu() {
     function menuCompanyOff() { menuOwnCompanyButtonOut.style.display = "none" }
 
     const menuClientButton = document.getElementById('btn-clients');
-    const menuClientButtonOut = document.getElementById('menu-client-block');
+    const menuClientButtonOut = document.getElementById('menu-client-close');
+    const menuClientBackgroundBlock = document.getElementById('menu-client-block');
 
     menuClientButton.onclick = () => { menuClientOn() };
-    function menuClientOn() { menuClientButtonOut.style.display = "block" }
+    function menuClientOn() { menuClientBackgroundBlock.style.display = "block" }
     menuClientButtonOut.onclick = () => { menuClientOff() };
-    function menuClientOff() { menuClientButtonOut.style.display = "none" }
+    function menuClientOff() { menuClientBackgroundBlock.style.display = "none" }
 }
 displayMenu()
+
+
+const deletedModels = []
+
+function completeClientConstruction() {
+    stateGame.ownCompany.money += stateGame.clients[currentClient].money
+    stateGame.clients[currentClient].money = 0
+    // stateGame.clients[currentClient].construction.forEach(c => c.forEach(ce => ce.progress = 0))
+    // stateGame.clients[currentClient].isCompleted = true
+
+    deletedModels.push(stateGame.clients[currentClient].THREEmodel)
+    deletedModels.push(stateGame.clients[currentClient].THREEsite)
+    stateGame.clients[currentClient] = null
+    stateGame.clients.splice(currentClient, 1)
+    renderDOM()
+}

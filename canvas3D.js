@@ -133,18 +133,18 @@ function main() {
 
         for (let client of stateGame.clients) {
 
-            if (client.site == undefined) {
+            if (client.THREEsite == undefined) {
                 //CREATE ROAD FOR NEW CLIENT
                 new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`, (collada) => {
                     console.log(`CREATE roadSite (${client.name})`)
-                    client.site = collada.scene
-                    client.site.position.set(0, 0, 0);
-                    client.site.name = `${client.name}-roadSite`
-                    scene.add(client.site)
+                    client.THREEsite = collada.scene
+                    client.THREEsite.position.set(0, 0, 0);
+                    client.THREEsite.name = `${client.name}-roadSite`
+                    scene.add(client.THREEsite)
                 })
                 //CREATE THREE MODEL FOR NEW CLIENT
-                // new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
                 new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
+                    // new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
                     console.log(`CREATE THREEmodel (${client.name})`)
                     client.THREEmodel = collada.scene
                     client.THREEmodel.position.set(0, 0, 0);
@@ -154,45 +154,41 @@ function main() {
             }
 
             const sketchUpModels = client.THREEmodel.children[0].children
-
             for (let construction of sketchUpModels) {
                 //HIDE ALL constructionDone
                 if (construction.name == "constructionDone") {
-                    construction.children.forEach(colladaModel => {
-                        colladaModel.visible = false
-                    });
+                    construction.children.forEach(colladaModel => colladaModel.visible = false)
                 }
                 //HIDE ALL constructionInProgress
                 if (construction.name == "constructionInProgress") {
-                    construction.children.forEach(colladaModel => {
-                        colladaModel.visible = false
-                    });
+                    construction.children.forEach(colladaModel => colladaModel.visible = false)
                 }
                 //HIDE ALL terrainSite
                 if (construction.name == "terrainSite") construction.visible = false
             }
+            //HIDE ALL ROAD
+            client.THREEsite.visible = false
         }
 
         //FIND THREE IN PROGRESS GROUP OF ELEMENTS
-        let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children.find((item) => {
-            return item.name == "constructionInProgress"
-        })
+        let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children
+            .find(item => item.name == "constructionInProgress")
         //FIND THREE DONE GROUP OF ELEMENTS
-        let THREEDone = stateGame.clients[currentClient].THREEmodel.children[0].children.find((item) => {
-            return item.name == "constructionDone"
-        })
+        let THREEDone = stateGame.clients[currentClient].THREEmodel.children[0].children
+            .find(item => item.name == "constructionDone")
         //FIND THREE TERRAIN ELEMENT
-        let THREETerrain = stateGame.clients[currentClient].THREEmodel.children[0].children.find((item) => {
-            return item.name == "terrainSite"
-        })
-        if (THREEInProgress == undefined) return console.log("No Three.js Model")
+        let THREETerrain = stateGame.clients[currentClient].THREEmodel.children[0].children
+            .find(item => item.name == "terrainSite")
 
-        if (THREETerrain.visible != true) {
-            THREETerrain.visible = true
-        }
+        THREETerrain.visible = false
+        if (THREETerrain.visible) THREETerrain.visible = false
+
 
         for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
             for (let constructionSiteElement of constructionSiteStage) {
+
+                //SHOW ROAD
+                stateGame.clients[currentClient].THREEsite.visible = true
 
                 //FIND THREE IN PROGRESS ELEMENTS
                 let THREEConstructionElementInProgress = THREEInProgress.children.find((item) => {
@@ -213,12 +209,10 @@ function main() {
                 }
                 if (constructionSiteElement.stage == "Excavation") {
                     THREETerrain.visible = true
-                    if (constructionSiteElement.progress > 0) {
-                        THREETerrain.visible = false
-                    }
+                    if (constructionSiteElement.progress > 0) THREETerrain.visible = false
                 }
 
-                //ADD CURRENT CONSTRUCTION TASK WHEN 0% < PROGRESS < 100%
+                //TOGGLE ON CURRENT CONSTRUCTION TASK WHEN 0% < PROGRESS < 100%
                 if ((constructionSiteElement.progress > 0 && constructionSiteElement.progress < 100) &&
                     THREEConstructionElementInProgress.visible != true) {
 
@@ -226,7 +220,7 @@ function main() {
                     THREEConstructionElementDone.visible = false
                 }
 
-                //DELETE CURRENT CONSTRUCTION TASK AND ADD THE "DONE" ONE WHEN PROGRESS REACHES 100%
+                //TOGGLE OFF CURRENT CONSTRUCTION TASK AND ADD THE "DONE" ONE WHEN PROGRESS REACHES 100%
                 if (constructionSiteElement.progress >= 100 && THREEConstructionElementDone.visible != true) {
 
                     THREEConstructionElementInProgress.visible = false
@@ -234,6 +228,27 @@ function main() {
                 }
             }
         }
+        if (deletedModels.length > -1) {
+            for (let THREEmodel of deletedModels) {
+                THREEmodel.visible = false
+
+                //ADD SCENE REMOVE FOR ALL MODELS
+
+                // if (stateGame.clients[currentClient].isCompleted) {
+                //     console.log("DELETED");
+                //     console.log(scene);
+                //     scene.remove(THREEConstructionElementInProgress)
+                //     scene.remove(THREEConstructionElementDone)
+                //     scene.remove(THREETerrain)
+                // }
+
+
+                THREEmodel = null
+                deletedModels.splice(THREEmodel, 1)
+            }
+        }
+
+
         //RENDER THE SCENE
         effect.render(scene, camera);
     }

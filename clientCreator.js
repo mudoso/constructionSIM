@@ -11,6 +11,7 @@ class Client {
         this.costPerHour = 0
         this.warehouse = []
         this.workers = []
+        // this.isCompleted = false
         this.constructionType = buildTypeList()
         //CALLS THE FUNCTION THAT CONSTRUCT THE BUILDING
         this.construction = eval(`${this.constructionType}( ${this.area} )`)
@@ -157,43 +158,45 @@ function createMaterialNeed(stage, area) {
     for (let singleMaterial of calledStage) {
 
         let countNumber = 0 // DEFAULT
+        let randomDelta = (Math.random() + 1) / 1.5
+
         //SPECIAL RULES
         //======================================================================================//
 
-        if (singleMaterial == "Clay Bricks") { countNumber = Math.floor((randomCount(41) + 40 * (Math.random() + 1) / 1.5 * area)) } // 40 < countNumber < 80
-        if (singleMaterial == "Clay Block") { countNumber = Math.floor((randomCount(31) + 30 * (Math.random() + 1) / 1.5 * area)) } // 30 < countNumber < 60
-        if (singleMaterial == "Concrete Bricks") { countNumber = Math.floor((randomCount(41) + 40 * (Math.random() + 1) / 1.5 * area)) } // 40 < countNumber < 80
-        if (singleMaterial == "Concrete Block") { countNumber = Math.floor((randomCount(31) + 30) * (Math.random() + 1) / 1.5 * area) } // 30 < countNumber < 60
+        if (singleMaterial == "Clay Bricks") { countNumber = Math.floor((randomCount(41) + 40 * randomDelta * area)) } // 40 < countNumber < 80
+        if (singleMaterial == "Clay Block") { countNumber = Math.floor((randomCount(31) + 30 * randomDelta * area)) } // 30 < countNumber < 60
+        if (singleMaterial == "Concrete Bricks") { countNumber = Math.floor((randomCount(41) + 40 * randomDelta * area)) } // 40 < countNumber < 80
+        if (singleMaterial == "Concrete Block") { countNumber = Math.floor((randomCount(31) + 30) * randomDelta * area) } // 30 < countNumber < 60
 
-        if (singleMaterial == "Mortar") { countNumber = Math.floor((randomCount(3) + 3) * (Math.random() + 1) / 1.5 * area) } // 3 < countNumber < 5
+        if (singleMaterial == "Mortar") { countNumber = Math.floor((randomCount(3) + 3) * randomDelta * area) } // 3 < countNumber < 5
 
         if (singleMaterial == "Ceramic Roof Tile") { countNumber = (randomCount(5) + 14) * area } // 14 < countNumber < 18
 
         if (stage == "foundation-concrete" || stage == "slab" || stage == "retain-wall" || stage == "structure-concrete") {
-            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(0.15 * (Math.random() + 1) / 1.5 * area) }
+            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(0.15 * randomDelta * area) }
         } else {
-            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
-            if (singleMaterial == "High Str. Concrete") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
-            if (singleMaterial == "Grout") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
-            if (singleMaterial == "Asphalt Concrete") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 0.15 * area) }
+            if (singleMaterial == "Normal Str. Concrete") { countNumber = Math.floor(randomCount(2) * randomDelta * 0.15 * area) }
+            if (singleMaterial == "High Str. Concrete") { countNumber = Math.floor(randomCount(2) * randomDelta * 0.15 * area) }
+            if (singleMaterial == "Grout") { countNumber = Math.floor(randomCount(2) * randomDelta * 0.15 * area) }
+            if (singleMaterial == "Asphalt Concrete") { countNumber = Math.floor(randomCount(2) * randomDelta * 0.15 * area) }
         }
 
         if (singleMaterial == "Straight Rebar #10") { countNumber = Math.floor(1.6 * Math.random() * area) }
         if (singleMaterial == "Straight Rebar #15") { countNumber = Math.floor(randomCount(2) * Math.random() * 1.3 * area) }
         if (singleMaterial == "Straight Rebar #20") { countNumber = Math.floor(randomCount(2) * Math.random() * 0.9 * area) }
 
-        if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
-        if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
-        if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(randomCount(2) * (Math.random() + 1) / 1.5 * 3.5 * area) }
+        if (singleMaterial == "Stud 2x4 in.") { countNumber = Math.floor(randomDelta * 3.5 * area) }
+        if (singleMaterial == "Stud 2x6 in.") { countNumber = Math.floor(randomDelta * 3.5 * area) }
+        if (singleMaterial == "Stud 2x8 in.") { countNumber = Math.floor(randomDelta * 3.5 * area) }
 
-        if (singleMaterial == "OSB Board") { countNumber = Math.floor(1.4 * (Math.random() + 1) / 1.5 * area) }
-        if (singleMaterial == "Hardwood Floor") { countNumber = Math.floor(1.1 * (Math.random() + 1) / 1.5 * area) }
+        if (singleMaterial == "OSB Board") { countNumber = Math.floor(1.4 * randomDelta * area) }
+        if (singleMaterial == "Hardwood Floor") { countNumber = Math.floor(1.1 * randomDelta * area) }
 
-        if (singleMaterial == "Drywall Panels") { countNumber = Math.floor(0.7 * (Math.random() + 1) / 1.5 * area) }
-        if (singleMaterial == "Plaster") { countNumber = Math.floor(.5 * (Math.random() + 1) / 1.5 * area) }
-        if (singleMaterial == "Insulation") { countNumber = Math.floor(1.6 * (Math.random() + 1) / 1.5 * area) }
+        if (singleMaterial == "Drywall Panels") { countNumber = Math.floor(0.7 * randomDelta * area) }
+        if (singleMaterial == "Plaster") { countNumber = Math.floor(.5 * randomDelta * area) }
+        if (singleMaterial == "Insulation") { countNumber = Math.floor(1.6 * randomDelta * area) }
 
-        if (stage == "door/window") { countNumber = Math.floor(0.07 * (Math.random() + 1) / 1.5 * area) }
+        if (stage == "door/window") { countNumber = Math.floor(0.06 * randomDelta * area) }
 
 
         //======================================================================================//

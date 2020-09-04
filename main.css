@@ -44,6 +44,11 @@
 .flex {
     display: flex;
 }
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .flex-col {
     display: flex;
     flex-direction: column;
@@ -119,6 +124,12 @@ body {
     z-index: 2;
     background: rgb(70 70 70 / .8);
 }
+#menu-client-close {
+    position: absolute;
+    right: 3rem;
+    top: 2.5rem;
+}
+
 
 #menu-client-name {
     font-size: 1.5rem;
@@ -174,11 +185,11 @@ body {
 .margin {
     color: var(--card-bg-color);
     padding: 1rem;
-    margin: .2rem;
     border: 2px dotted var(--card-bg-color);
 }
 .margin p,
 .margin header,
+.margin h2,
 .margin span {
     color: var(--card-bg-color);
 }
@@ -268,6 +279,16 @@ body::before {
     display: flex;
     justify-content: space-between;
     width: 7rem;
+}
+
+.send-money {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 16.5rem;
+}
+.send-money input {
+    width: 6rem;
 }
 
 
@@ -372,7 +393,7 @@ h2 {
     padding-left: 5rem;
     transition:
     ease-out 200ms;
-    min-height: 40rem;
+    min-height: 50rem;
 
 }
 .side-menu:hover {
@@ -385,7 +406,7 @@ h2 {
 .title-move {
     position: fixed;
     width: 20rem;
-    transform: rotate(-90deg) translate(-16rem, -13rem);
+    transform: rotate(-90deg) translate(-21rem, -13rem);
     transition:
     ease-out 000ms;
 }
@@ -598,7 +619,7 @@ input:focus {
 
 @media only screen and (max-width: 1400px) {
     *{
-        font-size: 7px;
+        font-size: 9px;
     }
     body {
         margin: 1rem 5%;

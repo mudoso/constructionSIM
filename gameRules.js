@@ -43,7 +43,7 @@ function timeRules() {
     if (hour == 16) { //SET END OF WORK HOUR
         hour = 8
         day++
-        endOfWorkTime() //CALL END OF WORKTIME FUNCTION
+        // endOfWorkTime() //CALL END OF WORKTIME FUNCTION
     }
     let min00 = ("0" + min).slice(-2);
     // let date = new Date();
@@ -80,10 +80,8 @@ function checkCostPerHour() {
 
                 if (workersOnSite.count > 0 || workersAssignedCount > 0) {
                     workersOnSite.timer++
-                    //ADD COST PER HOUR PER TYPE
-                    CostPerHourPerType = totalWorkersCount * workersOnSite.price
-
                     //ADD TO THE TOTAL PER HOUR
+                    CostPerHourPerType = totalWorkersCount * workersOnSite.price
                     targetClient.costPerHour += CostPerHourPerType
 
                     //DEDUCE COST PER HOUR OR WHEN JOB TIME FINISH
@@ -96,7 +94,9 @@ function checkCostPerHour() {
                             targetClient.money -= workersCostPerHour
                             stateGame.ownCompany.money += targetClient.money
                             targetClient.money = 0
-                            endOfWorkTime()
+                            workersOnSite.count = 0
+                            renderDOM()
+                            // endOfWorkTime()
                         } else {
                             targetClient.money -= workersCostPerHour
                             ownMoneyDOM.innerHTML = stateGame.ownCompany.money
@@ -107,13 +107,12 @@ function checkCostPerHour() {
             }
         }
     }
-    // DEDUCE OWN MONEY IF CLIENT MONEY < 0
-    if (stateGame.clients[currentClient].money < 0) {
-        stateGame.ownCompany.money += stateGame.clients[currentClient].money
-        stateGame.clients[currentClient].money = 0
-    }
-
-    let costPerHourValueDOM = document.getElementById("costperhour-value")
+    // // DEDUCE OWN MONEY IF CLIENT MONEY < 0
+    // if (stateGame.clients[currentClient].money < 0) {
+    //     stateGame.ownCompany.money += stateGame.clients[currentClient].money
+    //     stateGame.clients[currentClient].money = 0
+    // }
+    const costPerHourValueDOM = document.getElementById("costperhour-value")
     costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
 }
 
@@ -144,12 +143,22 @@ function endOfWorkTime() {
                 }
             }
         }
-        for (let workersOnSite of targetClient.workers) {
-            stateGame.clients[currentClient].money -= workersOnSite.price * workersOnSite.count
-            console.log(workersOnSite.name + " " + workersOnSite.price)
-            workersOnSite.count = 0
-            updateGame()
-        }
+        targetClient.workers
+            .filter(workersOnSite => workersOnSite.count > 0)
+            .forEach(workersOnSite => {
+                // targetClient.money -= workersOnSite.price * workersOnSite.count
+                workersOnSite.count = 0
+                renderDOM()
+            })
+
+
+
+        // for (let workersOnSite of targetClient.workers) {
+        //     stateGame.clients[currentClient].money -= workersOnSite.price * workersOnSite.count
+        //     console.log(workersOnSite.name + " " + workersOnSite.price)
+        //     workersOnSite.count = 0
+        //     renderDOM()
+        // }
     }
 }
 
@@ -173,7 +182,7 @@ function startTask(constructionSiteElement, targetClient) {
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
-                    updateGame()
+                    renderDOM()
                 }
             }
         }
@@ -226,7 +235,7 @@ function sendBackWorkerOrService(workerOrServiceStored) {
     console.log(workerOrServiceStored.timer)
     stateGame.clients[currentClient].money -= workerOrServiceStored.price
     workerOrServiceStored.count--
-    updateGame()
+    renderDOM()
 }
 
 
@@ -239,14 +248,14 @@ function assignWorkerOrService(workersNeeded, idButton) {
             workersOnSite.count >= workersNeeded.count) {
             workersNeeded.assigned = true
             workersOnSite.count -= workersNeeded.count
-            return updateGame()
+            return renderDOM()
         }
         //UNASSIGN WORKER TO A TASK
         if (workersOnSite.name == workersNeeded.type &&
             workersNeeded.assigned == true) {
             workersNeeded.assigned = false
             workersOnSite.count += workersNeeded.count
-            return updateGame()
+            return renderDOM()
         }
     }
 }
@@ -260,7 +269,7 @@ function assignMaterial(materialNeeded, idButton) {
             //ASSIGN MATERIAL TO A TASK
             materialNeeded.assigned = true
             materialOnWarehouse.count -= materialNeeded.count
-            return updateGame()
+            return renderDOM()
         }
     }
 }
@@ -285,11 +294,8 @@ function buyItem(itemBought, categoryItem) {
 
     //CONDITION TO PREVENT BREAK CODE IF INPUT IS IN WRONG FORMAT
     if (itemBought === null || getCount === null || getCount < 1) return console.log("DEU TILT")
-    if (getCount.value == undefined || getCount.value == null) {
-        getCount.value = 1
-    }
+    if (getCount.value == null) getCount.value = 1
 
-    //GET THE count BOUGHT
     countBought = parseInt(getCount.value)
     let moneySpent = countBought * itemBought.price
 
@@ -298,17 +304,22 @@ function buyItem(itemBought, categoryItem) {
 
     //DEDUCE (CLIENT MONEY + OWN MONEY) IF CLIENT MONEY IS LESS moneySpent
     if (stateGame.clients[currentClient].money <= moneySpent) {
-        stateGame.clients[currentClient].money -= moneySpent
-        stateGame.ownCompany.money += stateGame.clients[currentClient].money
-        stateGame.clients[currentClient].money = 0
-        return endOfWorkTime()
-    }
-    else
+        if (itemBought.service) { }
+        else {
+            stateGame.clients[currentClient].money -= moneySpent
+            stateGame.ownCompany.money += stateGame.clients[currentClient].money
+            stateGame.clients[currentClient].money = 0
+            // return endOfWorkTime()
+        }
 
-
+    } else {
         //SUBTRACT MONEY FROM CLIENT IMMEDIATELY IF NOT A SERVICE
         if (itemBought.service) { }
         else { stateGame.clients[currentClient].money -= moneySpent; }
+    }
+
+
+
 
 
     //CHECK IF IT IS AN ITEM OR A SERVICE
@@ -321,10 +332,7 @@ function buyItem(itemBought, categoryItem) {
     let itemStored = warehouseOrWorkersContainer.find(itemStored => itemStored.name === itemBought.name);
     //VERIFY IF ITEM EXISTS
     if (itemStored === undefined) {
-        console.log(itemStored)
         itemStored = { ...itemBought, "count": 0, } //CREATE NEW OBJECT
-        console.log(itemStored)
-
         warehouseOrWorkersContainer.unshift(itemStored)
     }
 
@@ -335,8 +343,7 @@ function buyItem(itemBought, categoryItem) {
             break; //Stop this loop, we found it!
         }
     }
-
-    updateGame()
+    renderDOM()
 }
 
 //======================================================================================//
