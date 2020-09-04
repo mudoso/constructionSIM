@@ -80,7 +80,6 @@ function checkCostPerHour() {
 
                 if (workersOnSite.count > 0 || workersAssignedCount > 0) {
                     workersOnSite.timer++
-                    //ADD TO THE TOTAL PER HOUR
                     CostPerHourPerType = totalWorkersCount * workersOnSite.price
                     targetClient.costPerHour += CostPerHourPerType
 
@@ -91,6 +90,7 @@ function checkCostPerHour() {
 
                         //TAKE OWN MONEY IF CLIENT ONE REACHES ZERO
                         if (targetClient.money < workersCostPerHour) {
+                            endOfWorkTime()
                             targetClient.money -= workersCostPerHour
                             stateGame.ownCompany.money += targetClient.money
                             targetClient.money = 0
@@ -116,17 +116,6 @@ function checkCostPerHour() {
     costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
 }
 
-//======================================================================================//
-//END CLOCK FUNCTIONS
-
-
-
-
-
-//======================================================================================//
-//RESPONSIBLE FOR ALL TASKS FUNCTIONS RULES RELATED
-//======================================================================================//
-
 // UNASSIGN ALL WORKERS AND ZERO COST PER HOUR
 function endOfWorkTime() {
     for (let targetClient of stateGame.clients) {
@@ -143,24 +132,19 @@ function endOfWorkTime() {
                 }
             }
         }
-        targetClient.workers
-            .filter(workersOnSite => workersOnSite.count > 0)
-            .forEach(workersOnSite => {
-                // targetClient.money -= workersOnSite.price * workersOnSite.count
-                workersOnSite.count = 0
-                renderDOM()
-            })
-
-
-
-        // for (let workersOnSite of targetClient.workers) {
-        //     stateGame.clients[currentClient].money -= workersOnSite.price * workersOnSite.count
-        //     console.log(workersOnSite.name + " " + workersOnSite.price)
-        //     workersOnSite.count = 0
-        //     renderDOM()
-        // }
     }
 }
+
+//======================================================================================//
+//END CLOCK FUNCTIONS
+
+
+
+
+
+//======================================================================================//
+//RESPONSIBLE FOR ALL TASKS FUNCTIONS RULES RELATED
+//======================================================================================//
 
 
 //START THE TASK IF ALL CONDITIONS ARE TRUE

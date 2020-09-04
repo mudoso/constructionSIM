@@ -1,9 +1,8 @@
-import * as THREE from '/node_modules/three/build/three.module.js';
-import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
-import { ColladaLoader } from '/node_modules/three/examples/jsm/loaders/ColladaLoader.js';
-import { GUI } from '/node_modules/three/examples/jsm/libs/dat.gui.module.js';
-import { OutlineEffect } from '/node_modules/three/examples/jsm/effects/OutlineEffect.js';
-import Stats from '/node_modules/three/examples/jsm/libs/stats.module.js';
+import * as THREE from 'https://unpkg.com/three@0.120.1/build/three.module.js';
+import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { ColladaLoader } from './node_modules/three/examples/jsm/loaders/ColladaLoader.js';
+import { OutlineEffect } from './node_modules/three/examples/jsm/effects/OutlineEffect.js';
+import Stats from './node_modules/three/examples/jsm/libs/stats.module.js';
 
 
 function main() {
