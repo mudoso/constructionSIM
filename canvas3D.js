@@ -1,8 +1,8 @@
-import * as THREE from 'https://raw.githubusercontent.com/mudoso/constructionSIM/master/node_modules/three/build/three.module.js';
-import { OrbitControls } from 'https://raw.githubusercontent.com/mudoso/constructionSIM/master/node_modules/three/examples/jsm/controls/OrbitControls.js';
-import { ColladaLoader } from 'https://raw.githubusercontent.com/mudoso/constructionSIM/master/node_modules/three/examples/jsm/loaders/ColladaLoader.js';
-import { OutlineEffect } from 'https://raw.githubusercontent.com/mudoso/constructionSIM/master/node_modules/three/examples/jsm/effects/OutlineEffect.js';
-import Stats from 'https://github.com/mudoso/constructionSIM/blob/master/node_modules/three/examples/jsm/libs/stats.module.js';
+import * as THREE from './node_modules/three/build/three.module.js';
+import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { ColladaLoader } from './node_modules/three/examples/jsm/loaders/ColladaLoader.js';
+import { OutlineEffect } from './node_modules/three/examples/jsm/effects/OutlineEffect.js';
+import Stats from './node_modules/three/examples/jsm/libs/stats.module.js';
 
 
 function main() {
