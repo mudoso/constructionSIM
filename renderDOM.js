@@ -86,10 +86,10 @@ function renderDOM() {
             let button = document.createElement('button');
             button.innerHTML = categoryItem.name
             button.setAttribute('id', categoryItem.name);
-            if (categoryItem.service == true || categoryItem.service == undefined) {
+            button.setAttribute('class', 'btn');
+            if (categoryItem.service || categoryItem.service == undefined) {
                 button.setAttribute('class', 'btn-darkblue');
             }
-            else button.setAttribute('class', 'btn');
             button.onclick = () => { itemList(categoryItem) };
             storeCategoryContainerDOM.appendChild(button);
         }
