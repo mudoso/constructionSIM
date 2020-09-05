@@ -10,8 +10,8 @@ stateGame = {
         "money": 20000
     },
     "clients": [
-        { ...new Client("Jiraya") },
-        { ...new Client("Marcia") },
+        // { ...new Client("Jiraya") },
+        // { ...new Client("Marcia") },
     ],
 }
 

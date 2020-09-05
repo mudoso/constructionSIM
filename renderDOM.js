@@ -53,10 +53,13 @@ function renderDOM() {
 
     function renderMoney() {
         ownMoneyDOM.innerHTML = stateGame.ownCompany.money
+        clientMoneyDOM.innerHTML = 0
+        if (stateGame.clients[currentClient] == null) return
         clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
     }
 
     function renderClientSelectorMenu() {
+        if (stateGame.clients[currentClient] == null) return
         menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
         clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
         clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
@@ -65,6 +68,7 @@ function renderDOM() {
 
     function renderWarehouseBtn() {
         warehouseContainerDOM.innerHTML = ""
+        if (stateGame.clients[currentClient] == null) return
         stateGame.clients[currentClient].warehouse.forEach(itemStored => {
             if (itemStored.count > 0) {
                 let button = document.createElement('button');
@@ -129,6 +133,7 @@ function renderDOM() {
 
     function renderWorkersAndServicesBtn() {
         workersAndServicesContainerDOM.innerHTML = ""
+        if (stateGame.clients[currentClient] == null) return
         for (let workerOrServiceStored of stateGame.clients[currentClient].workers) {
             if (workerOrServiceStored.count > 0) {
                 let button = document.createElement('button');
@@ -145,6 +150,7 @@ function renderDOM() {
 
     function renderCostPerHourBtn() {
         costPerHourDOM.innerHTML = ""
+        if (stateGame.clients[currentClient] == null) return
         let button = document.createElement('button');
         button.innerHTML =
             `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour ${extraShift}`
@@ -169,6 +175,7 @@ function renderDOM() {
     function renderMenuClientStages() {
         menuClientStages.innerHTML = ""
         menuClientMaterialsNeeded.innerHTML = ""
+        if (stateGame.clients[currentClient] == null) return
         for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
             let button = document.createElement('ul');
             let stageArray = stateGame.clients[currentClient].construction
@@ -216,6 +223,7 @@ function renderDOM() {
 
     function renderConstructionTaskCards() {
         constructionContainerDOM.innerHTML = ""
+        if (stateGame.clients[currentClient] == null) return
         for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
             constructionSiteStage.forEach(constructionSiteElement => {
 

@@ -174,6 +174,10 @@ function main() {
             client.THREEsite.visible = false
         }
 
+
+        if (stateGame.clients[currentClient] == null) return effect.render(scene, camera);
+
+
         //FIND THREE IN PROGRESS GROUP OF ELEMENTS
         let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children
             .find(item => item.name == "constructionInProgress")

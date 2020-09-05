@@ -31,11 +31,15 @@ function timeRules() {
     //UPDATE MONEY FROM STATEGAME
     companyNameDOM.innerHTML = stateGame.ownCompany.name
     ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
-    clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
+
+    if (stateGame.clients[currentClient] != null) {
+        console.log("object");
+        clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
+    }
     dayDom.innerHTML = stateGame.clock.day
 
     min++
-    checkCostPerHour() //CHECK AND DEDUCE COST PER HOUR
+
     if (min >= 60) { //SET END OF AN HOUR
         min = 0
         hour++
@@ -52,7 +56,10 @@ function timeRules() {
     stateGame.clock.minute = min00
     stateGame.clock.hour = hour
     stateGame.clock.day = day
-    verifyAssigned()
+    if (stateGame.clients[currentClient] != null) {
+        checkCostPerHour()
+        verifyAssigned()
+    }
 }
 setInterval(timeRules, 200); //START CLOCK
 
