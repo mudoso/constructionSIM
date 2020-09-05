@@ -175,6 +175,21 @@ function main() {
         }
 
 
+        if (deletedModels.length > -1) {
+            for (let THREEmodel of deletedModels) {
+                // THREEmodel.visible = false
+
+                console.log("DELETED");
+                console.log(scene);
+                scene.remove(THREEmodel)
+
+
+                // THREEmodel = null
+                deletedModels.splice(THREEmodel, 1)
+            }
+        }
+
+
         if (stateGame.clients[currentClient] == null) return effect.render(scene, camera);
 
 
@@ -236,19 +251,7 @@ function main() {
                 }
             }
         }
-        if (deletedModels.length > -1) {
-            for (let THREEmodel of deletedModels) {
-                // THREEmodel.visible = false
 
-                console.log("DELETED");
-                console.log(scene);
-                scene.remove(THREEmodel)
-
-
-                // THREEmodel = null
-                deletedModels.splice(THREEmodel, 1)
-            }
-        }
 
 
         //RENDER THE SCENE

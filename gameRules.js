@@ -33,7 +33,6 @@ function timeRules() {
     ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
 
     if (stateGame.clients[currentClient] != null) {
-        console.log("object");
         clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
     }
     dayDom.innerHTML = stateGame.clock.day
