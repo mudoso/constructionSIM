@@ -10,7 +10,7 @@ class Client {
         this.money = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * this.area)
         this.costPerHour = 0
         this.warehouse = []
-        this.warehouseLimit = this.area * 5
+        this.warehouseLimit = this.area * .4
         console.log(this.name, this.warehouseLimit)
         this.workers = []
         this.constructionType = buildTypeList()
