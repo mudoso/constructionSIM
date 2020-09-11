@@ -48,6 +48,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 .flex-col {
     display: flex;
@@ -332,15 +333,18 @@ body::before {
     box-shadow: 0 0 3rem 1rem rgba(122, 122, 122, 0.3);
     right: 5%;
     width: 90%;
-    top: 70%;
+    top: 69%;
     bottom: 0;
+
+    overflow: auto;
+
 }
 
 
 .warehouse {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    grid-gap: 1rem;
+        grid-gap: 1rem;
     padding: 1rem 0;
 }
 .warehouse button {
@@ -355,10 +359,11 @@ body::before {
     background-color: var(--layout-bg-color);
     position: absolute;
     top: 0;
+    bottom: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
+    right: 0;
     z-index: -1;
+    transition: 0ms;
 }
 
 
@@ -525,7 +530,6 @@ input:focus {
     margin-top: -1px;
     margin-left: 1rem;
     content: attr(btn-sudocontent);
-    /* box-shadow: 0 0 5px #14213d; */
 
     transform: scale(0);
     transition:
@@ -619,7 +623,7 @@ input:focus {
 
 @media only screen and (max-width: 1400px) {
     *{
-        font-size: 9px;
+        font-size: 10px;
     }
     body {
         margin: 1rem 5%;
@@ -638,5 +642,79 @@ input:focus {
     .layout-warehouse:hover {
         top: 80%;
         bottom: 0%;
+    }
+    .layout-blueprint{
+        padding: 4rem 2rem 2rem 2rem;
+    }
+    #menu-client-close {
+        position: absolute;
+        right: 3rem;
+        top: 0.5rem;
+    }
+  }
+
+  @media only screen and (max-width: 700px) {
+    *{
+        font-size: 10px;
+    }
+    .side-menu:hover {
+        /* left: 5%; */
+        right: 0%;
+        width: 95%;
+    }
+    .layout-blueprint{
+        padding: 4rem 2rem 2rem 2rem;
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-left: 0;
+        margin-right: 0;
+        max-height: 100%;
+        max-width: 100%;
+    }
+    #menu-client-close {
+        position: absolute;
+        right: 3rem;
+        top: 0.5rem;
+    }
+
+
+    .layout-site-construction {
+        left: -24rem;
+        padding-right: 5rem;
+    }
+
+
+    .side-menu {
+        right: -47rem;
+        height: 100%;
+        top: 2rem;
+
+        padding-left: 5rem;
+        transition:
+        ease-out 200ms;
+        overflow: auto;
+        min-height: 0rem;
+    
+    }
+    .side-menu:hover {
+        right: 0%;
+
+        padding-left: 1rem;
+        transition:
+        ease-out 200ms;
+        overflow: auto;
+    }
+    .title-move {
+        position: fixed;
+        width: 20rem;
+        transform: rotate(-90deg) translate(-21rem, -13rem);
+        transition:
+        ease-out 000ms;
+    }
+    .side-menu:hover>.title-move {
+        width: 100%;
+        transform: rotate(0deg);
+        position: relative;
+        right: 0;
     }
   }
