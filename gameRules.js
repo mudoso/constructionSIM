@@ -300,6 +300,8 @@ handleSendMoneyClient()
 function buyItem(itemBought, categoryItem) {
     const inputCountId = `${itemBought.name}-buyinput`
     const getCount = document.getElementById(inputCountId);
+    const sumWarehouseCountStored = stateGame.clients[currentClient].warehouse
+        .reduce((acc, item) => { return acc + item.count }, 0)
 
     //CONDITION TO PREVENT BREAK CODE IF INPUT IS IN WRONG FORMAT
     if (itemBought === null || getCount === null || getCount < 1) return console.log("DEU TILT")
@@ -307,7 +309,6 @@ function buyItem(itemBought, categoryItem) {
 
     countBought = parseInt(getCount.value)
     let moneySpent = countBought * itemBought.price
-    getCount.value = 1
 
     //PREVENTS BUY SERVICES OR MATERIALS IF CLIENT BUDGET = 0
     if (stateGame.clients[currentClient].money == 0) { return }
@@ -321,8 +322,14 @@ function buyItem(itemBought, categoryItem) {
         }
     } else {
         //SUBTRACT MONEY FROM CLIENT IMMEDIATELY IF NOT A SERVICE
-        if (!itemBought.service) stateGame.clients[currentClient].money -= moneySpent;
+        if (!itemBought.service) {
+            //IF WAREHOUSE FULL CANCEL buyItem
+            if (sumWarehouseCountStored + countBought > stateGame.clients[currentClient].warehouseLimit) { return }
+            stateGame.clients[currentClient].money -= moneySpent
+        }
     }
+
+    getCount.value = 1
 
     //CHECK IF IT IS AN ITEM OR A SERVICE
     let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
@@ -357,14 +364,14 @@ function discardWarehouseItem(materialStored) {
 
 //HANDLE WAREHOUSE (SITE STORAGE) LIMIT
 function warehouseDisplayLimit() {
-    const sumCountStored = stateGame.clients[currentClient].warehouse
+    const sumWarehouseCountStored = stateGame.clients[currentClient].warehouse
         .reduce((acc, item) => { return acc + item.count }, 0)
-    const ratioSpace = `${Math.floor(sumCountStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
+    const ratioSpace = `${Math.floor(sumWarehouseCountStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
 
     warehouseLimitDOM.style.color = "var(--text-base-color)"
     if (stateGame.clients[currentClient].warehouse[0] == null) return "EMPTY"
     if (ratioSpace >= 90) { warehouseLimitDOM.style.color = "#ff2a1a" }
-    if (sumCountStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
+    if (sumWarehouseCountStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
     return `${ratioSpace}%`
 }
 
