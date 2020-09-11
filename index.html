@@ -87,7 +87,7 @@
 <body>
     <header class="header">
 
-        <div class="layout nav-flex">
+        <nav class="layout nav-flex">
             <div>
                 <p>OWN COMPANY:</p>
                 <button id="menu-own-company" class="btn"><span id="own-company-name">NONE</span>'S COMPANY</button>
@@ -101,10 +101,10 @@
                 Day <span id="day">1</span><br>
                 Time <span id="time">1:00</span>
             </div>
-        </div>
+        </nav>
 
-        <div class="layout">
-            <p>CLIENT:</p>
+        <nav class="layout">
+            <p>SELECTED CLIENT:</p>
             <nav class="nav-stats-client">
                 <button id="btn-clients-left" class="btn"> &#9668;</button>
                 <button id="btn-clients" class="btn">NONE</button>
@@ -115,7 +115,41 @@
                 <header>CLIENT BUDGET:&nbsp;</header>
                 <p class="transfer-money">$<span class="client-money">0</span></p>
             </div>
-        </div>
+        </nav>
+
+        <nav id="looking-window" class="layout">
+            <p>CLIENT:</p>
+            <nav class="looking-for-client">
+
+                <section class="looking-client">
+                    <button id="btn-clients" class="btn">CLIENT-1</button>
+                    <div>
+                        <input class="form" type="number" name="quantities" id="number" min="0" max="" placeholder="1"
+                            step="1000" value="">
+                        <button id="btn-clients" class="btn">OFFER</button>
+                    </div>
+                </section>
+
+                <section class="looking-client">
+                    <button id="btn-clients" class="btn">CLIENT-1</button>
+                    <div>
+                        <input class="form" type="number" name="quantities" id="number" min="0" max="" placeholder="1"
+                            step="1000" value="">
+                        <button id="btn-clients" class="btn">OFFER</button>
+                    </div>
+                </section>
+
+                <section class="looking-client">
+                    <button id="btn-clients" class="btn">CLIENT-1</button>
+                    <div>
+                        <input class="form" type="number" name="quantities" id="number" min="0" max="" placeholder="1"
+                            step="1000" value="">
+                        <button id="btn-clients" class="btn">OFFER</button>
+                    </div>
+                </section>
+
+            </nav>
+        </nav>
 
     </header>
 

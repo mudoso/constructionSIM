@@ -202,6 +202,49 @@ body {
     color: var(--card-bg-color);
 }
 
+
+
+#looking-window {
+    position: relative;
+}
+
+.looking-for-client {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 2.7rem;
+    padding: 0 1rem 0rem 1rem;
+    width: 100%;
+    height: 2rem;
+    overflow: hidden;
+
+    background: var(--layout-bg-color);
+    border-radius: 3px;
+}
+.looking-for-client:hover {
+    height: auto;
+}
+.looking-for-client section {
+    margin-bottom: .7rem;
+
+}
+
+
+.looking-client {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+}
+.looking-client div {
+    width: 14rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.looking-client div input {
+    width: 7rem;
+}
+
 /*==========BACKGROUND============*/
 
 body::before {
