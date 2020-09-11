@@ -76,28 +76,9 @@ function main() {
 
     const ambientLight = new THREE.AmbientLight(0x404040)
     scene.add(ambientLight);
-
     const light = new THREE.DirectionalLight(0xbbbbbb);
-    const helper = new THREE.DirectionalLightHelper(light, 5);
     light.position.set(10, 30, 15);
     scene.add(light);
-    // scene.add(helper);
-
-    // const light = new THREE.DirectionalLight(0xFFFFFF, 1);
-    // light.position.set(10, 30, 15);
-    // scene.add(light);
-
-
-    //CREATED OBJECTS
-    //======================================================================================//
-
-
-    const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
-    const grassMaterial = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
-
-    const cube = new THREE.Mesh(boxGeometry, grassMaterial);
-    cube.position.set(0, 5, 0);
-    // scene.add(cube);
 
 
     //RESIZE FUNCTION
@@ -147,8 +128,8 @@ function main() {
                     scene.add(client.THREEsite)
                 })
                 //CREATE THREE MODEL FOR NEW CLIENT
-                new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
-                    // new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
+                // new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
+                new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
                     console.log(`CREATE THREEmodel (${client.name})`)
                     client.THREEmodel = collada.scene
                     client.THREEmodel.position.set(0, 0, 0);
@@ -251,9 +232,6 @@ function main() {
                 }
             }
         }
-
-
-
         //RENDER THE SCENE
         effect.render(scene, camera);
     }
