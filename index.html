@@ -58,8 +58,8 @@
                 </div>
                 <div class="send-money">
                     <input class="form money-div" type="number" name="send-own-money" id="send-own-money" min="0"
-                        max="10000" placeholder="0" step="100">
-                    <button class="btn">Send Money</button>
+                        max="10000" placeholder="0" step="100" value="0">
+                    <button id="send-money" class="btn">Send Money</button>
                 </div>
             </section>
 
@@ -106,7 +106,7 @@
         <div class="layout">
             <p>CLIENT:</p>
             <nav class="nav-stats-client">
-                <button id="btn-clients-left" class="btn">&#9664;</button>
+                <button id="btn-clients-left" class="btn"> &#9668;</button>
                 <button id="btn-clients" class="btn">NONE</button>
                 <button id="btn-clients-right" class="btn">&#9658;</button>
             </nav>
@@ -154,7 +154,7 @@
 
     <div class="layout-warehouse layout">
 
-        <h2 class="side-menu-title center">WAREHOUSE</h2>
+        <h2 id="warehouse-limit" class="side-menu-title center">SITE STORAGE</h2>
         <div id="warehouse-container" class="warehouse">
             <button class="btn"></button>
             <button class="btn"></button>

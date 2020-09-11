@@ -21,8 +21,11 @@ const menuOwnClients = document.querySelector(".menu-own-company-clients")
 const storeCategoryContainerDOM = document.getElementById("store-category")
 const storeBuyContainerDOM = document.getElementById("store-buy-items")
 const warehouseContainerDOM = document.getElementById("warehouse-container")
+const warehouseLimitDOM = document.getElementById("warehouse-limit")
 const workersAndServicesContainerDOM = document.getElementById("workers-services")
 const constructionContainerDOM = document.getElementById("construction-container")
+
+
 
 
 function renderDOM() {
@@ -34,6 +37,8 @@ function renderDOM() {
     renderCategoryStoreBtn()
 
     renderWarehouseBtn()
+
+    renderWarehouseLimit()
 
     renderWorkersAndServicesBtn()
 
@@ -77,11 +82,16 @@ function renderDOM() {
                 ${itemStored.count}
                 </span>${itemStored.unit}`
                 button.setAttribute('id', itemStored.name);
-                button.setAttribute('class', `btn`);
-                button.onclick = () => { };
+                button.setAttribute('class', `btn btn-sendback`);
+                button.setAttribute('btn-sudocontent', `Discard`);
+                button.onclick = () => { discardWarehouseItem(itemStored) };
                 warehouseContainerDOM.appendChild(button);
             }
         })
+    }
+
+    function renderWarehouseLimit() {
+        warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseDisplayLimit()})`
     }
 
     function renderCategoryStoreBtn() {
@@ -116,7 +126,6 @@ function renderDOM() {
                     <div class="unit">/${item.unit}</div>
                 </section>`
             storeBuyContainerDOM.appendChild(li);
-
             //THAN DRAW </button>
             let button = document.createElement('button');
             button.innerHTML = `$${item.price}`
@@ -331,8 +340,6 @@ function renderDOM() {
     function completeClientConstruction() {
         stateGame.ownCompany.money += stateGame.clients[currentClient].money
         stateGame.clients[currentClient].money = 0
-        // stateGame.clients[currentClient].construction.forEach(c => c.forEach(ce => ce.progress = 0))
-        // stateGame.clients[currentClient].isCompleted = true
 
         deletedModels.push(stateGame.clients[currentClient].THREEmodel)
         deletedModels.push(stateGame.clients[currentClient].THREEsite)
@@ -380,7 +387,4 @@ function handleDisplayMenu() {
     function menuClientOff() { menuClientBackgroundBlock.style.display = "none" }
 }
 handleDisplayMenu()
-
-
-
 

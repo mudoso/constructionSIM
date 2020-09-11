@@ -46,7 +46,6 @@ function timeRules() {
     if (hour == 16) { //SET END OF WORK HOUR
         hour = 8
         day++
-        // endOfWorkTime() //CALL END OF WORKTIME FUNCTION
     }
     let min00 = ("0" + min).slice(-2);
     // let date = new Date();
@@ -269,10 +268,30 @@ function assignMaterial(materialNeeded, idButton) {
 
 
 
+//RESPONSIBLE FOR HANDLE SEND MONEY TO CLIENT FUNCTION
+//======================================================================================//
+
+function handleSendMoneyClient() {
+    const sendMoneyBtn = document.getElementById('send-money');
+    const sendMoneyInput = document.getElementById('send-own-money');
+
+    sendMoneyBtn.onclick = () => { sendMoneyToClient() };
+
+    function sendMoneyToClient() {
+        let countSent = parseInt(sendMoneyInput.value)
+        sendMoneyInput.value = 0
+        if (countSent > stateGame.ownCompany.money) return console.log("Not enough money");
+
+        stateGame.ownCompany.money -= countSent
+        stateGame.clients[currentClient].money += countSent
+    }
+}
+handleSendMoneyClient()
+
 
 
 //======================================================================================//
-//RESPONSIBLE FOR ALL STORE FUNCTIONS RULES RELATED
+//RESPONSIBLE FOR ALL STORE AND WAREHOUSE FUNCTIONS RULES RELATED
 //======================================================================================//
 
 
@@ -288,29 +307,22 @@ function buyItem(itemBought, categoryItem) {
 
     countBought = parseInt(getCount.value)
     let moneySpent = countBought * itemBought.price
+    getCount.value = 1
 
     //PREVENTS BUY SERVICES OR MATERIALS IF CLIENT BUDGET = 0
     if (stateGame.clients[currentClient].money == 0) { return }
 
-    //DEDUCE (CLIENT MONEY + OWN MONEY) IF CLIENT MONEY IS LESS moneySpent
+    //COVER COST WITH OWN MONEY (CLIENT MONEY + OWN MONEY) IF CLIENT MONEY IS LESS moneySpent
     if (stateGame.clients[currentClient].money <= moneySpent) {
-        if (itemBought.service) { }
-        else {
+        if (!itemBought.service) {
             stateGame.clients[currentClient].money -= moneySpent
             stateGame.ownCompany.money += stateGame.clients[currentClient].money
             stateGame.clients[currentClient].money = 0
-            // return endOfWorkTime()
         }
-
     } else {
         //SUBTRACT MONEY FROM CLIENT IMMEDIATELY IF NOT A SERVICE
-        if (itemBought.service) { }
-        else { stateGame.clients[currentClient].money -= moneySpent; }
+        if (!itemBought.service) stateGame.clients[currentClient].money -= moneySpent;
     }
-
-
-
-
 
     //CHECK IF IT IS AN ITEM OR A SERVICE
     let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
@@ -335,6 +347,27 @@ function buyItem(itemBought, categoryItem) {
     }
     renderDOM()
 }
+
+//DISCARD WAREHOUSE (SITE STORAGE) ITEM
+function discardWarehouseItem(materialStored) {
+    let warehouseContainer = stateGame.clients[currentClient].warehouse
+    warehouseContainer.pop(materialStored)
+    renderDOM()
+}
+
+//HANDLE WAREHOUSE (SITE STORAGE) LIMIT
+function warehouseDisplayLimit() {
+    const sumCountStored = stateGame.clients[currentClient].warehouse
+        .reduce((acc, item) => { return acc + item.count }, 0)
+    const ratioSpace = `${Math.floor(sumCountStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
+
+    warehouseLimitDOM.style.color = "var(--text-base-color)"
+    if (stateGame.clients[currentClient].warehouse[0] == null) return "EMPTY"
+    if (ratioSpace >= 90) { warehouseLimitDOM.style.color = "#ff2a1a" }
+    if (sumCountStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
+    return `${ratioSpace}%`
+}
+
 
 //======================================================================================//
 //END STORE FUNCTIONS RULES

@@ -10,10 +10,10 @@ class Client {
         this.money = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * this.area)
         this.costPerHour = 0
         this.warehouse = []
+        this.warehouseLimit = this.area * 5
+        console.log(this.name, this.warehouseLimit)
         this.workers = []
-        // this.isCompleted = false
         this.constructionType = buildTypeList()
-        //CALLS THE FUNCTION THAT CONSTRUCT THE BUILDING
         this.construction = eval(`${this.constructionType}( ${this.area} )`)
     }
 }
