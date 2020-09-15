@@ -252,21 +252,21 @@ store = [
                 "stage": ["retain-wall", "structure-concrete", "walls-s2x4", "roof", "roof-ceramic", "drywall"],
                 "price": 12,
                 "unit": "m",
-                "volume": 0.001
+                "volume": 0.0015
             },
             {
                 "name": "Stud 2x6 in.",
                 "stage": ["retain-wall", "structure-concrete", "walls-s2x6", "roof", "roof-ceramic"],
                 "price": 20,
                 "unit": "m",
-                "volume": 0.0015
+                "volume": 0.002
             },
             {
                 "name": "Stud 2x8 in.",
                 "stage": ["retain-wall", "structure-concrete", "walls-s2x8", "roof", "roof-ceramic"],
                 "price": 27,
                 "unit": "m",
-                "volume": 0.002
+                "volume": 0.0025
             },
             {
                 "name": "OSB Board",
@@ -274,7 +274,7 @@ store = [
                     "walls-s2x4", "walls-s2x6", "walls-s2x8", "sheathing"],
                 "price": 2,
                 "unit": "m²",
-                "volume": 0.03
+                "volume": 0.025
             },
             {
                 "name": "Hardwood Floor",
