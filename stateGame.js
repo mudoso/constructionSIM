@@ -6,13 +6,19 @@ stateGame = {
     },
     "ownCompany": {
         "name": "TERNERO",
-        "level": 1,
+        "level": 10,
         "money": 20000
     },
-    "clients": [
+    "lookingForClients": [
         { ...new Client("Jiraya") },
         { ...new Client("Marcia") },
+        { ...new Client("Juliano") },
     ],
+    "clients": [
+        // { ...new Client("Jiraya") },
+        // { ...new Client("Marcia") },
+    ],
+
 }
 
 // {
