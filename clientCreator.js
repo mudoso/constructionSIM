@@ -6,8 +6,10 @@ class Client {
     constructor(clientName) {
         console.log(this);
         this.name = clientName
+        this.id = this.name + Math.floor(Math.random() * 100000)
+        // this.attempt = randomCount(stateGame.ownCompany.level) + 1
         this.area = randomCount(50) + 50
-        this.money = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * this.area)
+        this.money = clientBudgetFormula(this.area)
         this.costPerHour = 0
         this.warehouse = []
         this.warehouseLimit = this.area * .4
@@ -21,6 +23,14 @@ class Client {
 
 //BUILD CONSTRUCTOR TYPE LIST
 //======================================================================================//
+
+function clientBudgetFormula(area) {
+    console.log(area)
+    let budget = 0
+    budget = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * area)
+    return budget
+}
+
 
 function buildTypeList() {
     return randomIndex([
