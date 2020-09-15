@@ -34,6 +34,8 @@ function renderDOM() {
 
     renderClientSelectorMenu()
 
+    renderNewClientSelector()
+
     renderCategoryStoreBtn()
 
     renderWarehouseBtn()
@@ -44,7 +46,7 @@ function renderDOM() {
 
     renderCostPerHourBtn()
 
-    renderClientsOwnCompanyMenu()
+    renderOwnCompanyMenu()
 
     const menuMaterialsArray = []
     renderMenuClientStages()
@@ -65,11 +67,51 @@ function renderDOM() {
 
     function renderClientSelectorMenu() {
         if (stateGame.clients[currentClient] == null) return
-        menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
+        // menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
         clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
         clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
         clientRightArrowButtonDOM.onclick = () => { selectClientRight() };
     }
+
+    function renderNewClientSelector() {
+        const renderNewClientSelectorDOM = document.getElementById("looking-for-client")
+        renderNewClientSelectorDOM.innerHTML = ""
+
+        for (let client of stateGame.lookingForClients) {
+            let section = document.createElement('div');
+            let btnClass = "btn"
+            let attempt = "???"
+            if (client.attempt != null && client.attempt > 0) {
+                btnClass = "btn btn-sendback"
+                attempt = client.attempt
+            }
+            section.innerHTML =
+                `<section id="${client.name}-looking-client" class="looking-client">
+                    <button id="${client.name}-newClient-menu" class="btn">${client.name}</button>
+                    <div>
+                        <input id="${client.id}input" class="form" type="number" name="quantities" 
+                            min="${Math.floor(client.money)}" 
+                            value="${Math.floor(client.money)}"
+                            step="1000">
+                            $
+                        <button id="${client.name}-offer-client-btn"
+                            class="${btnClass}"
+                            btn-sudocontent="Attempts: ${attempt}">OFFER</button>
+                    </div>
+                </section>`
+            renderNewClientSelectorDOM.appendChild(section);
+
+            const buttonNewClientMenu = document.getElementById(`${client.name}-newClient-menu`)
+            const buttonOfferClient = document.getElementById(`${client.name}-offer-client-btn`)
+            const inputOfferClient = document.getElementById(`${client.id}input`)
+            buttonOfferClient.onclick = () => { newClientSelector(client, inputOfferClient) }
+            buttonNewClientMenu.onclick = () => {
+                const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+                menuClientBackgroundBlock.style.display = "block"
+            }
+        }
+    }
+
 
     function renderWarehouseBtn() {
         warehouseContainerDOM.innerHTML = ""
@@ -91,6 +133,7 @@ function renderDOM() {
     }
 
     function renderWarehouseLimit() {
+        if (stateGame.clients[currentClient] == null) return warehouseLimitDOM.innerHTML = `SITE STORAGE`
         warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseDisplayLimit()})`
     }
 
@@ -169,7 +212,7 @@ function renderDOM() {
         costPerHourDOM.appendChild(button);
     }
 
-    function renderClientsOwnCompanyMenu() {
+    function renderOwnCompanyMenu() {
         menuOwnClients.innerHTML = ""
         for (let clients of stateGame.clients) {
             let button = document.createElement('li');
@@ -182,9 +225,15 @@ function renderDOM() {
     }
 
     function renderMenuClientStages() {
+
+
         menuClientStages.innerHTML = ""
         menuClientMaterialsNeeded.innerHTML = ""
         if (stateGame.clients[currentClient] == null) return
+
+
+        menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
+
         for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
             let button = document.createElement('ul');
             let stageArray = stateGame.clients[currentClient].construction
@@ -335,18 +384,6 @@ function renderDOM() {
         button.innerHTML = `CLAIM <b>$${stateGame.clients[currentClient].money}</b>`
         const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[currentClient]}-completed`)
         buttonWorkersNeeded.appendChild(button);
-    }
-
-    function completeClientConstruction() {
-        stateGame.ownCompany.money += stateGame.clients[currentClient].money
-        stateGame.clients[currentClient].money = 0
-
-        deletedModels.push(stateGame.clients[currentClient].THREEmodel)
-        deletedModels.push(stateGame.clients[currentClient].THREEsite)
-        stateGame.clients[currentClient] = null
-        stateGame.clients.splice(currentClient, 1)
-        if (currentClient > 0) currentClient--
-        renderDOM()
     }
 
     function selectClientRight() {
