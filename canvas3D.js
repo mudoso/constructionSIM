@@ -118,61 +118,63 @@ function main() {
 
         for (let client of stateGame.clients) {
 
-            if (client.THREEsite == undefined) {
-                //CREATE ROAD FOR NEW CLIENT
-                new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`, (collada) => {
-                    console.log(`CREATE roadSite (${client.name})`)
-                    client.THREEsite = collada.scene
-                    client.THREEsite.position.set(0, 0, 0);
-                    client.THREEsite.name = `${client.name}-roadSite`
-                    scene.add(client.THREEsite)
-                })
-                //CREATE THREE MODEL FOR NEW CLIENT
-                // new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
-                new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, (collada) => {
-                    console.log(`CREATE THREEmodel (${client.name})`)
-                    client.THREEmodel = collada.scene
-                    client.THREEmodel.position.set(0, 0, 0);
-                    client.THREEmodel.name = `${client.name}`
-                    scene.add(client.THREEmodel)
-                })
-            }
+            async function createTHREEModel() {
+                if (client.THREEsite == null) {
+                    client.THREEsite = {}
+                    //CREATE ROAD FOR NEW CLIENT
+                    new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`, collada => {
+                        console.log(`CREATE roadSite (${client.name})`)
+                        client.THREEsite = collada.scene
+                        client.THREEsite.position.set(0, 0, 0);
+                        client.THREEsite.name = `${client.name}-roadSite`
+                        scene.add(client.THREEsite)
+                    })
+                    //CREATE THREE MODEL FOR NEW CLIENT
+                    // new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
+                    new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, collada => {
+                        console.log(`CREATE THREEmodel (${client.name})`)
+                        client.THREEmodel = collada.scene
+                        client.THREEmodel.position.set(0, 0, 0);
+                        client.THREEmodel.name = `${client.name}`
+                        scene.add(client.THREEmodel)
 
-            const sketchUpModels = client.THREEmodel.children[0].children
-            for (let construction of sketchUpModels) {
-                //HIDE ALL constructionDone
-                if (construction.name == "constructionDone") {
-                    construction.children.forEach(colladaModel => colladaModel.visible = false)
+                        const sketchUpModels = client.THREEmodel.children[0].children
+                        for (let construction of sketchUpModels) {
+                            //HIDE ALL constructionDone
+                            if (construction.name == "constructionDone") {
+                                construction.children.forEach(colladaModel => colladaModel.visible = false)
+                            }
+                            //HIDE ALL constructionInProgress
+                            if (construction.name == "constructionInProgress") {
+                                construction.children.forEach(colladaModel => colladaModel.visible = false)
+                            }
+                            //HIDE ALL terrainSite
+                            if (construction.name == "terrainSite") construction.visible = false
+                        }
+                        //HIDE ALL ROAD
+                        client.THREEsite.visible = false
+
+                    })
                 }
-                //HIDE ALL constructionInProgress
-                if (construction.name == "constructionInProgress") {
-                    construction.children.forEach(colladaModel => colladaModel.visible = false)
-                }
-                //HIDE ALL terrainSite
-                if (construction.name == "terrainSite") construction.visible = false
             }
-            //HIDE ALL ROAD
-            client.THREEsite.visible = false
+            createTHREEModel()
         }
-
 
         if (deletedModels.length > -1) {
             for (let THREEmodel of deletedModels) {
-                // THREEmodel.visible = false
-
                 console.log("DELETED");
                 console.log(scene);
                 scene.remove(THREEmodel)
-
-
-                // THREEmodel = null
                 deletedModels.splice(THREEmodel, 1)
             }
         }
 
 
-        if (stateGame.clients[currentClient] == null) return effect.render(scene, camera);
+        // if (stateGame.clients[currentClient] == null) return effect.render(scene, camera);
 
+        let THREEModelsAreFalse = stateGame.clients
+            .every(client => { client.THREEmodel })
+        if (THREEModelsAreFalse) return effect.render(scene, camera);
 
         //FIND THREE IN PROGRESS GROUP OF ELEMENTS
         let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children
@@ -195,13 +197,11 @@ function main() {
                 stateGame.clients[currentClient].THREEsite.visible = true
 
                 //FIND THREE IN PROGRESS ELEMENTS
-                let THREEConstructionElementInProgress = THREEInProgress.children.find((item) => {
-                    return item.name.replace(/_/g, " ") == constructionSiteElement.stage
-                })
+                let THREEConstructionElementInProgress = THREEInProgress.children
+                    .find((item) => { return item.name.replace(/_/g, " ") == constructionSiteElement.stage })
                 //FIND THREE DONE ELEMENTS
-                let THREEConstructionElementDone = THREEDone.children.find((item) => {
-                    return item.name.replace(/_/g, " ") == `${constructionSiteElement.stage}Done`
-                })
+                let THREEConstructionElementDone = THREEDone.children
+                    .find((item) => { return item.name.replace(/_/g, " ") == `${constructionSiteElement.stage}Done` })
                 //CATCH THREE.JS MODELS ERRORS
                 if (THREEConstructionElementDone == undefined || THREEConstructionElementDone == null) {
                     console.log(constructionSiteElement.stage, "NO THREE JS ###########");
@@ -232,6 +232,7 @@ function main() {
                 }
             }
         }
+
         //RENDER THE SCENE
         effect.render(scene, camera);
     }
