@@ -267,6 +267,21 @@ function assignMaterial(materialNeeded, idButton) {
 //END TASKS FUNCTIONS RULES
 
 
+//RESPONSIBLE FOR HANDLE COMPLETE CONSTRUCTION FUNCTION
+//======================================================================================//
+function completeClientConstruction() {
+    stateGame.clients[currentClient].money
+    stateGame.ownCompany.money += stateGame.clients[currentClient].money
+    stateGame.clients[currentClient].money = 0
+
+    deletedModels.push(stateGame.clients[currentClient].THREEmodel)
+    deletedModels.push(stateGame.clients[currentClient].THREEsite)
+    stateGame.clients[currentClient] = null
+    stateGame.clients.splice(currentClient, 1)
+    if (currentClient > 0) currentClient--
+    renderDOM()
+}
+
 
 //RESPONSIBLE FOR HANDLE SEND MONEY TO CLIENT FUNCTION
 //======================================================================================//
@@ -290,6 +305,30 @@ handleSendMoneyClient()
 
 
 
+//RESPONSIBLE FOR HANDLE LOOKING CLIENTS FUNCTIONS
+//======================================================================================//
+
+function newClientSelector(client, inputOfferClient) {
+    const index = stateGame.lookingForClients.indexOf(client)
+    const ownCompanyLevelDelta = (Math.random() * stateGame.ownCompany.level / 10) + 1
+    const maxClientBudget = client.money * ownCompanyLevelDelta
+    const minClientBudget = client.money * 0.5
+
+    if (client.attempt == null) client.attempt = randomCount(stateGame.ownCompany.level) + 1
+    if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
+        client.attempt -= 1
+
+        if (client.attempt <= 0) stateGame.lookingForClients.splice(index, 1)
+        return renderDOM()
+    }
+    client.money = parseInt(inputOfferClient.value)
+    stateGame.clients.unshift(client)
+    stateGame.lookingForClients.splice(index, 1);
+    renderDOM()
+}
+
+
+
 //======================================================================================//
 //RESPONSIBLE FOR ALL STORE AND WAREHOUSE FUNCTIONS RULES RELATED
 //======================================================================================//
@@ -300,8 +339,9 @@ handleSendMoneyClient()
 function buyItem(itemBought, categoryItem) {
     const inputCountId = `${itemBought.name}-buyinput`
     const getCount = document.getElementById(inputCountId);
+    if (stateGame.clients[currentClient] == null) return
     const volumeStored = stateGame.clients[currentClient].warehouse
-        .reduce((acc, item) => { return acc + (item.volumeTotal) }, 0)
+        .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
 
     //CONDITION TO PREVENT BREAK CODE IF INPUT IS IN WRONG FORMAT
     if (itemBought === null || getCount === null || getCount < 1) return console.log("Invalid Input")
@@ -346,7 +386,6 @@ function buyItem(itemBought, categoryItem) {
     for (let itemStored of warehouseOrWorkersContainer) {
         if (itemStored.name === itemBought.name) {
             itemStored.count = itemStored.count + countBought;
-            itemStored.volumeTotal = itemStored.count * itemStored.volume;
             break; //Stop this loop, we found it!
         }
     }
@@ -369,9 +408,9 @@ function discardWarehouseItem(materialStored) {
 
 //HANDLE WAREHOUSE (SITE STORAGE) LIMIT
 function warehouseDisplayLimit() {
+    if (stateGame.clients[currentClient] == null) return
     const volumeStored = stateGame.clients[currentClient].warehouse
-        .reduce((acc, item) => { return acc + (item.volumeTotal) }, 0)
-    console.log(volumeStored);
+        .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
     const currentVolumeStored = `${Math.floor(volumeStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
 
     warehouseLimitDOM.style.color = "var(--text-base-color)"
