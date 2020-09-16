@@ -10,7 +10,7 @@ let currentClient = 0
 //==========NAV STATS PATH=============
 const companyNameDOM = document.getElementById("own-company-name")
 const ownMoneyDOM = document.querySelectorAll(".own-money")
-const clientMoneyDOM = document.querySelectorAll(".client-money")
+let clientMoneyDOM = document.querySelectorAll(".client-money")
 const timeSpan = document.getElementById('time');
 const dayDom = document.getElementById("day")
 

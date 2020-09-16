@@ -27,7 +27,7 @@ class Client {
 function clientBudgetFormula(area) {
     console.log(area)
     let budget = 0
-    budget = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * area)
+    budget = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * area / 100) * 100
     return budget
 }
 

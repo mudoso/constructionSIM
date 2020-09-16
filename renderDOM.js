@@ -14,8 +14,10 @@ const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
 const clientSelectedButtonDOM = document.getElementById("btn-clients")
 const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
 const menuClientName = document.getElementById("menu-client-name")
+const menuClientMoney = document.getElementById("client-money-menu")
 const menuClientStages = document.getElementById('menu-client-stages')
 const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
+const menuClientSendMoneyInput = document.getElementById("send-money-input")
 const costPerHourDOM = document.getElementById("cost-per-hour")
 const menuOwnClients = document.querySelector(".menu-own-company-clients")
 const storeCategoryContainerDOM = document.getElementById("store-category")
@@ -48,9 +50,7 @@ function renderDOM() {
 
     renderOwnCompanyMenu()
 
-    const menuMaterialsArray = []
-    renderMenuClientStages()
-    renderMenuClientMaterialsNeeded()
+    renderMenuClient()
 
     renderConstructionTaskCards()
 
@@ -58,19 +58,66 @@ function renderDOM() {
     //RENDER FUNCTIONS
     //======================================================================================//
 
+
+    //HEADER AND NAV
+    //======================================================================================//
     function renderMoney() {
         ownMoneyDOM.innerHTML = stateGame.ownCompany.money
         clientMoneyDOM.innerHTML = 0
-        if (stateGame.clients[currentClient] == null) return
+        if (stateGame.clients[currentClient] == null) {
+            return clientMoneyDOM.innerHTML = 0
+        }
         clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
     }
 
+    function renderOwnCompanyMenu() {
+        menuOwnClients.innerHTML = ""
+        for (let clients of stateGame.clients) {
+            let button = document.createElement('li');
+            button.innerHTML = clients.name
+            button.setAttribute('id', clients.name);
+            button.setAttribute('class', "btn");
+            button.onclick = () => { };
+            menuOwnClients.appendChild(button);
+        }
+    }
+
     function renderClientSelectorMenu() {
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+        const menuClientButtonOut = document.getElementById('menu-client-close');
+        const menuClientButton = document.getElementById('btn-clients');
+        menuClientButtonOut.onclick = () => { menuClientOff(menuClientBackgroundBlock) };
+
         if (stateGame.clients[currentClient] == null) return
-        // menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
+
         clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
         clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
         clientRightArrowButtonDOM.onclick = () => { selectClientRight() };
+        menuClientButton.onclick = () => { menuClientOn(menuClientBackgroundBlock) };
+    }
+
+    function selectClientRight() {
+        currentClient++
+        if (stateGame.clients[currentClient] != null) return renderDOM()
+        currentClient = 0
+        renderDOM()
+    }
+
+    function selectClientLeft() {
+        currentClient--
+        if (stateGame.clients[currentClient] != null) return renderDOM()
+        currentClient = stateGame.clients.length - 1
+        renderDOM()
+    }
+
+    function menuClientOn(menuClientBackgroundBlock) {
+        menuClientBackgroundBlock.style.display = "block"
+        // renderDOM()
+    }
+
+    function menuClientOff(menuClientBackgroundBlock) {
+        menuClientBackgroundBlock.style.display = "none"
+        renderMenuClient()
     }
 
     function renderNewClientSelector() {
@@ -108,10 +155,105 @@ function renderDOM() {
             buttonNewClientMenu.onclick = () => {
                 const menuClientBackgroundBlock = document.getElementById('menu-client-block');
                 menuClientBackgroundBlock.style.display = "block"
+                renderMenuClient(client)
             }
         }
     }
 
+    function renderMenuClient(targetClientIsTrue) {
+
+        menuClientStages.innerHTML = ""
+        menuClientMaterialsNeeded.innerHTML = ""
+        menuClientSendMoneyInput.innerHTML = ""
+        menuClientMoney.innerHTML = clientMoneyDOM.innerHTML
+
+
+        let clientSelected = stateGame.clients[currentClient]
+        if (targetClientIsTrue) {
+            clientSelected = targetClientIsTrue
+            menuClientMoney.className = "";
+            clientMoneyDOM = document.querySelectorAll(".client-money")
+            menuClientMoney.innerHTML = clientSelected.money
+        }
+        if (clientSelected != targetClientIsTrue) {
+            renderSendMoneyInput()
+            menuClientMoney.className = "client-money";
+            clientMoneyDOM = document.querySelectorAll(".client-money")
+        }
+        if (clientSelected == null) return
+
+        menuClientName.innerHTML = clientSelected.name.toUpperCase()
+
+
+
+        addMaterialsNeededToArray(clientSelected)
+    }
+
+    function addMaterialsNeededToArray(clientSelected) {
+
+        const menuMaterialsArray = []
+
+        for (let constructionSiteStage of clientSelected.construction) {
+            let button = document.createElement('ul');
+            let stageArray = clientSelected.construction
+            button.innerHTML = `STAGE ${stageArray.indexOf(constructionSiteStage) + 1}:`
+            button.setAttribute('id', `stage-${stageArray.indexOf(constructionSiteStage)}`);
+            button.setAttribute('class', "margin");
+            menuClientStages.appendChild(button);
+
+            for (let constructionSiteElement of constructionSiteStage) {
+                let button = document.createElement('li');
+                button.innerHTML = `${constructionSiteElement.stage}`
+                button.setAttribute('class', "btn");
+                if (constructionSiteElement.progress >= 100) {
+                    button.setAttribute('class', "btn btn-clear");
+                    button.setAttribute('btn-sudocontent', 'Task Done');
+                }
+                document.getElementById(`stage-${stageArray.indexOf(constructionSiteStage)}`).appendChild(button);
+
+                //UPDATE menuMaterialsArray WITH REMAINING NEEDED MATERIALS IN CLIENT MENU
+
+                if (constructionSiteElement.progress < 100) {
+                    for (let materialNeeded of constructionSiteElement.materialNeeded) {
+                        let materialFound = menuMaterialsArray.find(itemInArray => itemInArray[0] == materialNeeded.name)
+                        if (materialFound != undefined) {
+                            let materialFoundCount = materialFound[1]
+                            materialFoundCount += materialNeeded.count
+                        } else {
+                            menuMaterialsArray.push([materialNeeded.name, materialNeeded.count])
+                        }
+                    }
+                }
+            }
+        }
+        renderMenuClientMaterialsNeeded(menuMaterialsArray)
+    }
+
+    function renderMenuClientMaterialsNeeded(menuMaterialsArray) {
+        //UPDATE REMAINING NEEDED MATERIALS IN CLIENT MENU
+        for (let materialArray of menuMaterialsArray) {
+            let button = document.createElement('button');
+            button.innerHTML = `${materialArray[0]} (${materialArray[1]})`
+            button.setAttribute('class', "btn");
+            menuClientMaterialsNeeded.appendChild(button);
+        }
+    }
+
+    function renderSendMoneyInput() {
+        menuClientSendMoneyInput.innerHTML = `
+            <input class="form money-div" type="number" name="send-own-money" id="send-own-money" 
+            min="0"
+            max="10000" 
+            placeholder="0" 
+            step="100" 
+            value="0">
+            <button id="send-money" class="btn">Send Money</button>
+        `
+        handleSendMoneyClient()
+    }
+
+    //WAREHOUSE (SITE STORAGE)
+    //======================================================================================//
 
     function renderWarehouseBtn() {
         warehouseContainerDOM.innerHTML = ""
@@ -136,6 +278,10 @@ function renderDOM() {
         if (stateGame.clients[currentClient] == null) return warehouseLimitDOM.innerHTML = `SITE STORAGE`
         warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseDisplayLimit()})`
     }
+
+
+    //STORE
+    //======================================================================================//
 
     function renderCategoryStoreBtn() {
         storeCategoryContainerDOM.innerHTML = ""
@@ -212,72 +358,9 @@ function renderDOM() {
         costPerHourDOM.appendChild(button);
     }
 
-    function renderOwnCompanyMenu() {
-        menuOwnClients.innerHTML = ""
-        for (let clients of stateGame.clients) {
-            let button = document.createElement('li');
-            button.innerHTML = clients.name
-            button.setAttribute('id', clients.name);
-            button.setAttribute('class', "btn");
-            button.onclick = () => { };
-            menuOwnClients.appendChild(button);
-        }
-    }
 
-    function renderMenuClientStages() {
-
-
-        menuClientStages.innerHTML = ""
-        menuClientMaterialsNeeded.innerHTML = ""
-        if (stateGame.clients[currentClient] == null) return
-
-
-        menuClientName.innerHTML = stateGame.clients[currentClient].name.toUpperCase()
-
-        for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
-            let button = document.createElement('ul');
-            let stageArray = stateGame.clients[currentClient].construction
-            button.innerHTML = `STAGE ${stageArray.indexOf(constructionSiteStage) + 1}:`
-            button.setAttribute('id', `stage-${stageArray.indexOf(constructionSiteStage)}`);
-            button.setAttribute('class', "margin");
-            menuClientStages.appendChild(button);
-
-            for (let constructionSiteElement of constructionSiteStage) {
-                let button = document.createElement('li');
-                button.innerHTML = `${constructionSiteElement.stage}`
-                button.setAttribute('class', "btn");
-                if (constructionSiteElement.progress >= 100) {
-                    button.setAttribute('class', "btn btn-clear");
-                    button.setAttribute('btn-sudocontent', 'Task Done');
-                }
-                document.getElementById(`stage-${stageArray.indexOf(constructionSiteStage)}`).appendChild(button);
-
-                //UPDATE menuMaterialsArray WITH REMAINING NEEDED MATERIALS IN CLIENT MENU
-                if (constructionSiteElement.progress < 100) {
-                    for (let materialNeeded of constructionSiteElement.materialNeeded) {
-
-                        let materialFound = menuMaterialsArray.find(material => material[0] == materialNeeded.name)
-                        if (materialFound != undefined) {
-                            let materialFoundCount = materialFound[1]
-                            materialFoundCount += materialNeeded.count
-                        } else {
-                            menuMaterialsArray.push([materialNeeded.name, materialNeeded.count])
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    function renderMenuClientMaterialsNeeded() {
-        //UPDATE REMAINING NEEDED MATERIALS IN CLIENT MENU
-        for (let materialArray of menuMaterialsArray) {
-            let button = document.createElement('button');
-            button.innerHTML = `${materialArray[0]} (${materialArray[1]})`
-            button.setAttribute('class', "btn");
-            menuClientMaterialsNeeded.appendChild(button);
-        }
-    }
+    //TASK CARDS
+    //======================================================================================//
 
     function renderConstructionTaskCards() {
         constructionContainerDOM.innerHTML = ""
@@ -385,20 +468,6 @@ function renderDOM() {
         const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[currentClient]}-completed`)
         buttonWorkersNeeded.appendChild(button);
     }
-
-    function selectClientRight() {
-        currentClient++
-        if (stateGame.clients[currentClient] != null) return renderDOM()
-        currentClient = 0
-        renderDOM()
-    }
-
-    function selectClientLeft() {
-        currentClient--
-        if (stateGame.clients[currentClient] != null) return renderDOM()
-        currentClient = stateGame.clients.length - 1
-        renderDOM()
-    }
 }
 //======================================================================================//
 renderDOM() //CALL UPDATE FUNCTION AFTER ALL CODE IS LOADED
@@ -414,14 +483,6 @@ function handleDisplayMenu() {
     menuOwnCompanyButtonOut.onclick = () => { menuCompanyOff() };
     function menuCompanyOff() { menuOwnCompanyButtonOut.style.display = "none" }
 
-    const menuClientButton = document.getElementById('btn-clients');
-    const menuClientButtonOut = document.getElementById('menu-client-close');
-    const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-
-    menuClientButton.onclick = () => { menuClientOn() };
-    function menuClientOn() { menuClientBackgroundBlock.style.display = "block" }
-    menuClientButtonOut.onclick = () => { menuClientOff() };
-    function menuClientOff() { menuClientBackgroundBlock.style.display = "none" }
 }
 handleDisplayMenu()
 
