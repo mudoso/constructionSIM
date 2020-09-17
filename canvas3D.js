@@ -118,7 +118,7 @@ function main() {
 
         for (let client of stateGame.clients) {
 
-            async function createTHREEModel() {
+            function createTHREEModel() {
                 if (client.THREEsite == null) {
                     client.THREEsite = {}
                     //CREATE ROAD FOR NEW CLIENT
@@ -137,44 +137,39 @@ function main() {
                         client.THREEmodel.position.set(0, 0, 0);
                         client.THREEmodel.name = `${client.name}`
                         scene.add(client.THREEmodel)
-
-                        const sketchUpModels = client.THREEmodel.children[0].children
-                        for (let construction of sketchUpModels) {
-                            //HIDE ALL constructionDone
-                            if (construction.name == "constructionDone") {
-                                construction.children.forEach(colladaModel => colladaModel.visible = false)
-                            }
-                            //HIDE ALL constructionInProgress
-                            if (construction.name == "constructionInProgress") {
-                                construction.children.forEach(colladaModel => colladaModel.visible = false)
-                            }
-                            //HIDE ALL terrainSite
-                            if (construction.name == "terrainSite") construction.visible = false
-                        }
-                        //HIDE ALL ROAD
-                        client.THREEsite.visible = false
-
                     })
                 }
             }
             createTHREEModel()
+
+            const sketchUpModels = client.THREEmodel.children[0].children
+            for (let construction of sketchUpModels) {
+                //HIDE ALL constructionDone
+                if (construction.name == "constructionDone") {
+                    construction.children.forEach(colladaModel => colladaModel.visible = false)
+                }
+                //HIDE ALL constructionInProgress
+                if (construction.name == "constructionInProgress") {
+                    construction.children.forEach(colladaModel => colladaModel.visible = false)
+                }
+                //HIDE ALL terrainSite
+                if (construction.name == "terrainSite") construction.visible = false
+            }
+            //HIDE ALL ROAD
+            client.THREEsite.visible = false
         }
 
         if (deletedModels.length > -1) {
             for (let THREEmodel of deletedModels) {
-                console.log("DELETED");
-                console.log(scene);
+                console.log("DELETED", THREEmodel);
                 scene.remove(THREEmodel)
                 deletedModels.splice(THREEmodel, 1)
             }
         }
 
-
-        // if (stateGame.clients[currentClient] == null) return effect.render(scene, camera);
-
-        let THREEModelsAreFalse = stateGame.clients
-            .every(client => { client.THREEmodel })
-        if (THREEModelsAreFalse) return effect.render(scene, camera);
+        let noClientsWithTHREEModel = stateGame.clients
+            .every(client => { client.THREEmodel == null })
+        if (noClientsWithTHREEModel) return effect.render(scene, camera);
 
         //FIND THREE IN PROGRESS GROUP OF ELEMENTS
         let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children
