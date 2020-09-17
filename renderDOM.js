@@ -13,6 +13,9 @@ const deletedModels = []
 const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
 const clientSelectedButtonDOM = document.getElementById("btn-clients")
 const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
+const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+const menuClientButtonDOMOut = document.getElementById('menu-client-close');
+const menuClientButton = document.getElementById('btn-clients');
 const menuClientName = document.getElementById("menu-client-name")
 const menuClientMoney = document.getElementById("client-money-menu")
 const menuClientStages = document.getElementById('menu-client-stages')
@@ -83,17 +86,18 @@ function renderDOM() {
     }
 
     function renderClientSelectorMenu() {
-        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-        const menuClientButtonOut = document.getElementById('menu-client-close');
-        const menuClientButton = document.getElementById('btn-clients');
-        menuClientButtonOut.onclick = () => { menuClientOff(menuClientBackgroundBlock) };
 
-        if (stateGame.clients[currentClient] == null) return
+        menuClientButtonDOMOut.onclick = () => { menuClientOff(menuClientBackgroundBlock) };
+
+        if (stateGame.clients[currentClient] == null) {
+            clientSelectedButtonDOM.onclick = () => { };
+            return clientSelectedButtonDOM.innerHTML = "NONE"
+        }
 
         clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
         clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
         clientRightArrowButtonDOM.onclick = () => { selectClientRight() };
-        menuClientButton.onclick = () => { menuClientOn(menuClientBackgroundBlock) };
+        clientSelectedButtonDOM.onclick = () => { menuClientOn(menuClientBackgroundBlock) };
     }
 
     function selectClientRight() {
@@ -137,8 +141,8 @@ function renderDOM() {
                     <button id="${client.name}-newClient-menu" class="btn">${client.name}</button>
                     <div>
                         <input id="${client.id}input" class="form" type="number" name="quantities" 
-                            min="${Math.floor(client.money)}" 
-                            value="${Math.floor(client.money)}"
+                            min="${client.money}" 
+                            value="${client.money}"
                             step="1000">
                             $
                         <button id="${client.name}-offer-client-btn"
