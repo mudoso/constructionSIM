@@ -612,7 +612,7 @@ input:focus {
         left ease-out 200ms;
 }
 .btn-clear:hover::after {
-    width: 100%;
+    /* width: 100%; */
 
     transform: scale(1);
     background: var(--first-color);
