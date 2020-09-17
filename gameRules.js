@@ -401,8 +401,9 @@ function buyItem(itemBought, categoryItem) {
 
 //DISCARD WAREHOUSE (SITE STORAGE) ITEM
 function discardWarehouseItem(materialStored) {
-    let warehouseContainer = stateGame.clients[currentClient].warehouse
-    warehouseContainer.pop(materialStored)
+    const warehouseContainer = stateGame.clients[currentClient].warehouse
+    const indexOfItemSelected = warehouseContainer.indexOf(materialStored)
+    warehouseContainer.splice(indexOfItemSelected, 1)
     renderDOM()
 }
 
