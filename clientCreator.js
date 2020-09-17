@@ -13,7 +13,6 @@ class Client {
         this.costPerHour = 0
         this.warehouse = []
         this.warehouseLimit = this.area * .4
-        console.log(this.name, this.warehouseLimit)
         this.workers = []
         this.constructionType = buildTypeList()
         this.construction = eval(`${this.constructionType}( ${this.area} )`)
@@ -25,7 +24,6 @@ class Client {
 //======================================================================================//
 
 function clientBudgetFormula(area) {
-    console.log(area)
     let budget = 0
     budget = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * area / 100) * 100
     return budget
