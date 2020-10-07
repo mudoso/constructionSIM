@@ -10,9 +10,9 @@ stateGame = {
         "money": 20000
     },
     "lookingForClients": [
-        { ...new Client("Jiraya") },
-        { ...new Client("Marcia") },
-        { ...new Client("Juliano") },
+        // { ...new Client("Jiraya") },
+        // { ...new Client("Marcia") },
+        // { ...new Client("Juliano") },
     ],
     "clients": [
         // { ...new Client("Jiraya") },
