@@ -20,10 +20,9 @@ const dayDom = document.getElementById("day")
 //======================================================================================//
 
 // SET TIME
-let min = 0
-let hour = 8
-let day = 1
-let extraShift = ""
+stateGame.clock.minute = 0
+stateGame.clock.hour = 8
+stateGame.clock.day = 1
 
 
 // CLOCK FUNCTION
@@ -31,6 +30,10 @@ function timeRules() {
     //UPDATE MONEY FROM STATEGAME
     companyNameDOM.innerHTML = stateGame.ownCompany.name
     ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
+
+    let min = stateGame.clock.minute
+    let hour = stateGame.clock.hour
+    let day = stateGame.clock.day
 
     if (stateGame.clients[currentClient] != null) {
         clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
@@ -46,6 +49,8 @@ function timeRules() {
     if (hour == 16) { //SET END OF WORK HOUR
         hour = 8
         day++
+        getNewAvailableClients()
+        renderDOM()
     }
     let min00 = ("0" + min).slice(-2);
     // let date = new Date();
@@ -60,7 +65,7 @@ function timeRules() {
     }
 }
 setInterval(timeRules, 200); //START CLOCK
-
+getNewAvailableClients()
 
 
 function checkCostPerHour() {
@@ -95,13 +100,12 @@ function checkCostPerHour() {
 
                         //TAKE OWN MONEY IF CLIENT ONE REACHES ZERO
                         if (targetClient.money < workersCostPerHour) {
-                            endOfWorkTime()
+                            unassignWorkers()
                             targetClient.money -= workersCostPerHour
                             stateGame.ownCompany.money += targetClient.money
                             targetClient.money = 0
                             workersOnSite.count = 0
                             renderDOM()
-                            // endOfWorkTime()
                         } else {
                             targetClient.money -= workersCostPerHour
                             ownMoneyDOM.innerHTML = stateGame.ownCompany.money
@@ -112,17 +116,11 @@ function checkCostPerHour() {
             }
         }
     }
-    // // DEDUCE OWN MONEY IF CLIENT MONEY < 0
-    // if (stateGame.clients[currentClient].money < 0) {
-    //     stateGame.ownCompany.money += stateGame.clients[currentClient].money
-    //     stateGame.clients[currentClient].money = 0
-    // }
     const costPerHourValueDOM = document.getElementById("costperhour-value")
     costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
 }
 
-// UNASSIGN ALL WORKERS AND ZERO COST PER HOUR
-function endOfWorkTime() {
+function unassignWorkers() {
     for (let targetClient of stateGame.clients) {
         for (let constructionSiteStage of targetClient.construction) {
             for (let constructionSiteElement of constructionSiteStage) {
@@ -138,6 +136,31 @@ function endOfWorkTime() {
             }
         }
     }
+}
+
+function randomNumberInteger(min = 0, max = 0) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function getNewClientList(numberOfTimes) {
+    const newClientsList = []
+
+    for (numberOfTimes; numberOfTimes > 0; numberOfTimes--) {
+        let randomIndex = randomNumberInteger(0, clientNames.length - 1)
+        let newClientRandomName = clientNames[randomIndex]
+        newClientsList.push(newClientRandomName)
+    }
+    return newClientsList
+}
+
+function getNewAvailableClients(numberOfTimes = 0) {
+
+    stateGame.lookingForClients = []
+
+    if (numberOfTimes < 1) numberOfTimes = randomNumberInteger(0, 3)
+
+    getNewClientList(numberOfTimes).forEach(clientName => stateGame.lookingForClients
+        .push(new Client(clientName)))
 }
 
 //======================================================================================//
