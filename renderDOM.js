@@ -31,6 +31,23 @@ const workersAndServicesContainerDOM = document.getElementById("workers-services
 const constructionContainerDOM = document.getElementById("construction-container")
 
 
+// const createHtmlElement = (elementName, attributes) => {
+//     const element = document.createElement(elementName)
+//     const attributesAsArray = Object.entries(attributes)
+
+//     attributesAsArray.forEach(([key, value]) => element.setAttribute(key, value))
+
+//     return element
+// }
+
+// const input = createHtmlElement('button', {
+//     type: 'radio',
+//     id: 'intup1',
+//     name: 'main',
+//     value: '100',
+//     'data-js': 'input1'
+// })
+// console.log("input", input)
 
 
 function renderDOM() {
@@ -307,8 +324,8 @@ function renderDOM() {
         categoryItem.stock.forEach(item => {
             //DRAW </li> FIRST
             let li = document.createElement('li');
-            li.innerHTML =
-                `<header>${item.name}</header>
+            li.innerHTML = `
+                <header>${item.name}</header>
                 <section>
                     <div>
                         <input id="${item.name}-buyinput" type="number" class="form"
@@ -317,7 +334,8 @@ function renderDOM() {
                     </div>
                     <span id="${item.name}-buylist"></span>
                     <div class="unit">/${item.unit}</div>
-                </section>`
+                </section>
+                `
             storeBuyContainerDOM.appendChild(li);
             //THAN DRAW </button>
             let button = document.createElement('button');
@@ -355,7 +373,7 @@ function renderDOM() {
         if (stateGame.clients[currentClient] == null) return
         let button = document.createElement('button');
         button.innerHTML =
-            `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour ${extraShift}`
+            `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour`
         button.setAttribute('id', `${Object.keys(stateGame.clients[currentClient].costPerHour)}`);
         button.setAttribute('class', `btn-darkblue`);
         button.onclick = () => { };
