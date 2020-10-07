@@ -143,18 +143,16 @@ function randomNumberInteger(min = 0, max = 0) {
 }
 
 function getNewClientList(numberOfTimes) {
-    const newClientsList = []
+    const newClientsList = Array(numberOfTimes).fill()
+        .map(item => {
+            let randomIndex = randomNumberInteger(0, clientNames.length - 1)
+            return clientNames[randomIndex]
+        })
 
-    for (numberOfTimes; numberOfTimes > 0; numberOfTimes--) {
-        let randomIndex = randomNumberInteger(0, clientNames.length - 1)
-        let newClientRandomName = clientNames[randomIndex]
-        newClientsList.push(newClientRandomName)
-    }
     return newClientsList
 }
 
 function getNewAvailableClients(numberOfTimes = 0) {
-
     stateGame.lookingForClients = []
 
     if (numberOfTimes < 1) numberOfTimes = randomNumberInteger(0, 3)
