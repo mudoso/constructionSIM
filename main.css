@@ -217,7 +217,9 @@ body {
 .looking-for-client section {
     margin-bottom: .7rem;
 }
-
+.looking-for-client button {
+    width: 100%;
+}
 
 .looking-client {
     display: flex;
