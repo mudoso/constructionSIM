@@ -10,44 +10,25 @@ const deletedModels = []
 
 //DEFINE ALL GLOBAL PATHS
 //==========NAV CLIENT PATH=============
-const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
-const clientSelectedButtonDOM = document.getElementById("btn-clients")
-const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
+const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')
+const clientSelectedButtonDOM = document.getElementById('btn-clients')
+const clientRightArrowButtonDOM = document.getElementById('btn-clients-right')
 const menuClientBackgroundBlock = document.getElementById('menu-client-block');
 const menuClientButtonDOMOut = document.getElementById('menu-client-close');
 const menuClientButton = document.getElementById('btn-clients');
-const menuClientName = document.getElementById("menu-client-name")
-const menuClientMoney = document.getElementById("client-money-menu")
+const menuClientName = document.getElementById('menu-client-name')
+const menuClientMoney = document.getElementById('client-money-menu')
 const menuClientStages = document.getElementById('menu-client-stages')
 const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
-const menuClientSendMoneyInput = document.getElementById("send-money-input")
-const costPerHourDOM = document.getElementById("cost-per-hour")
-const menuOwnClients = document.querySelector(".menu-own-company-clients")
-const storeCategoryContainerDOM = document.getElementById("store-category")
-const storeBuyContainerDOM = document.getElementById("store-buy-items")
-const warehouseContainerDOM = document.getElementById("warehouse-container")
-const warehouseLimitDOM = document.getElementById("warehouse-limit")
-const workersAndServicesContainerDOM = document.getElementById("workers-services")
-const constructionContainerDOM = document.getElementById("construction-container")
-
-
-// const createHtmlElement = (elementName, attributes) => {
-//     const element = document.createElement(elementName)
-//     const attributesAsArray = Object.entries(attributes)
-
-//     attributesAsArray.forEach(([key, value]) => element.setAttribute(key, value))
-
-//     return element
-// }
-
-// const input = createHtmlElement('button', {
-//     type: 'radio',
-//     id: 'intup1',
-//     name: 'main',
-//     value: '100',
-//     'data-js': 'input1'
-// })
-// console.log("input", input)
+const menuClientSendMoneyInput = document.getElementById('send-money-input')
+const costPerHourDOM = document.getElementById('cost-per-hour')
+const menuOwnClients = document.querySelector('.menu-own-company-clients')
+const storeCategoryContainerDOM = document.getElementById('store-category')
+const storeBuyContainerDOM = document.getElementById('store-buy-items')
+const warehouseContainerDOM = document.getElementById('warehouse-container')
+const warehouseLimitDOM = document.getElementById('warehouse-limit')
+const workersAndServicesContainerDOM = document.getElementById('workers-services')
+const constructionContainerDOM = document.getElementById('construction-container')
 
 
 function renderDOM() {
@@ -104,7 +85,7 @@ function renderDOM() {
 
     function renderClientSelectorMenu() {
 
-        menuClientButtonDOMOut.onclick = () => { menuClientOff(menuClientBackgroundBlock) };
+        // menuClientButtonDOMOut.onclick = () => { menuClientOff(menuClientBackgroundBlock) };
 
         if (stateGame.clients[currentClient] == null) {
             clientSelectedButtonDOM.onclick = () => { };
@@ -133,13 +114,19 @@ function renderDOM() {
 
     function menuClientOn(menuClientBackgroundBlock) {
         menuClientBackgroundBlock.style.display = "block"
-        // renderDOM()
     }
 
     function menuClientOff(menuClientBackgroundBlock) {
         menuClientBackgroundBlock.style.display = "none"
         renderMenuClient()
     }
+
+    menuClientBackgroundBlock.addEventListener('click', event => {
+        const closeTarget = event.target.id
+        if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
+            menuClientBackgroundBlock.style.display = "none"
+        }
+    })
 
     function renderNewClientSelector() {
         const renderNewClientSelectorDOM = document.getElementById("looking-for-client")
@@ -502,9 +489,14 @@ function handleDisplayMenu() {
 
     menuOwnCompanyButton.onclick = () => { menuCompanyOn() };
     function menuCompanyOn() { menuOwnCompanyButtonOut.style.display = "block" }
-    menuOwnCompanyButtonOut.onclick = () => { menuCompanyOff() };
-    function menuCompanyOff() { menuOwnCompanyButtonOut.style.display = "none" }
 
+    menuOwnCompanyButtonOut.addEventListener('click', event => {
+        const closeTarget = event.target.id
+        if (closeTarget == 'menu-own-company-block') {
+            menuOwnCompanyButtonOut.style.display = "none"
+        }
+    })
 }
 handleDisplayMenu()
+
 
