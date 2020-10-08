@@ -52,11 +52,11 @@ function timeRules() {
         getNewAvailableClients()
         renderDOM()
     }
-    let min00 = ("0" + min).slice(-2);
+    let min00 = ('0' + min).slice(-2)
     // let date = new Date();
     // let h = date.getHours();
-    timeSpan.textContent = hour + ":" + min00;
-    stateGame.clock.minute = min00
+    timeSpan.textContent = `${hour}:${min00}`;
+    stateGame.clock.minute = min
     stateGame.clock.hour = hour
     stateGame.clock.day = day
     if (stateGame.clients[currentClient] != null) {
@@ -144,8 +144,8 @@ function randomNumberInteger(min = 0, max = 0) {
 
 function getNewClientList(numberOfTimes) {
     const newClientsList = Array(numberOfTimes).fill()
-        .map(item => {
-            let randomIndex = randomNumberInteger(0, clientNames.length - 1)
+        .map(() => {
+            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
             return clientNames[randomIndex]
         })
 
@@ -155,7 +155,7 @@ function getNewClientList(numberOfTimes) {
 function getNewAvailableClients(numberOfTimes = 0) {
     stateGame.lookingForClients = []
 
-    if (numberOfTimes < 1) numberOfTimes = randomNumberInteger(0, 3)
+    if (numberOfTimes < 1) numberOfTimes = randomNumberInteger(1, 3)
 
     getNewClientList(numberOfTimes).forEach(clientName => stateGame.lookingForClients
         .push(new Client(clientName)))

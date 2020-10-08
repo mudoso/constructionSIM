@@ -10,44 +10,25 @@ const deletedModels = []
 
 //DEFINE ALL GLOBAL PATHS
 //==========NAV CLIENT PATH=============
-const clientLeftArrowButtonDOM = document.getElementById("btn-clients-left")
-const clientSelectedButtonDOM = document.getElementById("btn-clients")
-const clientRightArrowButtonDOM = document.getElementById("btn-clients-right")
-const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-const menuClientButtonDOMOut = document.getElementById('menu-client-close');
-const menuClientButton = document.getElementById('btn-clients');
-const menuClientName = document.getElementById("menu-client-name")
-const menuClientMoney = document.getElementById("client-money-menu")
-const menuClientStages = document.getElementById('menu-client-stages')
-const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
-const menuClientSendMoneyInput = document.getElementById("send-money-input")
-const costPerHourDOM = document.getElementById("cost-per-hour")
-const menuOwnClients = document.querySelector(".menu-own-company-clients")
-const storeCategoryContainerDOM = document.getElementById("store-category")
-const storeBuyContainerDOM = document.getElementById("store-buy-items")
-const warehouseContainerDOM = document.getElementById("warehouse-container")
-const warehouseLimitDOM = document.getElementById("warehouse-limit")
-const workersAndServicesContainerDOM = document.getElementById("workers-services")
-const constructionContainerDOM = document.getElementById("construction-container")
-
-
-// const createHtmlElement = (elementName, attributes) => {
-//     const element = document.createElement(elementName)
-//     const attributesAsArray = Object.entries(attributes)
-
-//     attributesAsArray.forEach(([key, value]) => element.setAttribute(key, value))
-
-//     return element
-// }
-
-// const input = createHtmlElement('button', {
-//     type: 'radio',
-//     id: 'intup1',
-//     name: 'main',
-//     value: '100',
-//     'data-js': 'input1'
-// })
-// console.log("input", input)
+const clientLeftArrowButtonDOM = document.querySelector('#btn-clients-left')
+const clientSelectedButtonDOM = document.querySelector('#btn-clients')
+const clientRightArrowButtonDOM = document.querySelector('#btn-clients-right')
+const menuClientBackgroundBlock = document.querySelector('#menu-client-block')
+const menuClientButtonDOMOut = document.querySelector('#menu-client-close')
+const menuClientButton = document.querySelector('#btn-clients')
+const menuClientName = document.querySelector('#menu-client-name')
+const menuClientMoney = document.querySelector('#client-money-menu')
+const menuClientStages = document.querySelector('#menu-client-stages')
+const menuClientMaterialsNeeded = document.querySelector(`#menu-client-materials`)
+const menuClientSendMoneyInput = document.querySelector('#send-money-input')
+const costPerHourDOM = document.querySelector('#cost-per-hour')
+const menuOwnClients = document.querySelector('.menu-own-company-clients')
+const storeCategoryContainerDOM = document.querySelector('#store-category')
+const storeBuyContainerDOM = document.querySelector('#store-buy-items')
+const warehouseContainerDOM = document.querySelector('#warehouse-container')
+const warehouseLimitDOM = document.querySelector('#warehouse-limit')
+const workersAndServicesContainerDOM = document.querySelector('#workers-services')
+const constructionContainerDOM = document.querySelector('#construction-container')
 
 
 function renderDOM() {
