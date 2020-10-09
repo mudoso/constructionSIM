@@ -85,8 +85,6 @@ function renderDOM() {
 
     function renderClientSelectorMenu() {
 
-        // menuClientButtonDOMOut.onclick = () => { menuClientOff(menuClientBackgroundBlock) };
-
         if (stateGame.clients[currentClient] == null) {
             clientSelectedButtonDOM.onclick = () => { };
             return clientSelectedButtonDOM.innerHTML = "NONE"
@@ -116,10 +114,10 @@ function renderDOM() {
         menuClientBackgroundBlock.style.display = "block"
     }
 
-    function menuClientOff(menuClientBackgroundBlock) {
-        menuClientBackgroundBlock.style.display = "none"
-        renderMenuClient()
-    }
+    // function menuClientOff(menuClientBackgroundBlock) {
+    //     menuClientBackgroundBlock.style.display = "none"
+    //     renderMenuClient()
+    // }
 
     menuClientBackgroundBlock.addEventListener('click', event => {
         const closeTarget = event.target.id
