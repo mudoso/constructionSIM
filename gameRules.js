@@ -25,11 +25,9 @@ stateGame.clock.hour = 8
 stateGame.clock.day = 1
 
 
-// CLOCK FUNCTION
 function timeRules() {
-    //UPDATE MONEY FROM STATEGAME
-    companyNameDOM.innerHTML = stateGame.ownCompany.name
-    ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
+
+    updateNameAndMoneyDOM()
 
     let min = stateGame.clock.minute
     let hour = stateGame.clock.hour
@@ -68,75 +66,95 @@ setInterval(timeRules, 200); //START CLOCK
 getNewAvailableClients()
 
 
+function updateNameAndMoneyDOM() {
+    companyNameDOM.innerHTML = stateGame.ownCompany.name
+    ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
+}
+
 function checkCostPerHour() {
-    //LOOK FOR ALL THE ASSIGN WORKERS FOR EACH TYPE
     for (let targetClient of stateGame.clients) {
         targetClient.costPerHour = 0
         for (let workersOnSite of targetClient.workers) {
-            if (workersOnSite != undefined) {
-                let workersAssignedCount = 0
-                for (let constructionSiteStage of targetClient.construction) {
-                    for (let constructionSiteElement of constructionSiteStage) {
-                        for (let workersAssigned of constructionSiteElement.workersNeeded) {
-                            if (workersAssigned.type == workersOnSite.name && workersAssigned.assigned == true) {
-                                //GET ALL ASSIGNED WORKERS
-                                workersAssignedCount += workersAssigned.count
-                            }
-                        }
-                    }
-                }
-                //ADD THE WORKERS ON SITE (IDLE) WITH THE ASSIGNED ONES
-                let totalWorkersCount = workersAssignedCount + workersOnSite.count
+            const workerTypeExists = workersOnSite != null
 
-                if (workersOnSite.count > 0 || workersAssignedCount > 0) {
+            if (workerTypeExists) {
+                const workersAssignedCount = checkAssignedWorkers(targetClient, workersOnSite)
+                const isWorkerHired = workersOnSite.count > 0 || workersAssignedCount > 0
+
+                if (isWorkerHired) {
+                    const totalWorkersCount = workersAssignedCount + workersOnSite.count
+                    const workerTypeCost = workersOnSite.price
+                    const costPerHourPerType = totalWorkersCount * workerTypeCost
+
                     workersOnSite.timer++
-                    CostPerHourPerType = totalWorkersCount * workersOnSite.price
-                    targetClient.costPerHour += CostPerHourPerType
+                    targetClient.costPerHour += costPerHourPerType
 
-                    //DEDUCE COST PER HOUR OR WHEN JOB TIME FINISH
-                    if (workersOnSite.timer >= 60 || hour == 16) {
+                    const workerCompletedHourCycle = workersOnSite.timer >= 60 || stateGame.clock.hour == 16
+
+                    if (workerCompletedHourCycle) {
                         workersOnSite.timer = 0
-                        let workersCostPerHour = totalWorkersCount * workersOnSite.price
-
-                        //TAKE OWN MONEY IF CLIENT ONE REACHES ZERO
-                        if (targetClient.money < workersCostPerHour) {
-                            unassignWorkers()
-                            targetClient.money -= workersCostPerHour
-                            stateGame.ownCompany.money += targetClient.money
-                            targetClient.money = 0
-                            workersOnSite.count = 0
-                            renderDOM()
-                        } else {
-                            targetClient.money -= workersCostPerHour
-                            ownMoneyDOM.innerHTML = stateGame.ownCompany.money
-                            clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
-                        }
+                        deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType)
                     }
                 }
             }
         }
     }
+    renderCostPerHourValueDOM()
+}
+
+function renderCostPerHourValueDOM() {
     const costPerHourValueDOM = document.getElementById("costperhour-value")
     costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
 }
 
-function unassignWorkers() {
-    for (let targetClient of stateGame.clients) {
-        for (let constructionSiteStage of targetClient.construction) {
-            for (let constructionSiteElement of constructionSiteStage) {
-                for (let workerNeeded of constructionSiteElement.workersNeeded) {
-                    for (let workersOnSite of targetClient.workers) {
-                        if (workerNeeded.assigned == true && workerNeeded.type == workersOnSite.name) {
-                            workersOnSite.count += workerNeeded.count
-                            console.log(workersOnSite.name + " " + workersOnSite.count)
-                            workerNeeded.assigned = false
-                        }
-                    }
+function checkAssignedWorkers(targetClient, workersOnSite, workersAssignedCount) {
+    workersAssignedCount = 0
+    for (let constructionSiteStage of targetClient.construction) {
+        for (let constructionSiteElement of constructionSiteStage) {
+            for (let workersAssigned of constructionSiteElement.workersNeeded) {
+                const isWorkerAssigned = workersAssigned.type == workersOnSite.name && workersAssigned.assigned == true
+                if (isWorkerAssigned) {
+                    workersAssignedCount += workersAssigned.count
+                }
+            }
+        }
+    }
+    return workersAssignedCount
+}
+
+function deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType) {
+    const insufficientClientMoney = targetClient.money < costPerHourPerType
+
+    if (insufficientClientMoney) {
+        unassignWorkers(targetClient, workersOnSite)
+        deduceOwnMoney(targetClient, costPerHourPerType)
+        workersOnSite.count = 0
+        renderDOM()
+        return
+    }
+    targetClient.money -= costPerHourPerType
+}
+
+function unassignWorkers(targetClient, workersOnSite) {
+    for (let constructionSiteStage of targetClient.construction) {
+        for (let constructionSiteElement of constructionSiteStage) {
+            for (let workerNeeded of constructionSiteElement.workersNeeded) {
+                if (workerNeeded.assigned == true && workerNeeded.type == workersOnSite.name) {
+                    workersOnSite.count += workerNeeded.count
+                    workerNeeded.assigned = false
                 }
             }
         }
     }
 }
+
+function deduceOwnMoney(targetClient, costPerHourPerType) {
+    targetClient.money -= costPerHourPerType
+    stateGame.ownCompany.money += targetClient.money
+    targetClient.money = 0
+}
+
+
 
 function randomNumberInteger(min = 0, max = 0) {
     return Math.floor(Math.random() * (max - min + 1)) + min
