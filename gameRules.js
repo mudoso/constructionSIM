@@ -1,3 +1,16 @@
+//################## NEED TO BE IMPLEMENTED #########################
+
+// A SKILLS SET IN THE COMPANY STATS
+// SKILLS [Network, Construction, Management]
+// MAKES SKILLS IMPACT IN THE GAME
+// CHANGE TASK PROGRESS FORMULA TO WORK IN ACCORD WITH SKILLS AND DIFFICULT OF THE TASK
+// getNewAvailableClients() SHOW "NO CLIENT WHEN THERE IS NO CLIENT IN THAT DAY"
+// ?? CHANGE CLOCK FUNCTION TO SHOW MORNING, EVENING, AFTERNOON
+// ?? MAKE THREE.JS LIGHTs TO CHANGE ACCORDING TO TIME OF THE DAY
+// ?? MAKE THREE.JS MeshToonMaterial SHADE EFFECT WORK
+// REFACTORING THE CODE AND GET RID OF EXCESSIVE COMMENTS
+
+
 //======================================================================================//
 //RESPONSIBLE FOR DEFINE ALL GAME RULES
 //======================================================================================//
@@ -84,6 +97,7 @@ function checkCostPerHour() {
                 if (isWorkerHired) {
                     const totalWorkersCount = workersAssignedCount + workersOnSite.count
                     const workerTypeCost = workersOnSite.price
+
                     const costPerHourPerType = totalWorkersCount * workerTypeCost
 
                     workersOnSite.timer++
@@ -107,8 +121,8 @@ function renderCostPerHourValueDOM() {
     costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
 }
 
-function checkAssignedWorkers(targetClient, workersOnSite, workersAssignedCount) {
-    workersAssignedCount = 0
+function checkAssignedWorkers(targetClient, workersOnSite) {
+    let workersAssignedCount = 0
     for (let constructionSiteStage of targetClient.construction) {
         for (let constructionSiteElement of constructionSiteStage) {
             for (let workersAssigned of constructionSiteElement.workersNeeded) {
@@ -154,68 +168,61 @@ function deduceOwnMoney(targetClient, costPerHourPerType) {
     targetClient.money = 0
 }
 
+//======================================================================================//
+//END CLOCK FUNCTIONS
+
+
+
+//======================================================================================//
+//RESPONSIBLE FOR GET NEW CLIENTS OF THE DAY
+//======================================================================================//
 
 
 function randomNumberInteger(min = 0, max = 0) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function getNewClientList(numberOfTimes) {
-    const newClientsList = Array(numberOfTimes).fill()
-        .map(() => {
-            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
-            return clientNames[randomIndex]
-        })
-
+function getNewClientList(numberOfClients) {
+    const newClientsList = Array(numberOfClients).fill().map(() => {
+        const randomIndex = randomNumberInteger(0, clientNames.length - 1)
+        return clientNames[randomIndex]
+    })
     return newClientsList
 }
 
-function getNewAvailableClients(numberOfTimes = 0) {
+function getNewAvailableClients(numberOfClients = 0) {
     stateGame.lookingForClients = []
 
-    if (numberOfTimes < 1) numberOfTimes = randomNumberInteger(1, 3)
+    if (numberOfClients < 1) numberOfClients = randomNumberInteger(1, 3)
 
-    getNewClientList(numberOfTimes).forEach(clientName => stateGame.lookingForClients
+    getNewClientList(numberOfClients).forEach(clientName => stateGame.lookingForClients
         .push(new Client(clientName)))
 }
 
-//======================================================================================//
-//END CLOCK FUNCTIONS
 
+function newClientSelectorBudgetOffer(client, inputOfferClient) {
+    const index = stateGame.lookingForClients.indexOf(client)
+    const ownCompanyLevelDelta = (Math.random() * stateGame.ownCompany.level / 10) + 1
+    const maxClientBudget = client.money * ownCompanyLevelDelta
+    const minClientBudget = client.money * 0.5
 
+    if (client.attempt == null) client.attempt = randomCount(stateGame.ownCompany.level) + 1
+    if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
+        client.attempt -= 1
 
+        if (client.attempt <= 0) stateGame.lookingForClients.splice(index, 1)
+        return renderDOM()
+    }
+    client.money = parseInt(inputOfferClient.value)
+    stateGame.clients.unshift(client)
+    stateGame.lookingForClients.splice(index, 1);
+    renderDOM()
+}
 
 
 //======================================================================================//
 //RESPONSIBLE FOR ALL TASKS FUNCTIONS RULES RELATED
 //======================================================================================//
-
-
-//START THE TASK IF ALL CONDITIONS ARE TRUE
-function startTask(constructionSiteElement, targetClient) {
-    if (constructionSiteElement == undefined) { console.log("ERROR") }
-
-    if (constructionSiteElement.progress < 100) {
-
-        constructionSiteElement.progress += 10 //PROGRESS RULE
-        const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
-        if (cardTaskPercentage == undefined || cardTaskPercentage == null) { return }
-        else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
-    }
-    // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
-    if (constructionSiteElement.progress >= 100) {
-        for (let workerAssigned of constructionSiteElement.workersNeeded) {
-            for (let workersOnSite of targetClient.workers) {
-                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
-                    workersOnSite.count += workerAssigned.count
-                    workerAssigned.count = 0
-                    workerAssigned.assigned = false
-                    renderDOM()
-                }
-            }
-        }
-    }
-}
 
 
 //VERIFY ASSIGNED MATERIAL OR WORKER
@@ -254,6 +261,33 @@ function verifyAssigned() {
 }
 
 
+//START THE TASK IF ALL CONDITIONS ARE TRUE
+function startTask(constructionSiteElement, targetClient) {
+    if (constructionSiteElement == undefined) { console.log("ERROR") }
+
+    if (constructionSiteElement.progress < 100) {
+
+        constructionSiteElement.progress += 10 //PROGRESS RULE
+        const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
+        if (cardTaskPercentage == undefined || cardTaskPercentage == null) { return }
+        else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+    }
+    // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
+    if (constructionSiteElement.progress >= 100) {
+        for (let workerAssigned of constructionSiteElement.workersNeeded) {
+            for (let workersOnSite of targetClient.workers) {
+                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
+                    workersOnSite.count += workerAssigned.count
+                    workerAssigned.count = 0
+                    workerAssigned.assigned = false
+                    renderDOM()
+                }
+            }
+        }
+    }
+}
+
+
 //SEND THE WORKER(OR SERVICE) BACK AND DEDUCE COST
 function sendBackWorkerOrService(workerOrServiceStored) {
     stateGame.clients[currentClient].costPerHour -= workerOrServiceStored.price
@@ -266,8 +300,6 @@ function sendBackWorkerOrService(workerOrServiceStored) {
     renderDOM()
 }
 
-
-//ASSIGN (OR UNASSIGN) WORKER TO A TASK
 function assignWorkerOrService(workersNeeded, idButton) {
 
     for (let workersOnSite of stateGame.clients[currentClient].workers) {
@@ -288,8 +320,6 @@ function assignWorkerOrService(workersNeeded, idButton) {
     }
 }
 
-
-//ASSIGN MATERIAL TO A TASK
 function assignMaterial(materialNeeded, idButton) {
     for (let materialOnWarehouse of stateGame.clients[currentClient].warehouse) {
         if (materialOnWarehouse.name == materialNeeded.name &&
@@ -302,12 +332,7 @@ function assignMaterial(materialNeeded, idButton) {
     }
 }
 
-//======================================================================================//
-//END TASKS FUNCTIONS RULES
 
-
-//RESPONSIBLE FOR HANDLE COMPLETE CONSTRUCTION FUNCTION
-//======================================================================================//
 function completeClientConstruction() {
     stateGame.clients[currentClient].money
     stateGame.ownCompany.money += stateGame.clients[currentClient].money
@@ -320,6 +345,11 @@ function completeClientConstruction() {
     if (currentClient > 0) currentClient--
     renderDOM()
 }
+
+
+//======================================================================================//
+//END TASKS FUNCTIONS RULES
+
 
 
 //RESPONSIBLE FOR HANDLE SEND MONEY TO CLIENT FUNCTION
@@ -344,27 +374,6 @@ handleSendMoneyClient()
 
 
 
-//RESPONSIBLE FOR HANDLE LOOKING CLIENTS FUNCTIONS
-//======================================================================================//
-
-function newClientSelector(client, inputOfferClient) {
-    const index = stateGame.lookingForClients.indexOf(client)
-    const ownCompanyLevelDelta = (Math.random() * stateGame.ownCompany.level / 10) + 1
-    const maxClientBudget = client.money * ownCompanyLevelDelta
-    const minClientBudget = client.money * 0.5
-
-    if (client.attempt == null) client.attempt = randomCount(stateGame.ownCompany.level) + 1
-    if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
-        client.attempt -= 1
-
-        if (client.attempt <= 0) stateGame.lookingForClients.splice(index, 1)
-        return renderDOM()
-    }
-    client.money = parseInt(inputOfferClient.value)
-    stateGame.clients.unshift(client)
-    stateGame.lookingForClients.splice(index, 1);
-    renderDOM()
-}
 
 
 
