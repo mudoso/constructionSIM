@@ -285,6 +285,18 @@ function renderDOM() {
         warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseDisplayLimit()})`
     }
 
+    function warehouseDisplayLimit() {
+        if (stateGame.clients[currentClient] == null) return
+        const volumeStored = stateGame.clients[currentClient].warehouse
+            .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
+        const currentVolumeStored = `${Math.floor(volumeStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
+
+        warehouseLimitDOM.style.color = "var(--text-base-color)"
+        if (stateGame.clients[currentClient].warehouse[0] == null) return "EMPTY"
+        if (currentVolumeStored >= 90) { warehouseLimitDOM.style.color = "#ff2a1a" }
+        if (volumeStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
+        return `${currentVolumeStored}%`
+    }
 
     //STORE
     //======================================================================================//
