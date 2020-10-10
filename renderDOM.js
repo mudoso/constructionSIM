@@ -157,7 +157,7 @@ function renderDOM() {
             const buttonNewClientMenu = document.getElementById(`${client.name}-newClient-menu`)
             const buttonOfferClient = document.getElementById(`${client.name}-offer-client-btn`)
             const inputOfferClient = document.getElementById(`${client.id}input`)
-            buttonOfferClient.onclick = () => { newClientSelector(client, inputOfferClient) }
+            buttonOfferClient.onclick = () => { newClientSelectorBudgetOffer(client, inputOfferClient) }
             buttonNewClientMenu.onclick = () => {
                 const menuClientBackgroundBlock = document.getElementById('menu-client-block');
                 menuClientBackgroundBlock.style.display = "block"
