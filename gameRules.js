@@ -80,7 +80,7 @@ function timeRules() {
     }
 }
 setInterval(timeRules, 200); //START CLOCK
-getNewAvailableClients()
+getNewAvailableClients(1)
 
 
 function updateNameAndMoneyDOM() {
@@ -186,21 +186,21 @@ function randomNumberInteger(min = 0, max = 0) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function getNewClientList(numberOfClients) {
-    const newClientsList = Array(numberOfClients).fill().map(() => {
-        const randomIndex = randomNumberInteger(0, clientNames.length - 1)
-        return clientNames[randomIndex]
-    })
-    return newClientsList
-}
 
-function getNewAvailableClients(numberOfClients = 0) {
+function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
     stateGame.lookingForClients = []
-
-    if (numberOfClients < 1) numberOfClients = randomNumberInteger(1, 3)
 
     getNewClientList(numberOfClients).forEach(clientName => stateGame.lookingForClients
         .push(new Client(clientName)))
+
+
+    function getNewClientList(numberOfClients) {
+        const newClientsList = Array(numberOfClients).fill().map(() => {
+            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
+            return clientNames[randomIndex]
+        })
+        return newClientsList
+    }
 }
 
 
@@ -414,6 +414,7 @@ function buyItem(itemBought, categoryItem) {
 
     addItemBoughtToContainer()
     renderDOM()
+
 
     // buyItem FUNCTIONS ============================================================//
 
