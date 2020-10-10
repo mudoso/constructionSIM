@@ -1,10 +1,14 @@
 //################## NEED TO BE IMPLEMENTED #########################
 
+// ADDED A FRONT PAGE TO INPUT COMPANY NAME, START NEW GAME OR LOAD GAME
+// MAKE A SAVE SYSTEM TO LocalStorage
+// MAKE A HELP TOOLTIP TO SHOW INFORMATION ABOUT THE COMPONENTS
 // A SKILLS SET IN THE COMPANY STATS
 // SKILLS [Network, Construction, Management]
 // MAKES SKILLS IMPACT IN THE GAME
 // CHANGE TASK PROGRESS FORMULA TO WORK IN ACCORD WITH SKILLS AND DIFFICULT OF THE TASK
 // getNewAvailableClients() SHOW "NO CLIENT WHEN THERE IS NO CLIENT IN THAT DAY"
+// ?? MAKE MATERIALS AND SERVICES TAKE TIME TO COME TO WORK SITE
 // ?? CHANGE CLOCK FUNCTION TO SHOW MORNING, EVENING, AFTERNOON
 // ?? MAKE THREE.JS LIGHTs TO CHANGE ACCORDING TO TIME OF THE DAY
 // ?? MAKE THREE.JS MeshToonMaterial SHADE EFFECT WORK
@@ -374,9 +378,6 @@ handleSendMoneyClient()
 
 
 
-
-
-
 //======================================================================================//
 //RESPONSIBLE FOR ALL STORE AND WAREHOUSE FUNCTIONS RULES RELATED
 //======================================================================================//
@@ -387,67 +388,88 @@ handleSendMoneyClient()
 function buyItem(itemBought, categoryItem) {
     const inputCountId = `${itemBought.name}-buyinput`
     const getCount = document.getElementById(inputCountId);
-    if (stateGame.clients[currentClient] == null) return
-    const volumeStored = stateGame.clients[currentClient].warehouse
-        .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
 
-    //CONDITION TO PREVENT BREAK CODE IF INPUT IS IN WRONG FORMAT
-    if (itemBought === null || getCount === null || getCount < 1) return console.log("Invalid Input")
-    if (getCount.value == null) getCount.value = 1
+    const noClientSelected = stateGame.clients[currentClient] == null
+    const isInvalidInput = itemBought == null || getCount == null
+    const isInvalidValue = getCount.value == null || getCount.value < 1
 
-    countBought = parseInt(getCount.value)
-    let moneySpent = countBought * itemBought.price
+    if (noClientSelected) return console.log("No Client Selected")
+    if (isInvalidInput) return console.log("Invalid Input")
+    if (isInvalidValue) return getCount.value = 1
 
-    //PREVENTS BUY SERVICES OR MATERIALS IF CLIENT BUDGET = 0
-    if (stateGame.clients[currentClient].money == 0) { return }
+    const noClientMoney = stateGame.clients[currentClient].money == 0
+    if (noClientMoney) return console.log("Not Enough Client Money")
 
-    //COVER COST WITH OWN MONEY (CLIENT MONEY + OWN MONEY) IF CLIENT MONEY IS LESS moneySpent
-    if (stateGame.clients[currentClient].money <= moneySpent) {
-        if (!itemBought.service) {
-            deduceOwnAndClientMoney()
-        }
-    } else {
-        //SUBTRACT MONEY FROM CLIENT IMMEDIATELY IF NOT A SERVICE
-        if (!itemBought.service) {
-            const volumeIsHigherThanWarehouseLimit = (volumeStored + countBought * itemBought.volume) > stateGame.clients[currentClient].warehouseLimit
-            if (volumeIsHigherThanWarehouseLimit) { return }
-            stateGame.clients[currentClient].money -= moneySpent
-        }
+    const countBought = parseInt(getCount.value)
+    const moneySpent = countBought * itemBought.price
+
+    const isItemBoughtMaterial = !itemBought.service
+    if (isItemBoughtMaterial) {
+        const isWarehouseFull = checkWarehouseSpace()
+        if (isWarehouseFull) return ("Warehouse Full")
+        handleBoughtMaterials()
     }
+
     getCount.value = 1
 
-    //CHECK IF IT IS AN ITEM OR A SERVICE
-    let warehouseOrWorkersContainer = stateGame.clients[currentClient].warehouse
-    if (itemBought.service) {
-        warehouseOrWorkersContainer = stateGame.clients[currentClient].workers
-    }
-
-    //SEND TO STATEGAME
-    let itemStored = warehouseOrWorkersContainer.find(itemStored => itemStored.name === itemBought.name);
-    //VERIFY IF ITEM EXISTS
-    if (itemStored === undefined) {
-        itemStored = { ...itemBought, "count": 0, "volumeTotal": 0, } //CREATE NEW OBJECT
-        warehouseOrWorkersContainer.unshift(itemStored)
-    }
-
-    //ADD TO EXISTING
-    for (let itemStored of warehouseOrWorkersContainer) {
-        if (itemStored.name === itemBought.name) {
-            itemStored.count = itemStored.count + countBought;
-            break; //Stop this loop, we found it!
-        }
-    }
+    addItemBoughtToContainer()
     renderDOM()
 
+    // buyItem FUNCTIONS ============================================================//
+
+    function checkWarehouseSpace() {
+        const isItemBoughtMaterial = !itemBought.service
+
+        if (isItemBoughtMaterial) {
+            const volumeStored = stateGame.clients[currentClient].warehouse
+                .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
+
+            const isVolumeHigherThanWarehouseLimit = (volumeStored + countBought * itemBought.volume) > stateGame.clients[currentClient].warehouseLimit
+            return isVolumeHigherThanWarehouseLimit
+        }
+    }
+
+    function handleBoughtMaterials() {
+        const notEnoughClientMoney = stateGame.clients[currentClient].money <= moneySpent
+
+        if (notEnoughClientMoney) return deduceOwnAndClientMoney()
+        stateGame.clients[currentClient].money -= moneySpent
+    }
 
     function deduceOwnAndClientMoney() {
         stateGame.clients[currentClient].money -= moneySpent
         stateGame.ownCompany.money += stateGame.clients[currentClient].money
         stateGame.clients[currentClient].money = 0
     }
+
+    function addItemBoughtToContainer() {
+        const warehouseOrSiteContainer = checkContainer()
+        createItemObject(warehouseOrSiteContainer)
+
+        const ItemStored = warehouseOrSiteContainer
+            .find(itemStored => itemStored.name === itemBought.name)
+
+        ItemStored.count = ItemStored.count + countBought;
+    }
+
+    function checkContainer() {
+        const isService = itemBought.service
+
+        if (isService) return stateGame.clients[currentClient].workers
+        return stateGame.clients[currentClient].warehouse
+    }
+
+    function createItemObject(warehouseOrSiteContainer) {
+        const isItemStored = warehouseOrSiteContainer
+            .some(itemStored => itemStored.name === itemBought.name)
+
+        if (!isItemStored) {
+            const newItemStored = { ...itemBought, "count": 0, "volumeTotal": 0, }
+            warehouseOrSiteContainer.unshift(newItemStored)
+        }
+    }
 }
 
-//DISCARD WAREHOUSE (SITE STORAGE) ITEM
 function discardWarehouseItem(materialStored) {
     const warehouseContainer = stateGame.clients[currentClient].warehouse
     const indexOfItemSelected = warehouseContainer.indexOf(materialStored)
@@ -455,19 +477,6 @@ function discardWarehouseItem(materialStored) {
     renderDOM()
 }
 
-//HANDLE WAREHOUSE (SITE STORAGE) LIMIT
-function warehouseDisplayLimit() {
-    if (stateGame.clients[currentClient] == null) return
-    const volumeStored = stateGame.clients[currentClient].warehouse
-        .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
-    const currentVolumeStored = `${Math.floor(volumeStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
-
-    warehouseLimitDOM.style.color = "var(--text-base-color)"
-    if (stateGame.clients[currentClient].warehouse[0] == null) return "EMPTY"
-    if (currentVolumeStored >= 90) { warehouseLimitDOM.style.color = "#ff2a1a" }
-    if (volumeStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
-    return `${currentVolumeStored}%`
-}
 
 
 //======================================================================================//
