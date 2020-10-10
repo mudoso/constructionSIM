@@ -130,6 +130,11 @@ function renderDOM() {
         const renderNewClientSelectorDOM = document.getElementById("looking-for-client")
         renderNewClientSelectorDOM.innerHTML = ""
 
+        if (stateGame.lookingForClients == false) {
+            renderNewClientSelectorDOM.innerHTML =
+                `<h3>NO MORE CLIENTS FOUND TODAY</h3>`
+        }
+
         for (let client of stateGame.lookingForClients) {
             let section = document.createElement('div');
             let btnClass = "btn"
