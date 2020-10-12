@@ -4,10 +4,6 @@
 //======================================================================================//
 
 
-//DEFINE ALL GLOBAL VARIABLES
-const deletedModels = []
-
-
 //DEFINE ALL GLOBAL PATHS
 //==========NAV CLIENT PATH=============
 const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')

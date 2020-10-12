@@ -21,6 +21,7 @@
 
 //DEFINE ALL GLOBAL VARIABLES
 let currentClient = 0
+const deletedModels = []
 
 
 //DEFINE ALL GLOBAL PATHS
@@ -352,7 +353,6 @@ function assignMaterial(materialNeeded, idButton) {
         }
     }
 }
-
 
 function completeClientConstruction() {
     stateGame.clients[currentClient].money
