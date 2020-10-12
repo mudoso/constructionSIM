@@ -83,7 +83,7 @@ function timeRules() {
         verifyAssigned()
     }
 }
-setInterval(timeRules, 200); //START CLOCK
+setInterval(timeRules, 1000); //START CLOCK
 getNewAvailableClients(1)
 
 function getCurrentExperience() {
@@ -238,41 +238,48 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
 //======================================================================================//
 
 
-//VERIFY ASSIGNED MATERIAL OR WORKER
 function verifyAssigned() {
     for (let targetClient of stateGame.clients) {
         for (let constructionSiteStage of targetClient.construction) {
             for (let constructionSiteElement of constructionSiteStage) {
 
-                //VERIFY IF ALL WORKERS (OR SERVICES) WERE ASSIGNED TO THE JOB TO START THE TASK
-                if (constructionSiteElement.workersNeeded != undefined) {
-                    const isWorkersNeededTrue = constructionSiteElement.workersNeeded
-                        .every(workersNeeded => workersNeeded.assigned);
-                    //VERIFY IF ALL MATERIALS WERE ASSIGNED TO THE JOB TO START THE TASK
-                    if (constructionSiteElement.materialNeeded != undefined) {
-                        const isMaterialNeededTrue = constructionSiteElement.materialNeeded
-                            .every(materialNeeded => materialNeeded.assigned)
-                        // START PROGRESS IF ALL WORKERS AND MATERIALS ARE ASSIGNED
-                        if (isWorkersNeededTrue && isMaterialNeededTrue) {
+                if (constructionSiteElement.progress < 100) {
+                    const allWorkersAssigned = verifyAssignedWorkers(constructionSiteElement)
+                    const allMaterialsAssigned = verifyAssignedMaterials(constructionSiteElement)
+
+                    if (allWorkersAssigned) {
+                        const noMaterialNeeded = allMaterialsAssigned === undefined
+                        if (noMaterialNeeded || allMaterialsAssigned) {
                             startTask(constructionSiteElement, targetClient)
                         }
                     }
-                    // START PROGRESS IF ALL WORKERS ARE ASSIGNED AND THERE IS NO MATERIALS TO TASK 
-                    if (isWorkersNeededTrue && constructionSiteElement.materialNeeded == undefined) {
-                        startTask(constructionSiteElement, targetClient)
-                    }
                 }
             }
-            let condition = constructionSiteStage.every((constructionSiteElement) => {
-                return constructionSiteElement.progress >= 100
-            });
-            if (condition == false) { break } //PREVENT NEXT STAGE IF ALL PROGRESS OF CURRENT STAGE ARE NOT 100%
+            const constructionSiteStageComplete = constructionSiteStage
+                .every(constructionSiteElement => constructionSiteElement.progress >= 100);
+            if (!constructionSiteStageComplete) break
         }
     }
 }
 
+function verifyAssignedWorkers(constructionSiteElement) {
+    const hasWorkerNeeded = constructionSiteElement.workersNeeded[0]
 
-//START THE TASK IF ALL CONDITIONS ARE TRUE
+    if (hasWorkerNeeded) {
+        return constructionSiteElement.workersNeeded
+            .every(workersNeeded => workersNeeded.assigned)
+    }
+}
+
+function verifyAssignedMaterials(constructionSiteElement) {
+    const hasMaterialNeeded = constructionSiteElement.materialNeeded[0]
+
+    if (hasMaterialNeeded) {
+        return constructionSiteElement.materialNeeded
+            .every(materialNeeded => materialNeeded.assigned)
+    }
+}
+
 function startTask(constructionSiteElement, targetClient) {
     if (constructionSiteElement == undefined) { console.log("ERROR") }
 
@@ -363,7 +370,6 @@ function completeClientConstruction() {
 }
 
 function drawProgressShadowTask(constructionSiteElement) {
-    console.log("drawProgressShadowTask -> constructionSiteElement", constructionSiteElement)
     const cardTask = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}`)
     const getCurrentWidthCard = getComputedStyle(cardTask).width.split('px').slice(0, -1)[0]
     const progressWidthCSS = (constructionSiteElement.progress / 100) * getCurrentWidthCard
