@@ -246,14 +246,12 @@ function verifyAssigned() {
 
                 //VERIFY IF ALL WORKERS (OR SERVICES) WERE ASSIGNED TO THE JOB TO START THE TASK
                 if (constructionSiteElement.workersNeeded != undefined) {
-                    let isWorkersNeededTrue = constructionSiteElement.workersNeeded.every(function (workersNeeded) {
-                        return workersNeeded.assigned;
-                    });
+                    const isWorkersNeededTrue = constructionSiteElement.workersNeeded
+                        .every(workersNeeded => workersNeeded.assigned);
                     //VERIFY IF ALL MATERIALS WERE ASSIGNED TO THE JOB TO START THE TASK
                     if (constructionSiteElement.materialNeeded != undefined) {
-                        let = isMaterialNeededTrue = constructionSiteElement.materialNeeded.every(function (materialNeeded) {
-                            return materialNeeded.assigned;
-                        });
+                        const isMaterialNeededTrue = constructionSiteElement.materialNeeded
+                            .every(materialNeeded => materialNeeded.assigned)
                         // START PROGRESS IF ALL WORKERS AND MATERIALS ARE ASSIGNED
                         if (isWorkersNeededTrue && isMaterialNeededTrue) {
                             startTask(constructionSiteElement, targetClient)
@@ -280,7 +278,10 @@ function startTask(constructionSiteElement, targetClient) {
 
     if (constructionSiteElement.progress < 100) {
 
-        constructionSiteElement.progress += 10 //PROGRESS RULE
+        constructionSiteElement.progress += 1 //PROGRESS RULE
+
+        drawProgressShadowTask(constructionSiteElement)
+
         const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
         if (cardTaskPercentage == undefined || cardTaskPercentage == null) { return }
         else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
@@ -359,6 +360,16 @@ function completeClientConstruction() {
     stateGame.clients.splice(currentClient, 1)
     if (currentClient > 0) currentClient--
     renderDOM()
+}
+
+function drawProgressShadowTask(constructionSiteElement) {
+    console.log("drawProgressShadowTask -> constructionSiteElement", constructionSiteElement)
+    const cardTask = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}`)
+    const getCurrentWidthCard = getComputedStyle(cardTask).width.split('px').slice(0, -1)[0]
+    const progressWidthCSS = (constructionSiteElement.progress / 100) * getCurrentWidthCard
+    const shadowColor = `rgb(115 170 115 / 20%)`
+
+    cardTask.style.boxShadow = `inset ${progressWidthCSS}px 0 ${shadowColor}`
 }
 
 

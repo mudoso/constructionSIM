@@ -439,12 +439,12 @@ function renderDOM() {
         let div = document.createElement('div');
         div.innerHTML =
             `<span id="${constructionSiteElement.stage}-${constructionSiteElement.index}">
-        (${constructionSiteElement.stage})
-        </span>
-        <span id="${constructionSiteElement.stage}-${currentClient}-${constructionSiteElement.index}-progress">
-        ${constructionSiteElement.progress} %
-        </span>
-        <br>`
+                (${constructionSiteElement.stage})
+            </span>
+            <span id="${constructionSiteElement.stage}-${currentClient}-${constructionSiteElement.index}-progress">
+                ${constructionSiteElement.progress} %
+            </span>
+            <br>`
         div.setAttribute('id', `${constructionSiteElement.stage}-${constructionSiteElement.index}`);
         div.setAttribute('class', `card center`);
         constructionContainerDOM.appendChild(div);
