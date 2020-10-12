@@ -16,79 +16,108 @@
 
 </head>
 
-<div id="menu-own-company-block">
-    <div class="menu-own-company layout">
+<body>
 
+    <div id="menu-own-company-block">
+        <div class="menu-own-company layout">
 
-        <h2 class="side-menu-title center">COMPANY'S STATS</h2>
-        <div class="grid-row">
+            <h2 class="side-menu-title center">COMPANY'S STATS</h2>
+            <div class="grid-row">
 
-            <div class="money-div layout">
-                <header>OWN MONEY:&nbsp;</header>
-                <p>$<span class="own-money">0</span></p>
+                <div class="money-div layout">
+                    <header>OWN MONEY:&nbsp;</header>
+                    <p>$<span class="own-money">0</span></p>
+                </div>
+
+                <div class="layout">SKILLS:
+                    <ul class="menu-own-company-skills">
+
+                        <li class="skill-line flex-between">
+                            <h3>CONSTRUCTION</h3>
+                            <div class="skill-span">
+                                <p id="skill-CONSTRUCTION">1</p>
+                                <button class="add-skill">+</button>
+                            </div>
+                        </li>
+
+                        <li class="skill-line flex-between">
+                            <h3>MANAGEMENT</h3>
+                            <div class="skill-span">
+                                <p id="skill-MANAGEMENT">1</p>
+                                <button class="add-skill">+</button>
+                            </div>
+                        </li>
+
+                        <li class="skill-line flex-between">
+                            <h3>NETWORKING</h3>
+                            <div class="skill-span">
+                                <p id="skill-NETWORK">1</p>
+                                <button class="add-skill">+</button>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="layout">CLIENTS:
+                    <ul class="menu-own-company-clients">
+                        <li class="layout btn">
+                            Client 1
+                        </li>
+                        <li class="layout btn">
+                            Client 1
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="layout">CLIENTS:
-                <ul class="menu-own-company-clients">
-                    <li class="layout btn">
-                        Client 1
-                    </li>
-                    <li class="layout btn">
-                        Client 1
-                    </li>
-                </ul>
-            </div>
         </div>
-
-
     </div>
-</div>
 
-<div id="menu-client-block">
-    <div class="menu-client layout-blueprint">
-        <div class="margin">
-            <h2 class="center"><span id="menu-client-name">CLIENT</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
-            <button id="menu-client-close" class="btn">Close</button>
-        </div>
-
-
-        <div class="grid-row">
-
-            <section class="margin flex-between">
-                <div class="money-div">
-                    <header>CLIENT BUDGET:&nbsp;</header>
-                    <p class="transfer-money">$<span id="client-money-menu" class="">0</span></p>
-                </div>
-                <div id="send-money-input" class="send-money">
-                    <input class="form money-div" type="number" name="send-own-money" id="send-own-money" min="0"
-                        max="10000" placeholder="0" step="100" value="0">
-                    <button id="send-money" class="btn">Send Money</button>
-                </div>
-            </section>
+    <div id="menu-client-block">
+        <div class="menu-client layout-blueprint">
+            <div class="margin">
+                <h2 class="center"><span id="menu-client-name">CLIENT</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
+                <button id="menu-client-close" class="btn">Close</button>
+            </div>
 
 
-            <section class="margin">
-                <header>MATERIALS NEEDED:</header>
-                <div id="menu-client-materials">
-                    <!-- <button class="btn">MATERIALS</button> -->
-                </div>
-            </section>
+            <div class="grid-row">
 
-            <section id="menu-client-stages">
-                <ul class="grid-row">
-                    <!-- <li class="layout btn">
+                <section class="margin flex-between">
+                    <div class="money-div">
+                        <header>CLIENT BUDGET:&nbsp;</header>
+                        <p class="transfer-money">$<span id="client-money-menu" class="">0</span></p>
+                    </div>
+                    <div id="send-money-input" class="send-money">
+                        <input class="form money-div" type="number" name="send-own-money" id="send-own-money" min="0"
+                            max="10000" placeholder="0" step="100" value="0">
+                        <button id="send-money" class="btn">Send Money</button>
+                    </div>
+                </section>
+
+
+                <section class="margin">
+                    <header>MATERIALS NEEDED:</header>
+                    <div id="menu-client-materials">
+                        <!-- <button class="btn">MATERIALS</button> -->
+                    </div>
+                </section>
+
+                <section id="menu-client-stages">
+                    <ul class="grid-row">
+                        <!-- <li class="layout btn">
                         TASK 1
                     </li> -->
-                </ul>
-            </section>
+                    </ul>
+                </section>
 
 
+            </div>
         </div>
     </div>
-</div>
 
 
-<body>
     <header class="header">
 
         <nav class="layout nav-flex">
@@ -98,6 +127,9 @@
                 <div class="money-div">
                     <header>OWN MONEY:&nbsp;</header>
                     <p>$<span class="own-money">0</span></p>
+                </div>
+                <div class="menu-own-lvl">COMPANY LEVEL: <span>1</span>
+                    <div class="menu-own-lvl-progress"></div>
                 </div>
             </div>
 

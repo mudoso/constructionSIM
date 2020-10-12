@@ -23,6 +23,7 @@ const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials
 const menuClientSendMoneyInput = document.getElementById('send-money-input')
 const costPerHourDOM = document.getElementById('cost-per-hour')
 const menuOwnClients = document.querySelector('.menu-own-company-clients')
+const menuOwnSkills = document.querySelector('.menu-own-company-skills')
 const storeCategoryContainerDOM = document.getElementById('store-category')
 const storeBuyContainerDOM = document.getElementById('store-buy-items')
 const warehouseContainerDOM = document.getElementById('warehouse-container')
@@ -49,7 +50,9 @@ function renderDOM() {
 
     renderCostPerHourBtn()
 
-    renderOwnCompanyMenu()
+    renderOwnCompanyMenuClients()
+
+    renderOwnCompanyMenuSkills()
 
     renderMenuClient()
 
@@ -71,7 +74,7 @@ function renderDOM() {
         clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
     }
 
-    function renderOwnCompanyMenu() {
+    function renderOwnCompanyMenuClients() {
         menuOwnClients.innerHTML = ""
         for (let clients of stateGame.clients) {
             let button = document.createElement('li');
@@ -80,6 +83,23 @@ function renderDOM() {
             button.setAttribute('class', "btn");
             button.onclick = () => { };
             menuOwnClients.appendChild(button);
+        }
+    }
+
+    function renderOwnCompanyMenuSkills() {
+        menuOwnSkills.innerHTML = ""
+        const companySkills = Object.entries(stateGame.ownCompany.skills)
+
+        for (const [skill, value] of companySkills) {
+            let li = document.createElement('li');
+            li.innerHTML =
+                `<h3>${skill.toUpperCase()}</h3>
+                <div class="skill-span">
+                    <p id="skill-${skill}">${value}</p>
+                    <button class="add-skill">+</button>
+                </div>`
+            li.setAttribute('class', "skill-line flex-between");
+            menuOwnSkills.appendChild(li);
         }
     }
 
@@ -355,9 +375,11 @@ function renderDOM() {
 
     function renderWorkersAndServicesBtn() {
         workersAndServicesContainerDOM.innerHTML = ""
+        workersAndServicesContainerDOM.style.display = 'none'
         if (stateGame.clients[currentClient] == null) return
         for (let workerOrServiceStored of stateGame.clients[currentClient].workers) {
             if (workerOrServiceStored.count > 0) {
+                workersAndServicesContainerDOM.style.display = 'grid'
                 let button = document.createElement('button');
                 button.innerHTML =
                     `${workerOrServiceStored.count} ${workerOrServiceStored.name} $${workerOrServiceStored.price}/${workerOrServiceStored.unit} (Idle)`

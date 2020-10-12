@@ -31,6 +31,38 @@
     outline: none;
 }
 
+h2 {
+    font-size: 1.5rem;
+}
+
+span {
+    color: inherit;
+}
+
+body {
+    font-weight: 400;
+    margin: 1rem 5%;
+}
+
+/*==========BACKGROUND============*/
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -2;
+    background-image: linear-gradient(
+        115deg,
+        #acacacd5,
+        #636363d5
+      ),
+    url(https://www.freevector.com/uploads/vector/preview/27651/Renovation_vector_4.jpg);
+  }
+
+
 .center {
     text-align: center;
     align-items: center;
@@ -40,7 +72,6 @@
     justify-content: center;
     justify-self: center;
 }
-
 .flex {
     display: flex;
 }
@@ -73,12 +104,6 @@
     padding: 1rem 0;
 }
 
-body {
-    font-weight: 400;
-    margin: 1rem 5%;
-}
-
-
 
 /*==========HIDDEN MENU============*/
 
@@ -103,7 +128,7 @@ body {
     margin-left: auto; 
     margin-right: auto; 
 
-    height: 40rem;
+    height: 60rem;
     width: 40rem;
     z-index: 3;
     box-shadow: 0px 0px 10px 1px rgb(33 33 33 / 0.7)
@@ -130,7 +155,14 @@ body {
     right: 3rem;
     top: 2.5rem;
 }
-
+.menu-own-lvl {
+    border-bottom: 3px solid var(--text-base-color);
+}
+.menu-own-lvl-progress {
+    margin: -3px 0;
+    width: attr(lvl-progress);
+    border-bottom: 3px solid var(--first-color);
+}
 
 #menu-client-name {
     font-size: 1.5rem;
@@ -182,7 +214,6 @@ body {
     /* grid-gap: .5rem; */
 }
 
-
 .margin {
     color: var(--card-bg-color);
     padding: 1rem;
@@ -201,7 +232,6 @@ body {
 .margin .btn-clear {
     color: var(--card-bg-color);
 }
-
 
 
 #looking-window {
@@ -237,23 +267,38 @@ body {
     font-size: .8rem;
 }
 
-/*==========BACKGROUND============*/
+/*==========SKILLS MENU============*/
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    z-index: -2;
-    background-image: linear-gradient(
-        115deg,
-        #acacacd5,
-        #636363d5
-      ),
-    url(https://www.freevector.com/uploads/vector/preview/27651/Renovation_vector_4.jpg);
-  }
+.add-skill {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1rem;
+    background: var(--first-color);
+    color: inherit;
+
+    border-radius: 50%;
+    cursor: pointer;
+    border: 0;
+}
+.add-skill:hover {
+    background: var(--first-color-hover);
+}
+
+.skill-line {
+    margin: 1rem;
+}
+
+.skill-span {
+    display: flex;
+    justify-content: space-between;
+    width: 4rem;
+    height: 2rem;
+}
 
 
 
@@ -330,7 +375,6 @@ body::before {
 }
 
 
-
 /* ==============LAYOUT============== */
 
 .layout {
@@ -362,7 +406,6 @@ body::before {
 
     z-index: 1;
 }
-
 .layout-warehouse:hover {
     position: fixed;
     transition:
@@ -376,8 +419,6 @@ body::before {
     overflow: auto;
 
 }
-
-
 .warehouse {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
@@ -414,11 +455,6 @@ body::before {
     height: 60rem;
     flex-direction: column;
     overflow: auto;
-}
-
-
-h2 {
-    font-size: 1.5rem;
 }
 
 .side-menu {
@@ -458,24 +494,15 @@ h2 {
     position: relative;
     right: 0;
 }
-
-
-
-
-
-
 .side-menu-title,
 .side-menu-items {
     padding: 1rem;
     border-bottom: 2px solid var(--sec-color-hover);
 }
-
 .side-menu h2,
 .side-menu ul {
     padding: 1rem;
 }
-
-
 .side-menu-services {
     /* border-top: 2px solid #1d3557; */
     display: grid;
@@ -484,15 +511,12 @@ h2 {
     grid-gap: .2rem;
     padding: .5rem 0;
 }
-
 .side-menu-items {
     /* border-top: 2px solid #1d3557; */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     grid-gap: 1rem;
 }
-
-
 .side-menu-buy {
     /* border-top: 2px solid #1d3557; */
     display: flex;
@@ -513,12 +537,7 @@ h2 {
 }
 
 
-
 /* ==============BUTTONS / CARDS============== */
-
-span {
-    color: inherit;
-}
 
 
 .btn, .btn-darkblue {
