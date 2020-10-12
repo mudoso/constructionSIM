@@ -7,7 +7,7 @@ stateGame = {
     "ownCompany": {
         "name": "TERNERO",
         "level": 1,
-        "experience": 734,
+        "experience": 0,
         "money": 20000,
         "skills": {
             "construction": 1,
