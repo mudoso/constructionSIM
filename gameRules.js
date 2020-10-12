@@ -20,8 +20,8 @@
 //======================================================================================//
 
 //DEFINE ALL GLOBAL VARIABLES
-let currentClient = 0
-const deletedModels = []
+var currentClient = 0
+var deletedModels = []
 
 
 //DEFINE ALL GLOBAL PATHS
@@ -84,7 +84,7 @@ function timeRules() {
         verifyAssigned()
     }
 }
-setInterval(timeRules, 1000); //START CLOCK
+setInterval(timeRules, 200); //START CLOCK
 getNewAvailableClients(1)
 
 function getCurrentExperience() {
@@ -244,7 +244,7 @@ function verifyAssigned() {
         for (let constructionSiteStage of targetClient.construction) {
             for (let constructionSiteElement of constructionSiteStage) {
 
-                if (constructionSiteElement.progress < 100) {
+                if (constructionSiteElement.progress <= 100) {
                     const allWorkersAssigned = verifyAssignedWorkers(constructionSiteElement)
                     const allMaterialsAssigned = verifyAssignedMaterials(constructionSiteElement)
 
@@ -286,7 +286,7 @@ function startTask(constructionSiteElement, targetClient) {
 
     if (constructionSiteElement.progress < 100) {
 
-        constructionSiteElement.progress += 1 //PROGRESS RULE
+        constructionSiteElement.progress += 5 //PROGRESS RULE
 
         drawProgressShadowTask(constructionSiteElement)
 
