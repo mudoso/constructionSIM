@@ -10,6 +10,7 @@ import { ColladaLoader } from 'https://unpkg.com/three@0.120.1/examples/jsm/load
 import { OutlineEffect } from 'https://unpkg.com/three@0.120.1/examples/jsm/effects/OutlineEffect.js';
 import Stats from 'https://unpkg.com/three@0.120.1/examples/jsm/libs/stats.module.js';
 
+
 function main() {
 
     //TARGET CANVAS, RENDERER, SCENE AND CAMERA
@@ -142,6 +143,9 @@ function main() {
             }
             createTHREEModel()
 
+            if (!client.THREEsite) return console.log(`LOADING roadSite.dae (${client.name})`);
+            if (!client.THREEmodel) return console.log(`LOADING ${client.constructionType}.dae (${client.name})`);
+
             const sketchUpModels = client.THREEmodel.children[0].children
             for (let construction of sketchUpModels) {
                 //HIDE ALL constructionDone
@@ -159,7 +163,7 @@ function main() {
             client.THREEsite.visible = false
         }
 
-        if (deletedModels.length > -1) {
+        if (deletedModels.length > 0) {
             for (let THREEmodel of deletedModels) {
                 console.log("DELETED", THREEmodel);
                 scene.remove(THREEmodel)
@@ -170,6 +174,8 @@ function main() {
         let noClientsWithTHREEModel = stateGame.clients
             .every(client => { client.THREEmodel == null })
         if (noClientsWithTHREEModel) return effect.render(scene, camera);
+
+        if (!stateGame.clients[currentClient].THREEmodel) return effect.render(scene, camera)
 
         //FIND THREE IN PROGRESS GROUP OF ELEMENTS
         let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children
