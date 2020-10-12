@@ -17,223 +17,224 @@
 </head>
 
 <body>
+    <canvas class="canvas"></canvas>
 
-    <div id="menu-own-company-block">
-        <div class="menu-own-company layout">
+    <main>
+        <nav>
+            <div id="menu-own-company-block">
+                <div class="menu-own-company layout">
 
-            <h2 class="side-menu-title center">COMPANY'S STATS</h2>
-            <div class="grid-row">
+                    <h2 class="side-menu-title center">COMPANY'S STATS</h2>
+                    <div class="grid-row">
 
-                <div class="money-div layout">
-                    <header>OWN MONEY:&nbsp;</header>
-                    <p>$<span class="own-money">0</span></p>
-                </div>
+                        <div class="money-div layout">
+                            <header>OWN MONEY:&nbsp;</header>
+                            <p>$<span class="own-money">0</span></p>
+                        </div>
 
-                <div class="layout">SKILLS:
-                    <ul class="menu-own-company-skills">
+                        <div class="layout">SKILLS:
+                            <ul class="menu-own-company-skills">
 
-                        <li class="skill-line flex-between">
-                            <h3>CONSTRUCTION</h3>
-                            <div class="skill-span">
-                                <p id="skill-CONSTRUCTION">1</p>
-                                <button class="add-skill">+</button>
-                            </div>
-                        </li>
+                                <li class="skill-line flex-between">
+                                    <h3>CONSTRUCTION</h3>
+                                    <div class="skill-span">
+                                        <p id="skill-CONSTRUCTION">1</p>
+                                        <button class="add-skill">+</button>
+                                    </div>
+                                </li>
 
-                        <li class="skill-line flex-between">
-                            <h3>MANAGEMENT</h3>
-                            <div class="skill-span">
-                                <p id="skill-MANAGEMENT">1</p>
-                                <button class="add-skill">+</button>
-                            </div>
-                        </li>
+                                <li class="skill-line flex-between">
+                                    <h3>MANAGEMENT</h3>
+                                    <div class="skill-span">
+                                        <p id="skill-MANAGEMENT">1</p>
+                                        <button class="add-skill">+</button>
+                                    </div>
+                                </li>
 
-                        <li class="skill-line flex-between">
-                            <h3>NETWORKING</h3>
-                            <div class="skill-span">
-                                <p id="skill-NETWORK">1</p>
-                                <button class="add-skill">+</button>
-                            </div>
-                        </li>
+                                <li class="skill-line flex-between">
+                                    <h3>NETWORKING</h3>
+                                    <div class="skill-span">
+                                        <p id="skill-NETWORK">1</p>
+                                        <button class="add-skill">+</button>
+                                    </div>
+                                </li>
 
-                    </ul>
-                </div>
+                            </ul>
+                        </div>
 
-                <div class="layout">CLIENTS:
-                    <ul class="menu-own-company-clients">
-                        <li class="layout btn">
-                            Client 1
-                        </li>
-                        <li class="layout btn">
-                            Client 1
-                        </li>
-                    </ul>
+                        <div class="layout">CLIENTS:
+                            <ul class="menu-own-company-clients">
+                                <li class="layout btn">
+                                    Client 1
+                                </li>
+                                <li class="layout btn">
+                                    Client 1
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-        </div>
-    </div>
-
-    <div id="menu-client-block">
-        <div class="menu-client layout-blueprint">
-            <div class="margin">
-                <h2 class="center"><span id="menu-client-name">CLIENT</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
-                <button id="menu-client-close" class="btn">Close</button>
-            </div>
-
-
-            <div class="grid-row">
-
-                <section class="margin flex-between">
-                    <div class="money-div">
-                        <header>CLIENT BUDGET:&nbsp;</header>
-                        <p class="transfer-money">$<span id="client-money-menu" class="">0</span></p>
+            <div id="menu-client-block">
+                <div class="menu-client layout-blueprint">
+                    <div class="margin">
+                        <h2 class="center"><span id="menu-client-name">CLIENT</span>'S CONSTRUCTION BLUEPRINT STATS</h2>
+                        <button id="menu-client-close" class="btn">Close</button>
                     </div>
-                    <div id="send-money-input" class="send-money">
-                        <input class="form money-div" type="number" name="send-own-money" id="send-own-money" min="0"
-                            max="10000" placeholder="0" step="100" value="0">
-                        <button id="send-money" class="btn">Send Money</button>
-                    </div>
-                </section>
 
 
-                <section class="margin">
-                    <header>MATERIALS NEEDED:</header>
-                    <div id="menu-client-materials">
-                        <!-- <button class="btn">MATERIALS</button> -->
-                    </div>
-                </section>
+                    <div class="grid-row">
 
-                <section id="menu-client-stages">
-                    <ul class="grid-row">
-                        <!-- <li class="layout btn">
+                        <section class="margin flex-between">
+                            <div class="money-div">
+                                <header>CLIENT BUDGET:&nbsp;</header>
+                                <p class="transfer-money">$<span id="client-money-menu" class="">0</span></p>
+                            </div>
+                            <div id="send-money-input" class="send-money">
+                                <input class="form money-div" type="number" name="send-own-money" id="send-own-money"
+                                    min="0" max="10000" placeholder="0" step="100" value="0">
+                                <button id="send-money" class="btn">Send Money</button>
+                            </div>
+                        </section>
+
+
+                        <section class="margin">
+                            <header>MATERIALS NEEDED:</header>
+                            <div id="menu-client-materials">
+                                <!-- <button class="btn">MATERIALS</button> -->
+                            </div>
+                        </section>
+
+                        <section id="menu-client-stages">
+                            <ul class="grid-row">
+                                <!-- <li class="layout btn">
                         TASK 1
                     </li> -->
-                    </ul>
-                </section>
+                            </ul>
+                        </section>
 
 
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        </nav>
 
+        <header class="header">
+            <nav class="layout nav-flex">
+                <div>
+                    <p>COMPANY:</p>
+                    <button id="menu-own-company" class="btn"><span id="own-company-name">NONE</span>'S COMPANY</button>
+                    <div class="money-div">
+                        <header>MONEY:&nbsp;</header>
+                        <p>$<span class="own-money">0</span></p>
+                    </div>
+                    <div class="menu-own-lvl">COMPANY LEVEL: <span>1</span>
+                        <div class="menu-own-lvl-progress"></div>
+                    </div>
+                </div>
 
-    <header class="header">
+                <div id="clock" class="clock">
+                    Day <span id="day">1</span><br>
+                    Time <span id="time">1:00</span>
+                </div>
+            </nav>
 
-        <nav class="layout nav-flex">
-            <div>
-                <p>OWN COMPANY:</p>
-                <button id="menu-own-company" class="btn"><span id="own-company-name">NONE</span>'S COMPANY</button>
+            <nav class="layout">
+                <p>SELECTED CLIENT:</p>
+                <nav class="nav-stats-client">
+                    <button id="btn-clients-left" class="btn"> &#9668;</button>
+                    <button id="btn-clients" class="btn">NONE</button>
+                    <button id="btn-clients-right" class="btn">&#9658;</button>
+                </nav>
+
                 <div class="money-div">
-                    <header>OWN MONEY:&nbsp;</header>
-                    <p>$<span class="own-money">0</span></p>
+                    <header>CLIENT BUDGET:&nbsp;</header>
+                    <p class="transfer-money">$<span class="client-money">0</span></p>
                 </div>
-                <div class="menu-own-lvl">COMPANY LEVEL: <span>1</span>
-                    <div class="menu-own-lvl-progress"></div>
-                </div>
-            </div>
-
-            <div id="clock" class="clock">
-                Day <span id="day">1</span><br>
-                Time <span id="time">1:00</span>
-            </div>
-        </nav>
-
-        <nav class="layout">
-            <p>SELECTED CLIENT:</p>
-            <nav class="nav-stats-client">
-                <button id="btn-clients-left" class="btn"> &#9668;</button>
-                <button id="btn-clients" class="btn">NONE</button>
-                <button id="btn-clients-right" class="btn">&#9658;</button>
             </nav>
 
-            <div class="money-div">
-                <header>CLIENT BUDGET:&nbsp;</header>
-                <p class="transfer-money">$<span class="client-money">0</span></p>
-            </div>
-        </nav>
+            <nav id="looking-window" class="layout">
+                <p>CLIENT:</p>
+                <nav id="looking-for-client" class="looking-for-client">
 
-        <nav id="looking-window" class="layout">
-            <p>CLIENT:</p>
-            <nav id="looking-for-client" class="looking-for-client">
+                    <section class="looking-client">
+                        <button id="btn-clients" class="btn">CLIENT-1</button>
+                        <div>
+                            <input class="form" type="number" name="quantities" id="number" min="0" max=""
+                                placeholder="1" step="1000" value="">
+                            <button id="btn-clients" class="btn">OFFER</button>
+                        </div>
+                    </section>
 
-                <section class="looking-client">
-                    <button id="btn-clients" class="btn">CLIENT-1</button>
-                    <div>
-                        <input class="form" type="number" name="quantities" id="number" min="0" max="" placeholder="1"
-                            step="1000" value="">
-                        <button id="btn-clients" class="btn">OFFER</button>
-                    </div>
-                </section>
+                    <section class="looking-client">
+                        <button id="btn-clients" class="btn">CLIENT-1</button>
+                        <div>
+                            <input class="form" type="number" name="quantities" id="number" min="0" max=""
+                                placeholder="1" step="1000" value="">
+                            <button id="btn-clients" class="btn">OFFER</button>
+                        </div>
+                    </section>
 
-                <section class="looking-client">
-                    <button id="btn-clients" class="btn">CLIENT-1</button>
-                    <div>
-                        <input class="form" type="number" name="quantities" id="number" min="0" max="" placeholder="1"
-                            step="1000" value="">
-                        <button id="btn-clients" class="btn">OFFER</button>
-                    </div>
-                </section>
+                    <section class="looking-client">
+                        <button id="btn-clients" class="btn">CLIENT-1</button>
+                        <div>
+                            <input class="form" type="number" name="quantities" id="number" min="0" max=""
+                                placeholder="1" step="1000" value="">
+                            <button id="btn-clients" class="btn">OFFER</button>
+                        </div>
+                    </section>
 
-                <section class="looking-client">
-                    <button id="btn-clients" class="btn">CLIENT-1</button>
-                    <div>
-                        <input class="form" type="number" name="quantities" id="number" min="0" max="" placeholder="1"
-                            step="1000" value="">
-                        <button id="btn-clients" class="btn">OFFER</button>
-                    </div>
-                </section>
-
+                </nav>
             </nav>
-        </nav>
+        </header>
 
-    </header>
+        <div class="layout-site-construction layout">
+            <h2 class="side-menu-title center">CONSTRUCTION SITE TASKS</h2>
 
-    <div class="layout-site-construction layout">
-        <h2 class="side-menu-title center">CONSTRUCTION SITE TASKS</h2>
+            <div id="cost-per-hour" class="side-menu-services">
+                <!-- <button  class="btn-darkblue"> Total Cost $22/hour</button> -->
+            </div>
+            <p class="center">Workers / Machines (Idle)</p>
 
-        <div id="cost-per-hour" class="side-menu-services">
-            <!-- <button  class="btn-darkblue"> Total Cost $22/hour</button> -->
-        </div>
-        <p class="center">Workers / Machines (Idle)</p>
-
-        <div id="workers-services" class="side-menu-services">
-            <!-- <button class="btn-darkblue"> 3 Worker(s)</button> -->
-        </div>
-        <div id="construction-container">
-        </div>
-    </div>
-
-
-    <div class="layout side-menu">
-
-        <h2 class="side-menu-title center title-move">MARKET / STORE</h2>
-        <div id="store-category" class="side-menu-items">
-            <!-- <button class="btn">Masonry</button> -->
+            <div id="workers-services" class="side-menu-services">
+                <!-- <button class="btn-darkblue"> 3 Worker(s)</button> -->
+            </div>
+            <div id="construction-container">
+            </div>
         </div>
 
-        <ul id="store-buy-items" class="side-menu-buy">
-            <!-- <li>
+
+        <div class="layout side-menu">
+
+            <h2 class="side-menu-title center title-move">MARKET / STORE</h2>
+            <div id="store-category" class="side-menu-items">
+                <!-- <button class="btn">Masonry</button> -->
+            </div>
+
+            <ul id="store-buy-items" class="side-menu-buy">
+                <!-- <li>
                     <header></header>
                     <section><div><input class="form" type="number" name="quantities" id="number" min="0" max="100" placeholder=""></div>
                     <button class="btn">$5</button></section>
                 </li>-->
-        </ul>
+            </ul>
 
-    </div>
-
-    <div class="layout-warehouse layout">
-
-        <h2 id="warehouse-limit" class="side-menu-title center">SITE STORAGE</h2>
-        <div id="warehouse-container" class="warehouse">
-            <button class="btn"></button>
-            <button class="btn"></button>
-            <button class="btn"></button>
         </div>
 
-    </div>
+        <div class="layout-warehouse layout">
 
-    <canvas class="canvas"></canvas>
+            <h2 id="warehouse-limit" class="side-menu-title center">SITE STORAGE</h2>
+            <div id="warehouse-container" class="warehouse">
+                <button class="btn"></button>
+                <button class="btn"></button>
+                <button class="btn"></button>
+            </div>
+
+        </div>
+
+    </main>
 
 </body>
 
