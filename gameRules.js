@@ -84,7 +84,7 @@ function timeRules() {
         verifyAssigned()
     }
 }
-setInterval(timeRules, 200); //START CLOCK
+setInterval(timeRules, 500); //START CLOCK
 getNewAvailableClients(1)
 
 function getCurrentExperience() {
@@ -282,31 +282,19 @@ function verifyAssignedMaterials(constructionSiteElement) {
 }
 
 function startTask(constructionSiteElement, targetClient) {
-    if (constructionSiteElement == undefined) { console.log("ERROR") }
-
     if (constructionSiteElement.progress < 100) {
 
-        constructionSiteElement.progress += 5 //PROGRESS RULE
+        constructionSiteElement.progress += 1 //PROGRESS RULE
 
-        drawProgressShadowTask(constructionSiteElement)
+        drawProgressLoadingTask(constructionSiteElement, targetClient)
 
-        const cardTaskPercentage = document.getElementById(`${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`)
-        if (cardTaskPercentage == undefined || cardTaskPercentage == null) { return }
-        else cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+        const cardId = `${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`
+        const cardTaskPercentage = document.getElementById(cardId)
+
+        if (cardTaskPercentage == null) return console.log('Card not found / or hidden');
+        cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
     }
-    // WHEN TASK REACH 100% UPDATE AND SEND WORKERS BACK TO STORE?
-    if (constructionSiteElement.progress >= 100) {
-        for (let workerAssigned of constructionSiteElement.workersNeeded) {
-            for (let workersOnSite of targetClient.workers) {
-                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
-                    workersOnSite.count += workerAssigned.count
-                    workerAssigned.count = 0
-                    workerAssigned.assigned = false
-                    renderDOM()
-                }
-            }
-        }
-    }
+    handleCompletedTask(constructionSiteElement, targetClient)
 }
 
 
@@ -369,15 +357,28 @@ function completeClientConstruction() {
     renderDOM()
 }
 
-function drawProgressShadowTask(constructionSiteElement) {
-    const cardTask = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}`)
-    const getCurrentWidthCard = getComputedStyle(cardTask).width.split('px').slice(0, -1)[0]
-    const progressWidthCSS = (constructionSiteElement.progress / 100) * getCurrentWidthCard
-    const shadowColor = `rgb(115 170 115 / 20%)`
-
-    cardTask.style.boxShadow = `inset ${progressWidthCSS}px 0 ${shadowColor}`
+function drawProgressLoadingTask(constructionSiteElement, targetClient) {
+    const cardId = `${constructionSiteElement.stage}-${targetClient.name}-${constructionSiteElement.index}-progressLoading`
+    const cardTaskLoadingDiv = document.getElementById(cardId)
+    if (cardTaskLoadingDiv) {
+        cardTaskLoadingDiv.style.width = `${constructionSiteElement.progress}%`
+    }
 }
 
+function handleCompletedTask(constructionSiteElement, targetClient) {
+    if (constructionSiteElement.progress >= 100) {
+        for (let workerAssigned of constructionSiteElement.workersNeeded) {
+            for (let workersOnSite of targetClient.workers) {
+                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
+                    workersOnSite.count += workerAssigned.count
+                    workerAssigned.count = 0
+                    workerAssigned.assigned = false
+                    renderDOM()
+                }
+            }
+        }
+    }
+}
 
 //======================================================================================//
 //END TASKS FUNCTIONS RULES

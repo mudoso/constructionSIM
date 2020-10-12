@@ -660,13 +660,23 @@ input:focus {
 
     border-radius: 5px;
     border: 0;
-    box-shadow: 0 0 20px 5px rgba(122, 122, 122, 0.3);
+    box-shadow: 0 0 15px 1px rgba(122, 122, 122, 1);
 }
 .card:hover {
     box-shadow: 0 0 10px var(--sec-color);
     animation-duration: 1000ms;
 }
 
+.progressLoading{
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 5px;
+
+    height: 100%;
+    /* width: 100%; */
+    background: rgb(20, 30, 60, .3)
+}
 
 .card button{
     position: relative;

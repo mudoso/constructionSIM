@@ -431,17 +431,18 @@ function renderDOM() {
         }
     }
 
-    function renderTaskCard(constructionSiteElement) {
+    function renderTaskCard({ stage, index, progress }) {
         let div = document.createElement('div');
+        const client = stateGame.clients[currentClient].name
         div.innerHTML =
-            `<span id="${constructionSiteElement.stage}-${constructionSiteElement.index}">
-                (${constructionSiteElement.stage})
-            </span>
-            <span id="${constructionSiteElement.stage}-${currentClient}-${constructionSiteElement.index}-progress">
-                ${constructionSiteElement.progress} %
-            </span>
-            <br>`
-        div.setAttribute('id', `${constructionSiteElement.stage}-${constructionSiteElement.index}`);
+            `<div id="${stage}-${client}-${index}-progressLoading" class="progressLoading"
+            style="width: ${progress}%;">
+            </div>
+            <span id="${stage}-${index}">(${stage})</span>
+            <span id="${stage}-${currentClient}-${index}-progress">${progress} %</span>
+            
+            `
+        div.setAttribute('id', `${stage}-${index}`);
         div.setAttribute('class', `card center`);
         constructionContainerDOM.appendChild(div);
     }
