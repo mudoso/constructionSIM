@@ -27,6 +27,7 @@ let currentClient = 0
 //==========NAV STATS PATH=============
 const companyNameDOM = document.getElementById("own-company-name")
 const ownMoneyDOM = document.querySelectorAll(".own-money")
+const ownExperience = document.querySelector(".menu-own-lvl-progress")
 let clientMoneyDOM = document.querySelectorAll(".client-money")
 const timeSpan = document.getElementById('time');
 const dayDom = document.getElementById("day")
@@ -74,6 +75,9 @@ function timeRules() {
     stateGame.clock.minute = min
     stateGame.clock.hour = hour
     stateGame.clock.day = day
+
+    getCurrentExperience()
+
     if (stateGame.clients[currentClient] != null) {
         checkCostPerHour()
         verifyAssigned()
@@ -82,6 +86,11 @@ function timeRules() {
 setInterval(timeRules, 200); //START CLOCK
 getNewAvailableClients(1)
 
+function getCurrentExperience() {
+    const currentExperience = stateGame.ownCompany.experience
+    const showExperience = (currentExperience / 1000) * 100
+    ownExperience.style.width = `${showExperience}%`
+}
 
 function updateNameAndMoneyDOM() {
     companyNameDOM.innerHTML = stateGame.ownCompany.name
@@ -341,6 +350,8 @@ function completeClientConstruction() {
     stateGame.clients[currentClient].money
     stateGame.ownCompany.money += stateGame.clients[currentClient].money
     stateGame.clients[currentClient].money = 0
+
+    stateGame.ownCompany.experience += 200
 
     deletedModels.push(stateGame.clients[currentClient].THREEmodel)
     deletedModels.push(stateGame.clients[currentClient].THREEsite)
