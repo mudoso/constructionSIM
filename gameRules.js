@@ -28,6 +28,7 @@ var deletedModels = []
 //==========NAV STATS PATH=============
 const companyNameDOM = document.getElementById("own-company-name")
 const ownMoneyDOM = document.querySelectorAll(".own-money")
+const ownLevelDOM = document.querySelectorAll(".own-lvl")
 const ownExperience = document.querySelector(".menu-own-lvl-progress")
 let clientMoneyDOM = document.querySelectorAll(".client-money")
 const timeSpan = document.getElementById('time');
@@ -46,15 +47,15 @@ stateGame.clock.day = 1
 
 function timeRules() {
 
-    updateNameAndMoneyDOM()
+    updateOwnCompanyPropDOM()
 
     let min = stateGame.clock.minute
     let hour = stateGame.clock.hour
     let day = stateGame.clock.day
 
-    if (stateGame.clients[currentClient] != null) {
-        clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
-    }
+
+
+    updateClientMoneyDOM()
     dayDom.innerHTML = stateGame.clock.day
 
     min++
@@ -87,15 +88,29 @@ function timeRules() {
 setInterval(timeRules, 500); //START CLOCK
 getNewAvailableClients(1)
 
+function updateClientMoneyDOM() {
+    if (stateGame.clients[currentClient] != null) {
+        clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
+    }
+}
+
 function getCurrentExperience() {
-    const currentExperience = stateGame.ownCompany.experience
+    let currentExperience = stateGame.ownCompany.experience
+    const experienceCap = 1000
+
+    if (currentExperience >= experienceCap) {
+        stateGame.ownCompany.level++
+        stateGame.ownCompany.experience = currentExperience - experienceCap
+        currentExperience = experienceCap
+    }
     const showExperience = (currentExperience / 1000) * 100
     ownExperience.style.width = `${showExperience}%`
 }
 
-function updateNameAndMoneyDOM() {
+function updateOwnCompanyPropDOM() {
     companyNameDOM.innerHTML = stateGame.ownCompany.name
     ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
+    ownLevelDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.level)
 }
 
 function checkCostPerHour() {

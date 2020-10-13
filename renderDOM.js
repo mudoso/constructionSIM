@@ -406,7 +406,9 @@ function renderDOM() {
 
     function renderConstructionTaskCards() {
         constructionContainerDOM.innerHTML = ""
+
         if (stateGame.clients[currentClient] == null) return
+
         for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
             constructionSiteStage.forEach(constructionSiteElement => {
 
