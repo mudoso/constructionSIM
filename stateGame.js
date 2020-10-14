@@ -9,6 +9,7 @@ stateGame = {
         "level": 1,
         "experience": 0,
         "money": 20000,
+        "skillPoints": 0,
         "skills": {
             "construction": 1,
             "management": 1,
