@@ -32,7 +32,11 @@
                             <p>$<span class="own-money">0</span></p>
                         </div>
 
-                        <div class="layout">COMPANY LEVEL: <span class="own-lvl">1</span></div>
+                        <div class="layout">
+                            <div class="menu-own-lvl">COMPANY LEVEL: <span class="own-lvl">1</span>
+                                <div class="menu-own-lvl-progress"></div>
+                            </div>
+                        </div>
 
                         <div class="layout">SKILLS:
                             <ul class="menu-own-company-skills">
@@ -144,10 +148,10 @@
                 </div>
             </nav>
 
-            <nav class="layout">
+            <nav class="layout select-client">
                 <p>SELECTED CLIENT:</p>
                 <nav class="nav-stats-client">
-                    <button id="btn-clients-left" class="btn"> &#9668;</button>
+                    <button id="btn-clients-left" class="btn">&#9668;</button>
                     <button id="btn-clients" class="btn">NONE</button>
                     <button id="btn-clients-right" class="btn">&#9658;</button>
                 </nav>
@@ -156,41 +160,25 @@
                     <header>CLIENT BUDGET:&nbsp;</header>
                     <p class="transfer-money">$<span class="client-money">0</span></p>
                 </div>
-            </nav>
 
-            <nav id="looking-window" class="layout">
-                <p>CLIENT:</p>
-                <nav id="looking-for-client" class="looking-for-client">
+                <nav id="looking-window">
+                    <h3>&#9658; LOOK FOR NEW CLIENTS &#9668; <span class="new-span">(3 NEW)</span></h3>
+                    <nav id="looking-for-client" class="looking-for-client">
 
-                    <section class="looking-client">
-                        <button id="btn-clients" class="btn">CLIENT-1</button>
-                        <div>
-                            <input class="form" type="number" name="quantities" id="number" min="0" max=""
-                                placeholder="1" step="1000" value="">
-                            <button id="btn-clients" class="btn">OFFER</button>
-                        </div>
-                    </section>
+                        <!-- <section class="looking-client">
+                            <button id="btn-clients" class="btn">CLIENT-1</button>
+                            <div>
+                                <input class="form" type="number" name="quantities" id="number" min="0" max=""
+                                    placeholder="1" step="1000" value="">
+                                <button id="btn-clients" class="btn">OFFER</button>
+                            </div>
+                        </section> -->
 
-                    <section class="looking-client">
-                        <button id="btn-clients" class="btn">CLIENT-1</button>
-                        <div>
-                            <input class="form" type="number" name="quantities" id="number" min="0" max=""
-                                placeholder="1" step="1000" value="">
-                            <button id="btn-clients" class="btn">OFFER</button>
-                        </div>
-                    </section>
-
-                    <section class="looking-client">
-                        <button id="btn-clients" class="btn">CLIENT-1</button>
-                        <div>
-                            <input class="form" type="number" name="quantities" id="number" min="0" max=""
-                                placeholder="1" step="1000" value="">
-                            <button id="btn-clients" class="btn">OFFER</button>
-                        </div>
-                    </section>
-
+                    </nav>
                 </nav>
             </nav>
+
+
         </header>
 
         <div class="layout-site-construction layout">
