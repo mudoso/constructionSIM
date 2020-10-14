@@ -163,12 +163,25 @@ function renderDOM() {
         const renderNewClientSelectorDOM = document.getElementById("looking-for-client")
         renderNewClientSelectorDOM.innerHTML = ""
 
-        if (stateGame.lookingForClients == false) {
+        const areAvailableAttempts = stateGame.lookingForClients.lookingAttempts > 0
+        const areAvailableClient = stateGame.lookingForClients.clientList.length > 0
+
+        if (!areAvailableClient) {
             renderNewClientSelectorDOM.innerHTML =
-                `<h3>NO MORE CLIENTS FOUND TODAY</h3>`
+                `<h4>NO MORE CLIENTS FOUND TODAY</h4>`
         }
 
-        for (let client of stateGame.lookingForClients) {
+        if (areAvailableAttempts && !areAvailableClient) {
+            renderNewClientSelectorDOM.innerHTML = ''
+
+            let button = document.createElement('button');
+            button.innerHTML = `LOOK FOR NEW CLIENTS`
+            button.setAttribute('class', "btn");
+            button.onclick = event => { researchNewClients(event.target) }
+            renderNewClientSelectorDOM.appendChild(button);
+        }
+
+        for (let client of stateGame.lookingForClients.clientList) {
             let section = document.createElement('div');
             let btnClass = "btn"
             let attempt = "???"

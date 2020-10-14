@@ -1,8 +1,10 @@
 stateGame = {
     "clock": {
+        "timeScale": 1000,
         "day": 1,
         "hour": 0,
-        "minute": 0
+        "minute": 0,
+        "minuteAccumulated": 0
     },
     "ownCompany": {
         "name": "TERNERO",
@@ -16,11 +18,15 @@ stateGame = {
             "network": 1,
         }
     },
-    "lookingForClients": [
-        // { ...new Client("Jiraya") },
-        // { ...new Client("Marcia") },
-        // { ...new Client("Juliano") },
-    ],
+    "lookingForClients": {
+        "lookingAttempts": 1,
+        "emojiText": '',
+        "clientList": [
+            // { ...new Client("Jiraya") },
+            // { ...new Client("Marcia") },
+            // { ...new Client("Juliano") },
+        ],
+    },
     "clients": [
         // { ...new Client("Jiraya") },
         // { ...new Client("Marcia") },

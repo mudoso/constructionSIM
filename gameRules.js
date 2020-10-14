@@ -17,13 +17,9 @@
 //RESPONSIBLE FOR DEFINE ALL GAME RULES
 //======================================================================================//
 
-//DEFINE ALL GLOBAL VARIABLES
-var currentClient = 0
-var deletedModels = []
-
-
 //DEFINE ALL GLOBAL PATHS
 //==========NAV STATS PATH=============
+const clock = stateGame.clock
 const companyNameDOM = document.getElementById("own-company-name")
 const ownMoneyDOM = document.querySelectorAll(".own-money")
 const ownLevelDOM = document.querySelectorAll(".own-lvl")
@@ -31,56 +27,59 @@ let clientMoneyDOM = document.querySelectorAll(".client-money")
 const timeSpan = document.getElementById('time');
 
 
+//DEFINE ALL GLOBAL VARIABLES
+var currentClient = 0
+var deletedModels = []
+clock.timeScale = 500
+
+
 //======================================================================================//
 //RESPONSIBLE FOR CLOCK RELATED FUNCTIONS
 //======================================================================================//
 
 // SET TIME
-stateGame.clock.minute = 0
-stateGame.clock.hour = 8
-stateGame.clock.day = 1
+clock.minute = 0
+clock.hour = 8
+clock.day = 1
 
 
 function timeRules() {
-    let min = stateGame.clock.minute
-    let hour = stateGame.clock.hour
-    let day = stateGame.clock.day
+    let minAcc = clock.minuteAccumulated
+    let min = clock.minute
+    let hour = clock.hour
+    let day = clock.day
     const dayDom = document.getElementById("day")
 
-    dayDom.innerHTML = stateGame.clock.day
+    dayDom.innerHTML = clock.day
 
     updateOwnCompanyPropDOM()
     updateClientMoneyDOM()
-
-    function updateNumberOfNewClientsDOM() {
-        const numberNewOfClientsDOM = document.querySelector(".new-span")
-        const availableNewClients = stateGame.lookingForClients.length
-        if (availableNewClients < 1) {
-            return numberNewOfClientsDOM.innerHTML = ''
-        }
-        numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
-    }
     updateNumberOfNewClientsDOM()
 
     min++
+    minAcc++
+    const minuteCycle = min >= 60
+    const dayCycle = hour >= 16
 
-    if (min >= 60) { //SET END OF AN HOUR
+    if (minuteCycle) { //SET END OF AN HOUR
         min = 0
         hour++
     }
-    if (hour == 16) { //SET END OF WORK HOUR
+    if (dayCycle) { //SET END OF WORK HOUR
         hour = 8
         day++
-        getNewAvailableClients()
+
+        getNewAvailableClients(0)
+        getNewLookingAttempts()
         renderDOM()
     }
     let min00 = ('0' + min).slice(-2)
-    // let date = new Date();
-    // let h = date.getHours();
+
     timeSpan.textContent = `${hour}:${min00}`
-    stateGame.clock.minute = min
-    stateGame.clock.hour = hour
-    stateGame.clock.day = day
+    clock.minute = min
+    clock.hour = hour
+    clock.day = day
+    clock.minuteAccumulated = minAcc
 
     getCurrentExperience()
 
@@ -89,9 +88,87 @@ function timeRules() {
         verifyAssigned()
     }
 }
-setInterval(timeRules, 500); //START CLOCK
-getNewAvailableClients(1)
+let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
+// getNewAvailableClients(1)
 
+function changeTimeSpeed(timeScale = 0) {
+    clock.timeScale = timeScale
+    clearInterval(timeClockRules)
+    if (timeScale > 0) {
+        timeClockRules = setInterval(timeRules, clock.timeScale);
+    }
+}
+
+function researchNewClients(targetHTML) {
+    if (clock.timeScale <= 0) return
+
+    const reticenceCounter = drawReticence(targetHTML)
+
+    const skillValue = stateGame.ownCompany.skills.network
+    const researchTime = clock.minuteAccumulated + (60 - skillValue * 2)
+
+    const researchNewClients = setInterval(() => {
+        if (clock.minuteAccumulated < researchTime) return
+
+        const hasSomeClient = stateGame.clients.length > 0
+        const SkillDelta = Math.floor(120 * skillValue / 10)
+        const remainingTime = clock.minuteAccumulated + 60 + SkillDelta
+
+        stateGame.lookingForClients.lookingAttempts--
+        stateGame.lookingForClients.emojiText = ''
+        hasSomeClient
+            ? getNewAvailableClients()
+            : getNewAvailableClients(1)
+        clearNewClientsList(remainingTime)
+        renderDOM()
+
+        clearInterval(reticenceCounter)
+        clearInterval(researchNewClients)
+    }, 500)
+}
+
+function drawReticence(targetHTML) {
+    targetHTML.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
+    targetHTML.onclick = false
+
+    // const numberNewOfClientsDOM = document.querySelector(".new-span")
+    // const emoji = stateGame.lookingForClients.emojiText = `(🔍...)`
+    // numberNewOfClientsDOM.innerHTML = emoji
+
+    let reticence = '...'
+
+    return setInterval(() => {
+        reticence = reticence + '.'
+        if (reticence.length > 3) reticence = ''
+        stateGame.lookingForClients.emojiText = `(🔍${reticence})`
+    }, 500);
+}
+
+function getNewLookingAttempts() {
+    const relatedSkill = stateGame.ownCompany.skills.network
+    const skillDelta = Math.floor(relatedSkill / 3)
+    stateGame.lookingForClients.lookingAttempts = 1 + skillDelta
+}
+
+function clearNewClientsList(remainingTime) {
+    const clearNewClients = setInterval(() => {
+        if (clock.minuteAccumulated < remainingTime) return
+        getNewAvailableClients(0)
+        renderDOM()
+        clearInterval(clearNewClients)
+    }, 500);
+}
+
+function updateNumberOfNewClientsDOM() {
+    const numberNewOfClientsDOM = document.querySelector(".new-span")
+    const availableNewClients = stateGame.lookingForClients.clientList.length
+    const emojiText = stateGame.lookingForClients.emojiText
+
+    if (availableNewClients < 1) {
+        return numberNewOfClientsDOM.innerHTML = `${emojiText}`
+    }
+    numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
+}
 
 function updateClientMoneyDOM() {
     if (stateGame.clients[currentClient] != null) {
@@ -142,7 +219,7 @@ function checkCostPerHour() {
                     workersOnSite.timer++
                     targetClient.costPerHour += costPerHourPerType
 
-                    const workerCompletedHourCycle = workersOnSite.timer >= 60 || stateGame.clock.hour == 16
+                    const workerCompletedHourCycle = workersOnSite.timer >= 60 || clock.hour == 16
 
                     if (workerCompletedHourCycle) {
                         workersOnSite.timer = 0
@@ -223,24 +300,25 @@ function randomNumberInteger(min = 0, max = 0) {
 
 
 function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
-    stateGame.lookingForClients = []
+    stateGame.lookingForClients.clientList = []
 
-    getNewClientList(numberOfClients).forEach(clientName => stateGame.lookingForClients
+    getNewClientList(numberOfClients).forEach(clientName => stateGame.lookingForClients.clientList
         .push(new Client(clientName)))
 
 
     function getNewClientList(numberOfClients) {
-        const newClientsList = Array(numberOfClients).fill().map(() => {
-            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
-            return clientNames[randomIndex]
-        })
+        const newClientsList = Array(numberOfClients).fill()
+            .map(() => {
+                const randomIndex = randomNumberInteger(0, clientNames.length - 1)
+                return clientNames[randomIndex]
+            })
         return newClientsList
     }
 }
 
 
 function newClientSelectorBudgetOffer(client, inputOfferClient) {
-    const index = stateGame.lookingForClients.indexOf(client)
+    const index = stateGame.lookingForClients.clientList.indexOf(client)
     const ownCompanyLevelDelta = (Math.random() * stateGame.ownCompany.level / 10) + 1
     const maxClientBudget = client.money * ownCompanyLevelDelta
     const minClientBudget = client.money * 0.5
@@ -249,12 +327,12 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
     if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
         client.attempt -= 1
 
-        if (client.attempt <= 0) stateGame.lookingForClients.splice(index, 1)
+        if (client.attempt <= 0) stateGame.lookingForClients.clientList.splice(index, 1)
         return renderDOM()
     }
     client.money = parseInt(inputOfferClient.value)
     stateGame.clients.unshift(client)
-    stateGame.lookingForClients.splice(index, 1);
+    stateGame.lookingForClients.clientList.splice(index, 1);
     renderDOM()
 }
 
