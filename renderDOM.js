@@ -73,11 +73,21 @@ function renderDOM() {
     function renderOwnCompanyMenuClients() {
         menuOwnClients.innerHTML = ""
         for (let clients of stateGame.clients) {
-            let button = document.createElement('li');
-            button.innerHTML = clients.name
-            button.setAttribute('id', clients.name);
-            button.setAttribute('class', "btn");
-            button.onclick = () => { };
+            const stageItemsProgressList = clients.construction
+                .map(stage => stage.map(itemStage => itemStage.progress))
+                .flat()
+
+            const completedTasks = stageItemsProgressList
+                .filter(progress => progress >= 100)
+            const taskProgression = `${completedTasks.length}✔️/${stageItemsProgressList.length}`
+            const taskPercentage = Math.floor(completedTasks.length / stageItemsProgressList.length * 1000) / 10
+
+            let button = document.createElement('button')
+            button.innerHTML = `<div>${clients.name}</div><div>${taskProgression} Completed Tasks   (${taskPercentage}%)</div>`
+            button.setAttribute('id', clients.name)
+            button.setAttribute('class', "flex-between btn")
+            button.setAttribute('style', "display: flex")
+            button.onclick = () => { }
             menuOwnClients.appendChild(button);
         }
     }
@@ -87,12 +97,19 @@ function renderDOM() {
         const companySkills = Object.entries(stateGame.ownCompany.skills)
 
         for (const [skill, value] of companySkills) {
+
+            const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
+            let addSkillButton = ''
+            if (isSkillPointAvailable) {
+                addSkillButton = `<button class="add-skill">+</button>`
+            }
+
             let li = document.createElement('li');
             li.innerHTML =
                 `<h3>${skill.toUpperCase()}</h3>
                 <div class="skill-span">
                     <p id="skill-${skill}">${value}</p>
-                    <button class="add-skill">+</button>
+                    ${addSkillButton}
                 </div>`
             li.setAttribute('class', "skill-line flex-between");
             menuOwnSkills.appendChild(li);
