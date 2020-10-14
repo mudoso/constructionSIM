@@ -256,7 +256,7 @@ body::before {
     border-radius: 3px;
 }
 .looking-for-client section {
-    margin-bottom: .7rem;
+    margin-top: .7rem;
 }
 .looking-for-client button {
     width: 100%;
@@ -580,7 +580,6 @@ body::before {
 input:focus {
     box-shadow: 0 0 5px var(--sec-color);
 }
-
 
 
 .btn-sendback {
