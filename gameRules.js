@@ -3,8 +3,6 @@
 // ADDED A FRONT PAGE TO INPUT COMPANY NAME, START NEW GAME OR LOAD GAME
 // MAKE A SAVE SYSTEM TO LocalStorage
 // MAKE A HELP TOOLTIP TO SHOW INFORMATION ABOUT THE COMPONENTS
-// A SKILLS SET IN THE COMPANY STATS
-// SKILLS [Network, Construction, Management]
 // MAKES SKILLS IMPACT IN THE GAME
 // CHANGE TASK PROGRESS FORMULA TO WORK IN ACCORD WITH SKILLS AND DIFFICULT OF THE TASK
 // getNewAvailableClients() SHOW "NO CLIENT WHEN THERE IS NO CLIENT IN THAT DAY"
@@ -29,10 +27,8 @@ var deletedModels = []
 const companyNameDOM = document.getElementById("own-company-name")
 const ownMoneyDOM = document.querySelectorAll(".own-money")
 const ownLevelDOM = document.querySelectorAll(".own-lvl")
-const ownExperience = document.querySelector(".menu-own-lvl-progress")
 let clientMoneyDOM = document.querySelectorAll(".client-money")
 const timeSpan = document.getElementById('time');
-const dayDom = document.getElementById("day")
 
 
 //======================================================================================//
@@ -46,17 +42,25 @@ stateGame.clock.day = 1
 
 
 function timeRules() {
-
-    updateOwnCompanyPropDOM()
-
     let min = stateGame.clock.minute
     let hour = stateGame.clock.hour
     let day = stateGame.clock.day
+    const dayDom = document.getElementById("day")
 
-
-
-    updateClientMoneyDOM()
     dayDom.innerHTML = stateGame.clock.day
+
+    updateOwnCompanyPropDOM()
+    updateClientMoneyDOM()
+
+    function updateNumberOfNewClientsDOM() {
+        const numberNewOfClientsDOM = document.querySelector(".new-span")
+        const availableNewClients = stateGame.lookingForClients.length
+        if (availableNewClients < 1) {
+            return numberNewOfClientsDOM.innerHTML = ''
+        }
+        numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
+    }
+    updateNumberOfNewClientsDOM()
 
     min++
 
@@ -88,6 +92,7 @@ function timeRules() {
 setInterval(timeRules, 500); //START CLOCK
 getNewAvailableClients(1)
 
+
 function updateClientMoneyDOM() {
     if (stateGame.clients[currentClient] != null) {
         clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
@@ -95,16 +100,21 @@ function updateClientMoneyDOM() {
 }
 
 function getCurrentExperience() {
+    const ownExperience = document.querySelectorAll(".menu-own-lvl-progress")
+
     let currentExperience = stateGame.ownCompany.experience
     const experienceCap = 1000
 
     if (currentExperience >= experienceCap) {
         stateGame.ownCompany.level++
+        stateGame.ownCompany.skillPoints++
         stateGame.ownCompany.experience = currentExperience - experienceCap
         currentExperience = experienceCap
     }
     const showExperience = (currentExperience / 1000) * 100
-    ownExperience.style.width = `${showExperience}%`
+
+    ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
+    // ownExperience.style.width = `${showExperience}%`
 }
 
 function updateOwnCompanyPropDOM() {
