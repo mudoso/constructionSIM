@@ -652,6 +652,16 @@ input:focus {
 }
 
 
+.btn-focus {
+    animation: none ;
+    /* animation: 1.5s ease-in 1.5s infinite focus ; */
+}
+
+@keyframes focus {
+    0% { }
+    50% { box-shadow: 0 0 .2rem .5rem var(--card-bg-color); }
+    100% { }
+}
 
 .card {
     position: relative;
