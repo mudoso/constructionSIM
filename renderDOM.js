@@ -79,7 +79,7 @@ function renderDOM() {
 
             const completedTasks = stageItemsProgressList
                 .filter(progress => progress >= 100)
-            const taskProgression = `${completedTasks.length}✔️/${stageItemsProgressList.length}`
+            const taskProgression = `${completedTasks.length}/${stageItemsProgressList.length}✔️`
             const taskPercentage = Math.floor(completedTasks.length / stageItemsProgressList.length * 1000) / 10
 
             let button = document.createElement('button')
@@ -97,24 +97,48 @@ function renderDOM() {
         const companySkills = Object.entries(stateGame.ownCompany.skills)
 
         for (const [skill, value] of companySkills) {
-
-            const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
-            let addSkillButton = ''
-            if (isSkillPointAvailable) {
-                addSkillButton = `<button class="add-skill">+</button>`
-            }
-
             let li = document.createElement('li');
             li.innerHTML =
                 `<h3>${skill.toUpperCase()}</h3>
-                <div class="skill-span">
-                    <p id="skill-${skill}">${value}</p>
-                    ${addSkillButton}
+                <div id="skill-div-${skill}" class="skill-span">
+                    <h3 id="skill-${skill}">${value}</h3>
                 </div>`
-            li.setAttribute('class', "skill-line flex-between");
-            menuOwnSkills.appendChild(li);
+            li.setAttribute('class', "skill-line flex-between")
+            menuOwnSkills.appendChild(li)
+
+            const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
+
+            addSkillButton(skill, isSkillPointAvailable)
+
+            // function displaySkillPoint(isSkillPointAvailable) {
+            //     if (isSkillPointAvailable) {
+            //         const addSkillButton = document.querySelectorAll(`.add-skill`)
+            //         addSkillButton.forEach(button => button.style.display = 'block')
+            //     }
+            // }
+            // displaySkillPoint(isSkillPointAvailable)
         }
     }
+
+    function addSkillButton(skill, isSkillPointAvailable) {
+        const skillLI = document.querySelector(`#skill-div-${skill}`)
+
+        let button = document.createElement('button')
+        button.innerHTML = "+"
+        button.setAttribute('class', 'add-skill')
+        button.setAttribute('style', "display: none")
+        button.onclick = event =>
+            addSkillPoint(event.path[2].children[0].innerText, isSkillPointAvailable)
+        skillLI.appendChild(button)
+    }
+
+    // function addSkillPoint(skillName, isSkillPointAvailable) {
+    //     if (isSkillPointAvailable) {
+    //         stateGame.ownCompany.skillPoints--
+    //         stateGame.ownCompany.skills[skillName.toLowerCase()]++
+    //         renderDOM()
+    //     }
+    // }
 
     function renderClientSelectorMenu() {
 

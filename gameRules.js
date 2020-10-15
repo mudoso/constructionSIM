@@ -30,7 +30,7 @@ const timeSpan = document.getElementById('time');
 //DEFINE ALL GLOBAL VARIABLES
 var currentClient = 0
 var deletedModels = []
-clock.timeScale = 500
+clock.timeScale = 200
 
 
 //======================================================================================//
@@ -52,9 +52,9 @@ function timeRules() {
 
     dayDom.innerHTML = clock.day
 
-    updateOwnCompanyPropDOM()
-    updateClientMoneyDOM()
-    updateNumberOfNewClientsDOM()
+    // updateOwnCompanyPropDOM()
+    // updateClientMoneyDOM()
+    // updateNumberOfNewClientsDOM()
 
     min++
     minAcc++
@@ -81,15 +81,34 @@ function timeRules() {
     clock.day = day
     clock.minuteAccumulated = minAcc
 
+    // getCurrentExperience()
+    // getCurrentSkillPoints()
+    // displaySkillPoint()
+
+    // if (stateGame.clients[currentClient] != null) {
+    //     checkCostPerHour()
+    //     verifyAssigned()
+    // }
+}
+let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
+
+function listenerFunctions() {
+
+    updateOwnCompanyPropDOM()
+    updateClientMoneyDOM()
+    updateNumberOfNewClientsDOM()
+
     getCurrentExperience()
+    getCurrentSkillPoints()
+    displaySkillPoint()
 
     if (stateGame.clients[currentClient] != null) {
         checkCostPerHour()
         verifyAssigned()
     }
 }
-let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
-// getNewAvailableClients(1)
+setInterval(listenerFunctions, 500)
+
 
 function changeTimeSpeed(timeScale = 0) {
     clock.timeScale = timeScale
@@ -176,9 +195,38 @@ function updateClientMoneyDOM() {
     }
 }
 
-function getCurrentExperience() {
+function getCurrentSkillPoints() {
+    const skillPointsDOM = document.querySelector("#skill-points")
+    skillPointsDOM.innerHTML = stateGame.ownCompany.skillPoints
+}
+
+function displaySkillPoint() {
+    const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
+    const addSkillButton = document.querySelectorAll(`.add-skill`)
+
+    isSkillPointAvailable
+        ? addSkillButton.forEach(button => button.style.display = 'block')
+        : addSkillButton.forEach(button => button.style.display = 'none')
+}
+
+function addSkillPoint(skillName) {
+    const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
+
+    console.log("addSkillPoint -> skillName", skillName)
+    console.log("addSkillPoint -> isSkillPointAvailable", isSkillPointAvailable)
+    if (isSkillPointAvailable) {
+        stateGame.ownCompany.skillPoints--
+        stateGame.ownCompany.skills[skillName.toLowerCase()]++
+
+        displaySkillPoint()
+        renderDOM()
+    }
+}
+
+function getCurrentExperience(addExperience = 0) {
     const ownExperience = document.querySelectorAll(".menu-own-lvl-progress")
 
+    stateGame.ownCompany.experience += addExperience
     let currentExperience = stateGame.ownCompany.experience
     const experienceCap = 1000
 
@@ -191,8 +239,9 @@ function getCurrentExperience() {
     const showExperience = (currentExperience / 1000) * 100
 
     ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
-    // ownExperience.style.width = `${showExperience}%`
 }
+
+
 
 function updateOwnCompanyPropDOM() {
     companyNameDOM.innerHTML = stateGame.ownCompany.name
@@ -304,16 +353,14 @@ function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
 
     getNewClientList(numberOfClients).forEach(clientName => stateGame.lookingForClients.clientList
         .push(new Client(clientName)))
+}
 
-
-    function getNewClientList(numberOfClients) {
-        const newClientsList = Array(numberOfClients).fill()
-            .map(() => {
-                const randomIndex = randomNumberInteger(0, clientNames.length - 1)
-                return clientNames[randomIndex]
-            })
-        return newClientsList
-    }
+function getNewClientList(numberOfClients) {
+    return Array(numberOfClients).fill()
+        .map(() => {
+            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
+            return clientNames[randomIndex]
+        })
 }
 
 
@@ -450,7 +497,7 @@ function completeClientConstruction() {
     stateGame.ownCompany.money += stateGame.clients[currentClient].money
     stateGame.clients[currentClient].money = 0
 
-    stateGame.ownCompany.experience += 200
+    getCurrentExperience(200)
 
     deletedModels.push(stateGame.clients[currentClient].THREEmodel)
     deletedModels.push(stateGame.clients[currentClient].THREEsite)
