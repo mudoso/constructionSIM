@@ -596,6 +596,7 @@ input:focus {
 
 
 .btn-sendback {
+    z-index: 2;
     background: var(--ter-color);
     color: var(--card-bg-color);
 }
@@ -608,6 +609,7 @@ input:focus {
     margin-top: -1px;
     margin-left: 1rem;
     content: attr(btn-sudocontent);
+    z-index: 2;
 
     transform: scale(0);
     transition:
@@ -625,7 +627,6 @@ input:focus {
 }
 .btn-sendback:hover:active::after {
     position: absolute;
-
 }
 
 
