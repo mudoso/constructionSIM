@@ -31,7 +31,7 @@ const speedPlayBtn = document.querySelector('#speed-btn')
 
 
 const rendererDOM = {
-    all: () => {
+    all() {
         rendererDOM.money()
         rendererDOM.clientSelectorMenu()
         rendererDOM.newClientSelector()
@@ -47,20 +47,35 @@ const rendererDOM = {
         rendererDOM.constructionTaskCards()
     },
 
-    money: () => {
-        ownMoneyDOM.innerHTML = stateGame.ownCompany.money
-        clientMoneyDOM.innerHTML = 0
-        if (stateGame.clients[currentClient] == null) {
-            return clientMoneyDOM.innerHTML = 0
-        }
-        clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
+    companyStats() {
+        companyNameDOM.innerHTML = stateGame.ownCompany.name
+        ownLevelDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.level)
     },
+
+    money() {
+        const hasClientSelected = stateGame.clients[currentClient]
+
+        ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
+        clientMoneyDOM.innerHTML = 0
+
+        !hasClientSelected
+            ? clientMoneyDOM.innerHTML = 0
+            : clientMoneyDOM.forEach(DOM =>
+                DOM.innerHTML = stateGame.clients[currentClient].money)
+    },
+
+    // updateClientMoneyDOM() {
+    //     if (stateGame.clients[currentClient] != null) {
+    //         clientMoneyDOM.forEach(DOM =>
+    //             DOM.innerHTML = stateGame.clients[currentClient].money)
+    //     }
+    // },
 
 
     //COMPANY MENU
     //======================================================================================//
 
-    ownCompanyMenuClients: () => {
+    ownCompanyMenuClients() {
         menuOwnClients.innerHTML = ""
         for (let clients of stateGame.clients) {
             const stageItemsProgressList = clients.construction
@@ -82,7 +97,7 @@ const rendererDOM = {
         }
     },
 
-    ownCompanySkills: () => {
+    ownCompanySkills() {
         menuOwnSkills.innerHTML = ""
         const companySkills = Object.entries(stateGame.ownCompany.skills)
 
@@ -103,7 +118,7 @@ const rendererDOM = {
         rendererDOM.updateCurrentSkillPoints()
     },
 
-    addSkillButton: (skill, isSkillPointAvailable) => {
+    addSkillButton(skill, isSkillPointAvailable) {
         const skillLI = document.querySelector(`#skill-div-${skill}`)
         const display = isSkillPointAvailable ? 'block' : 'none'
 
@@ -116,7 +131,7 @@ const rendererDOM = {
         skillLI.appendChild(button)
     },
 
-    displaySkillBtn: () => {
+    displaySkillBtn() {
         const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
         const addSkillButton = document.querySelectorAll(`.add-skill`)
 
@@ -127,12 +142,12 @@ const rendererDOM = {
         rendererDOM.displayAvailableSkillPoints()
     },
 
-    displayAvailableSkillPoints: () => {
+    displayAvailableSkillPoints() {
         const skillPointsDOM = document.querySelector("#skill-points")
         skillPointsDOM.innerHTML = stateGame.ownCompany.skillPoints
     },
 
-    updateCurrentSkillPoints: () => {
+    updateCurrentSkillPoints() {
         const companySkills = Object.entries(stateGame.ownCompany.skills)
 
         for (const [skill, value] of companySkills) {
@@ -141,7 +156,7 @@ const rendererDOM = {
         }
     },
 
-    addListenerToSpeedPanel: () => {
+    addListenerToSpeedPanel() {
         speedPauseBtn.onclick = () => stopTime(speedPlayBtn)
         speedPlayBtn.onclick = () => speedTime(speedPlayBtn)
     },
@@ -150,7 +165,7 @@ const rendererDOM = {
     //CLIENT MENU
     //======================================================================================//
 
-    clientSelectorMenu: () => {
+    clientSelectorMenu() {
         if (stateGame.clients[currentClient] == null) {
             clientSelectedButtonDOM.onclick = () => { };
             return clientSelectedButtonDOM.innerHTML = "NONE"
@@ -161,7 +176,7 @@ const rendererDOM = {
         clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn(menuClientBackgroundBlock) };
     },
 
-    selectClientRight: () => {
+    selectClientRight() {
         currentClient++
         if (stateGame.clients[currentClient] != null) return rendererDOM.all()
 
@@ -170,7 +185,7 @@ const rendererDOM = {
 
     },
 
-    selectClientLeft: () => {
+    selectClientLeft() {
         currentClient--
         if (stateGame.clients[currentClient] != null) return rendererDOM.all()
 
@@ -186,7 +201,7 @@ const rendererDOM = {
     //CLIENT SEARCH
     //======================================================================================//
 
-    newClientSelector: () => {
+    newClientSelector() {
         const newClientSelectorDOM = document.getElementById("looking-for-client")
         newClientSelectorDOM.innerHTML = ""
 
@@ -204,7 +219,7 @@ const rendererDOM = {
         rendererDOM.newClientsList(newClientSelectorDOM)
     },
 
-    searchNewClientsBtn: (newClientSelectorDOM) => {
+    searchNewClientsBtn(newClientSelectorDOM) {
         newClientSelectorDOM.innerHTML = ''
 
         let button = document.createElement('button');
@@ -214,7 +229,7 @@ const rendererDOM = {
         newClientSelectorDOM.appendChild(button);
     },
 
-    newClientsList: (newClientSelectorDOM) => {
+    newClientsList(newClientSelectorDOM) {
         for (let client of stateGame.lookingForClients.clientList) {
             let div = document.createElement('div');
             let btnClass = "btn"
@@ -253,7 +268,7 @@ const rendererDOM = {
         }
     },
 
-    menuClient: (targetClientIsTrue) => {
+    menuClient(targetClientIsTrue) {
         menuClientStages.innerHTML = ""
         menuClientMaterialsNeeded.innerHTML = ""
         menuClientSendMoneyInput.innerHTML = ""
@@ -278,7 +293,7 @@ const rendererDOM = {
         rendererDOM.addMaterialsNeededToArray(clientSelected)
     },
 
-    addMaterialsNeededToArray: (clientSelected) => {
+    addMaterialsNeededToArray(clientSelected) {
         const menuMaterialsArray = []
 
         for (let constructionSiteStage of clientSelected.construction) {
@@ -315,7 +330,7 @@ const rendererDOM = {
         rendererDOM.menuClientMaterialsNeeded(menuMaterialsArray)
     },
 
-    menuClientMaterialsNeeded: (menuMaterialsArray) => {
+    menuClientMaterialsNeeded(menuMaterialsArray) {
         //UPDATE REMAINING NEEDED MATERIALS IN CLIENT MENU
         for (let materialArray of menuMaterialsArray) {
             let button = document.createElement('button');
@@ -325,7 +340,7 @@ const rendererDOM = {
         }
     },
 
-    sendMoneyInput: () => {
+    sendMoneyInput() {
         menuClientSendMoneyInput.innerHTML = `
                 <input class="form money-div" type="number" name="send-own-money" id="send-own-money" 
                 min="0"
@@ -342,7 +357,7 @@ const rendererDOM = {
     //WAREHOUSE (SITE STORAGE)
     //======================================================================================//
 
-    warehouseBtn: () => {
+    warehouseBtn() {
         warehouseContainerDOM.innerHTML = ""
         if (stateGame.clients[currentClient] == null) return
         stateGame.clients[currentClient].warehouse.forEach(itemStored => {
@@ -361,12 +376,12 @@ const rendererDOM = {
         })
     },
 
-    warehouseLimit: () => {
+    warehouseLimit() {
         if (stateGame.clients[currentClient] == null) return warehouseLimitDOM.innerHTML = `SITE STORAGE`
         warehouseLimitDOM.innerHTML = `SITE STORAGE (${rendererDOM.warehouseDisplayLimit()})`
     },
 
-    warehouseDisplayLimit: () => {
+    warehouseDisplayLimit() {
         if (stateGame.clients[currentClient] == null) return
         const volumeStored = stateGame.clients[currentClient].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
@@ -383,7 +398,7 @@ const rendererDOM = {
     //STORE
     //======================================================================================//
 
-    categoryStoreBtn: () => {
+    categoryStoreBtn() {
         storeCategoryContainerDOM.innerHTML = ""
         for (let categoryItem of store) {
             let button = document.createElement('button');
@@ -398,7 +413,7 @@ const rendererDOM = {
         }
     },
 
-    itemList: (categoryItem) => {
+    itemList(categoryItem) {
         storeBuyContainerDOM.innerHTML = ""
         categoryItem.stock.forEach(item => {
             //DRAW </li> FIRST
@@ -430,7 +445,7 @@ const rendererDOM = {
         })
     },
 
-    workersAndServicesBtn: () => {
+    workersAndServicesBtn() {
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
         if (stateGame.clients[currentClient] == null) return
@@ -449,7 +464,7 @@ const rendererDOM = {
         }
     },
 
-    costPerHourBtn: () => {
+    costPerHourBtn() {
         costPerHourDOM.innerHTML = ""
         if (stateGame.clients[currentClient] == null) return
         let button = document.createElement('button');
@@ -461,10 +476,15 @@ const rendererDOM = {
         costPerHourDOM.appendChild(button);
     },
 
+    costPerHourValue() {
+        const costPerHourValueDOM = document.getElementById("costperhour-value")
+        costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
+    },
+
     //TASK CARDS
     //======================================================================================//
 
-    constructionTaskCards: () => {
+    constructionTaskCards() {
         constructionContainerDOM.innerHTML = ""
 
         if (stateGame.clients[currentClient] == null) return
@@ -493,7 +513,7 @@ const rendererDOM = {
         }
     },
 
-    taskCard: ({ stage, index, progress }) => {
+    taskCard({ stage, index, progress }) {
         let div = document.createElement('div');
         const client = stateGame.clients[currentClient].name
         div.innerHTML =
@@ -507,7 +527,7 @@ const rendererDOM = {
         constructionContainerDOM.appendChild(div);
     },
 
-    workersOrServicesBtn: (constructionSiteElement) => {
+    workersOrServicesBtn(constructionSiteElement) {
         if (constructionSiteElement.workersNeeded) {
             constructionSiteElement.workersNeeded.forEach(workersNeeded => {
                 const button = document.createElement('button');
@@ -535,7 +555,7 @@ const rendererDOM = {
         }
     },
 
-    materialsBtn: (constructionSiteElement) => {
+    materialsBtn(constructionSiteElement) {
         if (constructionSiteElement.materialNeeded) {
             constructionSiteElement.materialNeeded.forEach(materialNeeded => {
                 let button = document.createElement('button');
@@ -558,7 +578,7 @@ const rendererDOM = {
         }
     },
 
-    finishClientCard: () => {
+    finishClientCard() {
         let div = document.createElement('div');
         div.innerHTML = `${stateGame.clients[currentClient].name.toUpperCase()}'s CONSTRUCTION COMPLETED`
         div.setAttribute('id', `${stateGame.clients[currentClient]}-completed`);
@@ -574,7 +594,7 @@ const rendererDOM = {
         buttonWorkersNeeded.appendChild(button);
     },
 
-    handleDisplayOwnMenu: () => {
+    handleDisplayOwnMenu() {
         const menuOwnCompanyButton = document.getElementById('menu-own-company');
         const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
 
@@ -592,7 +612,7 @@ const rendererDOM = {
         menuOwnCompanyButtonOut.style.display = "block"
     },
 
-    handleDisplayClientMenu: () => {
+    handleDisplayClientMenu() {
         menuClientBackgroundBlock.addEventListener('click', event => {
             const closeTarget = event.target.id
             if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
