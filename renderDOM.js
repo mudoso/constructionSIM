@@ -26,7 +26,8 @@ const warehouseContainerDOM = document.getElementById('warehouse-container')
 const warehouseLimitDOM = document.getElementById('warehouse-limit')
 const workersAndServicesContainerDOM = document.getElementById('workers-services')
 const constructionContainerDOM = document.getElementById('construction-container')
-
+const speedPauseBtn = document.querySelector('#pause-btn')
+const speedPlayBtn = document.querySelector('#speed-btn')
 
 function renderDOM() {
 
@@ -49,6 +50,8 @@ function renderDOM() {
     renderOwnCompanyMenuClients()
 
     renderOwnCompanyMenuSkills()
+
+    addListenerToSpeedPanel()
 
     renderMenuClient()
 
@@ -109,14 +112,6 @@ function renderDOM() {
             const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
 
             addSkillButton(skill, isSkillPointAvailable)
-
-            // function displaySkillPoint(isSkillPointAvailable) {
-            //     if (isSkillPointAvailable) {
-            //         const addSkillButton = document.querySelectorAll(`.add-skill`)
-            //         addSkillButton.forEach(button => button.style.display = 'block')
-            //     }
-            // }
-            // displaySkillPoint(isSkillPointAvailable)
         }
     }
 
@@ -132,13 +127,10 @@ function renderDOM() {
         skillLI.appendChild(button)
     }
 
-    // function addSkillPoint(skillName, isSkillPointAvailable) {
-    //     if (isSkillPointAvailable) {
-    //         stateGame.ownCompany.skillPoints--
-    //         stateGame.ownCompany.skills[skillName.toLowerCase()]++
-    //         renderDOM()
-    //     }
-    // }
+    function addListenerToSpeedPanel() {
+        speedPauseBtn.onclick = () => stopTime(speedPlayBtn)
+        speedPlayBtn.onclick = () => speedTime(speedPlayBtn)
+    }
 
     function renderClientSelectorMenu() {
 

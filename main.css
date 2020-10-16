@@ -40,7 +40,7 @@ span {
 }
 
 main {
-    padding: 1rem 5%;
+    padding: 1rem 3rem;
 }
 
 /*==========BACKGROUND============*/
@@ -328,7 +328,7 @@ body::before {
 
 .header {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(27rem, 27rem));
+    grid-template-columns: repeat(auto-fit, minmax(auto, 27rem));
     grid-auto-rows: 9rem;
     grid-gap: 1rem;  
 
@@ -346,11 +346,22 @@ body::before {
     display: flex;
 }
 
-.clock {
-    display: block;
-    width: 7rem;
+.time-div {
     padding-left: .5rem;
     border-left: 2px dotted var(--sec-color);
+}
+.clock {
+    width: 7rem;
+    padding-left: .5rem;
+}
+#pause-btn {
+    min-width: 2rem;
+    padding: .01rem;
+    margin-right: .2rem;
+}
+#speed-btn {
+    width: auto;
+    padding: .01rem;
 }
 
 
@@ -412,24 +423,26 @@ body::before {
     margin: 0 0%;
     transition:
         ease-out 200ms;
-    right: 5%;
-    top: 88%;
+    right: 3rem;
+
     bottom: 0;
+    height: 8.5rem;
 
     z-index: 1;
 }
 .layout-warehouse:hover {
     position: fixed;
-    transition:
-        ease-out 200ms;
-    box-shadow: 0 0 3rem 1rem rgba(122, 122, 122, 0.3);
-    right: 5%;
-    width: 90%;
-    top: 69%;
+    right: 3rem;
+    width: calc(100% - 6rem);
+
     bottom: 0;
+    height: 19rem;
 
     overflow: auto;
+    transition:
+        ease-out 200ms;
 
+    box-shadow: 0 0 3rem 1rem rgba(122, 122, 122, 0.3);
 }
 .warehouse {
     display: grid;
@@ -464,7 +477,7 @@ body::before {
 .layout-site-construction {
     position: fixed;
     display: block;
-    left: 5%;
+    left: 3rem;
     width: 27rem;
     height: 58rem;
     flex-direction: column;
@@ -480,18 +493,18 @@ body::before {
     right: -47rem;
     padding-left: 5rem;
     transition:
-    ease-out 200ms;
+    ease-out 400ms;
     min-height: 50rem;
 }
 .side-menu:hover {
     right: 0%;
     padding-left: 1rem;
     transition:
-    ease-out 200ms;
+    ease-out 400ms;
 }
 
 
-.title-move {
+/* .title-move {
     position: fixed;
     width: 20rem;
     transform: rotate(-90deg) translate(-21rem, -13rem);
@@ -503,7 +516,7 @@ body::before {
     transform: rotate(0deg);
     position: relative;
     right: 0;
-}
+} */
 .side-menu-title,
 .side-menu-items {
     padding: 1rem;
@@ -723,14 +736,12 @@ input:focus {
         margin-top: 1rem;
     }
     .layout-warehouse {
-        margin: 0 0 0 5%;
-        width: 90%;
-        top: 91%;
-        box-shadow: 0 0 3rem 1rem rgba(122, 122, 122, 0.3);
+        right: 3rem;
+        width: calc(100% - 6rem);
     }
     .layout-warehouse:hover {
-        top: 80%;
-        bottom: 0%;
+        right: 3rem;
+        width: calc(100% - 6rem);
     }
     .layout-blueprint{
         padding: 4rem 2rem 2rem 2rem;
@@ -748,22 +759,36 @@ input:focus {
     }
 
     .header{
+        right: 0;
         justify-content: center;
     }
 
     .side-menu {
         right: -47rem;
+        width: 50rem;
+
+        top: 2rem;
+        height: calc(100% - 4rem);
 
         padding-left: 5rem;
         overflow: auto;
         min-height: 0rem;
     }
     .side-menu:hover {
-        right: 0%;
-        width: 90%;
+        right: 0;
+        width: calc(100% - 6rem);
 
         padding-left: 1rem;
         overflow: auto;
+    }
+
+    .layout-warehouse {
+        right: 0rem;
+        width: calc(100% - 0rem);
+    }
+    .layout-warehouse:hover {
+        right: 0rem;
+        width: calc(100% - 0rem);
     }
 
     .layout-blueprint{
@@ -780,18 +805,26 @@ input:focus {
         right: 3rem;
         top: 0.5rem;
     }
-
+    .menu-own-company {
+        width: auto;
+        height: auto;
+        margin: 1.5rem;
+    }
 
     .layout-site-construction {
+        top: 2rem;
+        height: calc(100% - 4rem);
+
         left: -24rem;
         padding-right: 5rem;
     }
     .layout-site-construction:hover {
         left: 0;
+        width: calc(100% - 6rem);
         padding-right: 1rem;
     }
 
-    .title-move {
+    /* .title-move {
         position: fixed;
         width: 20rem;
         transform: rotate(-90deg) translate(-21rem, -13rem);
@@ -803,5 +836,5 @@ input:focus {
         transform: rotate(0deg);
         position: relative;
         right: 0;
-    }
+    } */
   }

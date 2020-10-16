@@ -30,7 +30,7 @@ const timeSpan = document.getElementById('time');
 //DEFINE ALL GLOBAL VARIABLES
 var currentClient = 0
 var deletedModels = []
-clock.timeScale = 200
+clock.timeScale = 1000
 
 
 //======================================================================================//
@@ -44,53 +44,37 @@ clock.day = 1
 
 
 function timeRules() {
-    let minAcc = clock.minuteAccumulated
-    let min = clock.minute
-    let hour = clock.hour
-    let day = clock.day
     const dayDom = document.getElementById("day")
 
     dayDom.innerHTML = clock.day
 
-    // updateOwnCompanyPropDOM()
-    // updateClientMoneyDOM()
-    // updateNumberOfNewClientsDOM()
+    clock.minute++
+    clock.minuteAccumulated++
 
-    min++
-    minAcc++
-    const minuteCycle = min >= 60
-    const dayCycle = hour >= 16
+    const minuteCycle = clock.minute >= 60
+    const dayCycle = clock.hour >= 16
 
-    if (minuteCycle) { //SET END OF AN HOUR
-        min = 0
-        hour++
+    if (minuteCycle) {
+        clock.minute = 0
+        clock.hour++
     }
-    if (dayCycle) { //SET END OF WORK HOUR
-        hour = 8
-        day++
-
+    if (dayCycle) {
+        clock.hour = 8
+        clock.day++
         getNewAvailableClients(0)
         getNewLookingAttempts()
         renderDOM()
     }
-    let min00 = ('0' + min).slice(-2)
+    let min00 = ('0' + clock.minute).slice(-2)
+    timeSpan.textContent = `${clock.hour}:${min00}`
 
-    timeSpan.textContent = `${hour}:${min00}`
-    clock.minute = min
-    clock.hour = hour
-    clock.day = day
-    clock.minuteAccumulated = minAcc
-
-    // getCurrentExperience()
-    // getCurrentSkillPoints()
-    // displaySkillPoint()
-
-    // if (stateGame.clients[currentClient] != null) {
-    //     checkCostPerHour()
-    //     verifyAssigned()
-    // }
+    if (stateGame.clients[currentClient] != null) {
+        checkCostPerHour()
+        handleTaskProgress()
+    }
 }
 let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
+
 
 function listenerFunctions() {
 
@@ -101,11 +85,6 @@ function listenerFunctions() {
     getCurrentExperience()
     getCurrentSkillPoints()
     displaySkillPoint()
-
-    if (stateGame.clients[currentClient] != null) {
-        checkCostPerHour()
-        verifyAssigned()
-    }
 }
 setInterval(listenerFunctions, 500)
 
@@ -115,6 +94,32 @@ function changeTimeSpeed(timeScale = 0) {
     clearInterval(timeClockRules)
     if (timeScale > 0) {
         timeClockRules = setInterval(timeRules, clock.timeScale);
+    }
+}
+
+function stopTime(speedPlayBtn) {
+    speedPlayBtn.innerHTML = '&#8213;'
+    changeTimeSpeed(0)
+}
+
+function speedTime(speedPlayBtn) {
+    const speedOne = 1000
+    const speedTwo = 400
+    const speedThree = 50
+
+    switch (clock.timeScale) {
+        default:
+            speedPlayBtn.innerHTML = '&#9658;'
+            changeTimeSpeed(speedOne)
+            break;
+        case speedOne:
+            speedPlayBtn.innerHTML = '&#9658;&#9658;'
+            changeTimeSpeed(speedTwo)
+            break;
+        case speedTwo:
+            speedPlayBtn.innerHTML = '&#9658;&#9658;&#9658;'
+            changeTimeSpeed(speedThree)
+            break;
     }
 }
 
@@ -149,11 +154,6 @@ function researchNewClients(targetHTML) {
 function drawReticence(targetHTML) {
     targetHTML.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
     targetHTML.onclick = false
-
-    // const numberNewOfClientsDOM = document.querySelector(".new-span")
-    // const emoji = stateGame.lookingForClients.emojiText = `(🔍...)`
-    // numberNewOfClientsDOM.innerHTML = emoji
-
     let reticence = '...'
 
     return setInterval(() => {
@@ -212,8 +212,6 @@ function displaySkillPoint() {
 function addSkillPoint(skillName) {
     const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
 
-    console.log("addSkillPoint -> skillName", skillName)
-    console.log("addSkillPoint -> isSkillPointAvailable", isSkillPointAvailable)
     if (isSkillPointAvailable) {
         stateGame.ownCompany.skillPoints--
         stateGame.ownCompany.skills[skillName.toLowerCase()]++
@@ -240,8 +238,6 @@ function getCurrentExperience(addExperience = 0) {
 
     ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
 }
-
-
 
 function updateOwnCompanyPropDOM() {
     companyNameDOM.innerHTML = stateGame.ownCompany.name
@@ -292,6 +288,7 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
         for (let constructionSiteElement of constructionSiteStage) {
             for (let workersAssigned of constructionSiteElement.workersNeeded) {
                 const isWorkerAssigned = workersAssigned.type == workersOnSite.name && workersAssigned.assigned == true
+
                 if (isWorkerAssigned) {
                     workersAssignedCount += workersAssigned.count
                 }
@@ -347,7 +344,6 @@ function randomNumberInteger(min = 0, max = 0) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-
 function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
     stateGame.lookingForClients.clientList = []
 
@@ -362,7 +358,6 @@ function getNewClientList(numberOfClients) {
             return clientNames[randomIndex]
         })
 }
-
 
 function newClientSelectorBudgetOffer(client, inputOfferClient) {
     const index = stateGame.lookingForClients.clientList.indexOf(client)
@@ -389,28 +384,52 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
 //======================================================================================//
 
 
-function verifyAssigned() {
+function handleTaskProgress() {
     for (let targetClient of stateGame.clients) {
         for (let constructionSiteStage of targetClient.construction) {
             for (let constructionSiteElement of constructionSiteStage) {
 
-                if (constructionSiteElement.progress <= 100) {
-                    const allWorkersAssigned = verifyAssignedWorkers(constructionSiteElement)
-                    const allMaterialsAssigned = verifyAssignedMaterials(constructionSiteElement)
-
-                    if (allWorkersAssigned) {
-                        const noMaterialNeeded = allMaterialsAssigned === undefined
-                        if (noMaterialNeeded || allMaterialsAssigned) {
-                            startTask(constructionSiteElement, targetClient)
-                        }
-                    }
-                }
+                verifyAssigned(constructionSiteElement, targetClient)
             }
-            const constructionSiteStageComplete = constructionSiteStage
-                .every(constructionSiteElement => constructionSiteElement.progress >= 100);
-            if (!constructionSiteStageComplete) break
+            const hasConstructionInProgress = verifyConstructionInProgress(constructionSiteStage)
+            if (hasConstructionInProgress) break
+        }
+        const hasStageInProgress = verifyStageInProgress(targetClient)
+        if (hasStageInProgress) break
+
+        sendBackAllWorkerOrService(targetClient)
+    }
+}
+
+function verifyAssigned(constructionSiteElement, targetClient) {
+    if (constructionSiteElement.progress < 100) {
+        const allWorkersAssigned = verifyAssignedWorkers(constructionSiteElement)
+        const allMaterialsAssigned = verifyAssignedMaterials(constructionSiteElement)
+
+        if (allWorkersAssigned) {
+            const noMaterialNeeded = allMaterialsAssigned === undefined
+            if (noMaterialNeeded || allMaterialsAssigned) {
+                startTask(constructionSiteElement, targetClient)
+            }
         }
     }
+}
+
+function verifyConstructionInProgress(constructionSiteStage) {
+    return constructionSiteStage
+        .some(constructionSiteElement => constructionSiteElement.progress < 100)
+}
+
+function verifyStageInProgress(targetClient) {
+    return targetClient.construction
+        .some(constructionSiteStage => constructionSiteStage
+            .some(constructionSiteElement => constructionSiteElement.progress < 100))
+}
+
+function sendBackAllWorkerOrService(targetClient) {
+    targetClient.workers.forEach(workerOrServiceStored => {
+        if (workerOrServiceStored.count > 0) sendBackWorkerOrService(workerOrServiceStored)
+    })
 }
 
 function verifyAssignedWorkers(constructionSiteElement) {
@@ -447,13 +466,26 @@ function startTask(constructionSiteElement, targetClient) {
     handleCompletedTask(constructionSiteElement, targetClient)
 }
 
+function handleCompletedTask(constructionSiteElement, targetClient) {
+    if (constructionSiteElement.progress >= 100) {
+        for (let workerAssigned of constructionSiteElement.workersNeeded) {
+            for (let workersOnSite of targetClient.workers) {
+                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
+                    workersOnSite.count += workerAssigned.count
+                    workerAssigned.count = 0
+                    workerAssigned.assigned = false
+                    renderDOM()
+                }
+            }
+        }
+    }
+}
 
 //SEND THE WORKER(OR SERVICE) BACK AND DEDUCE COST
 function sendBackWorkerOrService(workerOrServiceStored) {
     stateGame.clients[currentClient].costPerHour -= workerOrServiceStored.price
 
     remainingCost = workerOrServiceStored.timer / 60
-    // remainingCost = remainingCost * workerOrServiceStored.price
     console.log(workerOrServiceStored.timer)
     stateGame.clients[currentClient].money -= workerOrServiceStored.price
     workerOrServiceStored.count--
@@ -515,20 +547,6 @@ function drawProgressLoadingTask(constructionSiteElement, targetClient) {
     }
 }
 
-function handleCompletedTask(constructionSiteElement, targetClient) {
-    if (constructionSiteElement.progress >= 100) {
-        for (let workerAssigned of constructionSiteElement.workersNeeded) {
-            for (let workersOnSite of targetClient.workers) {
-                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
-                    workersOnSite.count += workerAssigned.count
-                    workerAssigned.count = 0
-                    workerAssigned.assigned = false
-                    renderDOM()
-                }
-            }
-        }
-    }
-}
 
 //======================================================================================//
 //END TASKS FUNCTIONS RULES
