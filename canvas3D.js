@@ -28,7 +28,7 @@ function main() {
     const effect = new OutlineEffect(renderer);
 
     //DISPLAY AXES FOR HELP
-    var axesHelper = new THREE.AxesHelper(5);
+    let axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
 
     //DISPLAY FRAMES PER SECOND

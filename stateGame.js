@@ -1,4 +1,4 @@
-stateGame = {
+const stateGame = {
     "clock": {
         "timeScale": 1000,
         "day": 1,

@@ -63,7 +63,7 @@ function timeRules() {
         clock.day++
         getNewAvailableClients(0)
         getNewLookingAttempts()
-        renderDOM()
+        rendererDOM.all()
     }
     let min00 = ('0' + clock.minute).slice(-2)
     timeSpan.textContent = `${clock.hour}:${min00}`
@@ -83,8 +83,9 @@ function listenerFunctions() {
     updateNumberOfNewClientsDOM()
 
     getCurrentExperience()
-    getCurrentSkillPoints()
-    displaySkillPoint()
+    rendererDOM.displayAvailableSkillPoints()
+    rendererDOM.displaySkillBtn()
+    rendererDOM.updateCurrentSkillPoints()
 }
 setInterval(listenerFunctions, 500)
 
@@ -144,7 +145,7 @@ function researchNewClients(targetHTML) {
             ? getNewAvailableClients()
             : getNewAvailableClients(1)
         clearNewClientsList(remainingTime)
-        renderDOM()
+        rendererDOM.newClientSelector()
 
         clearInterval(reticenceCounter)
         clearInterval(researchNewClients)
@@ -173,7 +174,7 @@ function clearNewClientsList(remainingTime) {
     const clearNewClients = setInterval(() => {
         if (clock.minuteAccumulated < remainingTime) return
         getNewAvailableClients(0)
-        renderDOM()
+        rendererDOM.newClientSelector()
         clearInterval(clearNewClients)
     }, 500);
 }
@@ -195,20 +196,6 @@ function updateClientMoneyDOM() {
     }
 }
 
-function getCurrentSkillPoints() {
-    const skillPointsDOM = document.querySelector("#skill-points")
-    skillPointsDOM.innerHTML = stateGame.ownCompany.skillPoints
-}
-
-function displaySkillPoint() {
-    const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
-    const addSkillButton = document.querySelectorAll(`.add-skill`)
-
-    isSkillPointAvailable
-        ? addSkillButton.forEach(button => button.style.display = 'block')
-        : addSkillButton.forEach(button => button.style.display = 'none')
-}
-
 function addSkillPoint(skillName) {
     const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
 
@@ -216,8 +203,10 @@ function addSkillPoint(skillName) {
         stateGame.ownCompany.skillPoints--
         stateGame.ownCompany.skills[skillName.toLowerCase()]++
 
-        displaySkillPoint()
-        renderDOM()
+        rendererDOM.displayAvailableSkillPoints()
+        rendererDOM.displaySkillBtn()
+        rendererDOM.updateCurrentSkillPoints()
+
     }
 }
 
@@ -305,7 +294,7 @@ function deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType) {
         unassignWorkers(targetClient, workersOnSite)
         deduceOwnMoney(targetClient, costPerHourPerType)
         workersOnSite.count = 0
-        renderDOM()
+        rendererDOM.all()
         return
     }
     targetClient.money -= costPerHourPerType
@@ -370,12 +359,12 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
         client.attempt -= 1
 
         if (client.attempt <= 0) stateGame.lookingForClients.clientList.splice(index, 1)
-        return renderDOM()
+        return rendererDOM.all()
     }
     client.money = parseInt(inputOfferClient.value)
     stateGame.clients.unshift(client)
     stateGame.lookingForClients.clientList.splice(index, 1);
-    renderDOM()
+    rendererDOM.all()
 }
 
 
@@ -474,7 +463,7 @@ function handleCompletedTask(constructionSiteElement, targetClient) {
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
-                    renderDOM()
+                    rendererDOM.all()
                 }
             }
         }
@@ -489,7 +478,7 @@ function sendBackWorkerOrService(workerOrServiceStored) {
     console.log(workerOrServiceStored.timer)
     stateGame.clients[currentClient].money -= workerOrServiceStored.price
     workerOrServiceStored.count--
-    renderDOM()
+    rendererDOM.all()
 }
 
 function assignWorkerOrService(workersNeeded, idButton) {
@@ -500,14 +489,14 @@ function assignWorkerOrService(workersNeeded, idButton) {
             workersOnSite.count >= workersNeeded.count) {
             workersNeeded.assigned = true
             workersOnSite.count -= workersNeeded.count
-            return renderDOM()
+            return rendererDOM.all()
         }
         //UNASSIGN WORKER TO A TASK
         if (workersOnSite.name == workersNeeded.type &&
             workersNeeded.assigned == true) {
             workersNeeded.assigned = false
             workersOnSite.count += workersNeeded.count
-            return renderDOM()
+            return rendererDOM.all()
         }
     }
 }
@@ -519,7 +508,7 @@ function assignMaterial(materialNeeded, idButton) {
             //ASSIGN MATERIAL TO A TASK
             materialNeeded.assigned = true
             materialOnWarehouse.count -= materialNeeded.count
-            return renderDOM()
+            return rendererDOM.all()
         }
     }
 }
@@ -536,7 +525,7 @@ function completeClientConstruction() {
     stateGame.clients[currentClient] = null
     stateGame.clients.splice(currentClient, 1)
     if (currentClient > 0) currentClient--
-    renderDOM()
+    rendererDOM.all()
 }
 
 function drawProgressLoadingTask(constructionSiteElement, targetClient) {
@@ -610,7 +599,7 @@ function buyItem(itemBought, categoryItem) {
     getCount.value = 1
 
     addItemBoughtToContainer()
-    renderDOM()
+    rendererDOM.all()
 
 
     // buyItem FUNCTIONS ============================================================//
@@ -672,7 +661,7 @@ function discardWarehouseItem(materialStored) {
     const warehouseContainer = stateGame.clients[currentClient].warehouse
     const indexOfItemSelected = warehouseContainer.indexOf(materialStored)
     warehouseContainer.splice(indexOfItemSelected, 1)
-    renderDOM()
+    rendererDOM.all()
 }
 
 

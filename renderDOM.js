@@ -29,51 +29,38 @@ const constructionContainerDOM = document.getElementById('construction-container
 const speedPauseBtn = document.querySelector('#pause-btn')
 const speedPlayBtn = document.querySelector('#speed-btn')
 
-function renderDOM() {
 
-    renderMoney()
+const rendererDOM = {
+    all: () => {
+        rendererDOM.money()
+        rendererDOM.clientSelectorMenu()
+        rendererDOM.newClientSelector()
+        rendererDOM.categoryStoreBtn()
+        rendererDOM.warehouseBtn()
+        rendererDOM.warehouseLimit()
+        rendererDOM.workersAndServicesBtn()
+        rendererDOM.costPerHourBtn()
+        rendererDOM.ownCompanyMenuClients()
+        rendererDOM.ownCompanySkills()
+        rendererDOM.addListenerToSpeedPanel()
+        rendererDOM.menuClient()
+        rendererDOM.constructionTaskCards()
+    },
 
-    renderClientSelectorMenu()
-
-    renderNewClientSelector()
-
-    renderCategoryStoreBtn()
-
-    renderWarehouseBtn()
-
-    renderWarehouseLimit()
-
-    renderWorkersAndServicesBtn()
-
-    renderCostPerHourBtn()
-
-    renderOwnCompanyMenuClients()
-
-    renderOwnCompanyMenuSkills()
-
-    addListenerToSpeedPanel()
-
-    renderMenuClient()
-
-    renderConstructionTaskCards()
-
-    //======================================================================================//
-    //RENDER FUNCTIONS
-    //======================================================================================//
-
-
-    //HEADER AND NAV
-    //======================================================================================//
-    function renderMoney() {
+    money: () => {
         ownMoneyDOM.innerHTML = stateGame.ownCompany.money
         clientMoneyDOM.innerHTML = 0
         if (stateGame.clients[currentClient] == null) {
             return clientMoneyDOM.innerHTML = 0
         }
         clientMoneyDOM.innerHTML = stateGame.clients[currentClient].money
-    }
+    },
 
-    function renderOwnCompanyMenuClients() {
+
+    //COMPANY MENU
+    //======================================================================================//
+
+    ownCompanyMenuClients: () => {
         menuOwnClients.innerHTML = ""
         for (let clients of stateGame.clients) {
             const stageItemsProgressList = clients.construction
@@ -93,9 +80,9 @@ function renderDOM() {
             button.onclick = () => { }
             menuOwnClients.appendChild(button);
         }
-    }
+    },
 
-    function renderOwnCompanyMenuSkills() {
+    ownCompanySkills: () => {
         menuOwnSkills.innerHTML = ""
         const companySkills = Object.entries(stateGame.ownCompany.skills)
 
@@ -103,109 +90,140 @@ function renderDOM() {
             let li = document.createElement('li');
             li.innerHTML =
                 `<h3>${skill.toUpperCase()}</h3>
-                <div id="skill-div-${skill}" class="skill-span">
-                    <h3 id="skill-${skill}">${value}</h3>
-                </div>`
+                    <div id="skill-div-${skill}" class="skill-span">
+                        <h3 id="skill-${skill}">${value}</h3>
+                    </div>`
             li.setAttribute('class', "skill-line flex-between")
             menuOwnSkills.appendChild(li)
 
             const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
 
-            addSkillButton(skill, isSkillPointAvailable)
+            rendererDOM.addSkillButton(skill, isSkillPointAvailable)
         }
-    }
+        rendererDOM.updateCurrentSkillPoints()
+    },
 
-    function addSkillButton(skill, isSkillPointAvailable) {
+    addSkillButton: (skill, isSkillPointAvailable) => {
         const skillLI = document.querySelector(`#skill-div-${skill}`)
+        const display = isSkillPointAvailable ? 'block' : 'none'
 
         let button = document.createElement('button')
         button.innerHTML = "+"
         button.setAttribute('class', 'add-skill')
-        button.setAttribute('style', "display: none")
+        button.setAttribute('style', `display: ${display}`)
         button.onclick = event =>
             addSkillPoint(event.path[2].children[0].innerText, isSkillPointAvailable)
         skillLI.appendChild(button)
-    }
+    },
 
-    function addListenerToSpeedPanel() {
+    displaySkillBtn: () => {
+        const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
+        const addSkillButton = document.querySelectorAll(`.add-skill`)
+
+        isSkillPointAvailable
+            ? addSkillButton.forEach(button => button.style.display = 'block')
+            : addSkillButton.forEach(button => button.style.display = 'none')
+
+        rendererDOM.displayAvailableSkillPoints()
+    },
+
+    displayAvailableSkillPoints: () => {
+        const skillPointsDOM = document.querySelector("#skill-points")
+        skillPointsDOM.innerHTML = stateGame.ownCompany.skillPoints
+    },
+
+    updateCurrentSkillPoints: () => {
+        const companySkills = Object.entries(stateGame.ownCompany.skills)
+
+        for (const [skill, value] of companySkills) {
+            const skillPointsDOM = document.querySelector(`#skill-${skill}`)
+            skillPointsDOM.innerHTML = value
+        }
+    },
+
+    addListenerToSpeedPanel: () => {
         speedPauseBtn.onclick = () => stopTime(speedPlayBtn)
         speedPlayBtn.onclick = () => speedTime(speedPlayBtn)
-    }
+    },
 
-    function renderClientSelectorMenu() {
 
+    //CLIENT MENU
+    //======================================================================================//
+
+    clientSelectorMenu: () => {
         if (stateGame.clients[currentClient] == null) {
             clientSelectedButtonDOM.onclick = () => { };
             return clientSelectedButtonDOM.innerHTML = "NONE"
         }
-
         clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
-        clientLeftArrowButtonDOM.onclick = () => { selectClientLeft() };
-        clientRightArrowButtonDOM.onclick = () => { selectClientRight() };
-        clientSelectedButtonDOM.onclick = () => { menuClientOn(menuClientBackgroundBlock) };
-    }
+        clientLeftArrowButtonDOM.onclick = () => { rendererDOM.selectClientLeft() };
+        clientRightArrowButtonDOM.onclick = () => { rendererDOM.selectClientRight() };
+        clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn(menuClientBackgroundBlock) };
+    },
 
-    function selectClientRight() {
+    selectClientRight: () => {
         currentClient++
-        if (stateGame.clients[currentClient] != null) return renderDOM()
+        if (stateGame.clients[currentClient] != null) return rendererDOM.all()
+
         currentClient = 0
-        renderDOM()
-    }
+        rendererDOM.all()
 
-    function selectClientLeft() {
+    },
+
+    selectClientLeft: () => {
         currentClient--
-        if (stateGame.clients[currentClient] != null) return renderDOM()
+        if (stateGame.clients[currentClient] != null) return rendererDOM.all()
+
         currentClient = stateGame.clients.length - 1
-        renderDOM()
-    }
+        rendererDOM.all()
+    },
 
-    function menuClientOn(menuClientBackgroundBlock) {
+    menuClientOn: (menuClientBackgroundBlock) => {
         menuClientBackgroundBlock.style.display = "block"
-    }
+    },
 
-    // function menuClientOff(menuClientBackgroundBlock) {
-    //     menuClientBackgroundBlock.style.display = "none"
-    //     renderMenuClient()
-    // }
 
-    menuClientBackgroundBlock.addEventListener('click', event => {
-        const closeTarget = event.target.id
-        if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
-            menuClientBackgroundBlock.style.display = "none"
-        }
-    })
+    //CLIENT SEARCH
+    //======================================================================================//
 
-    function renderNewClientSelector() {
-        const renderNewClientSelectorDOM = document.getElementById("looking-for-client")
-        renderNewClientSelectorDOM.innerHTML = ""
+    newClientSelector: () => {
+        const newClientSelectorDOM = document.getElementById("looking-for-client")
+        newClientSelectorDOM.innerHTML = ""
 
         const areAvailableAttempts = stateGame.lookingForClients.lookingAttempts > 0
         const areAvailableClient = stateGame.lookingForClients.clientList.length > 0
 
         if (!areAvailableClient) {
-            renderNewClientSelectorDOM.innerHTML =
-                `<h4>NO MORE CLIENTS FOUND TODAY</h4>`
+            newClientSelectorDOM.innerHTML = `<h4>NO MORE CLIENTS FOUND TODAY</h4>`
         }
 
         if (areAvailableAttempts && !areAvailableClient) {
-            renderNewClientSelectorDOM.innerHTML = ''
-
-            let button = document.createElement('button');
-            button.innerHTML = `LOOK FOR NEW CLIENTS`
-            button.setAttribute('class', "btn");
-            button.onclick = event => { researchNewClients(event.target) }
-            renderNewClientSelectorDOM.appendChild(button);
+            rendererDOM.searchNewClientsBtn(newClientSelectorDOM)
         }
 
+        rendererDOM.newClientsList(newClientSelectorDOM)
+    },
+
+    searchNewClientsBtn: (newClientSelectorDOM) => {
+        newClientSelectorDOM.innerHTML = ''
+
+        let button = document.createElement('button');
+        button.innerHTML = `LOOK FOR NEW CLIENTS`
+        button.setAttribute('class', "btn");
+        button.onclick = event => { researchNewClients(event.target) }
+        newClientSelectorDOM.appendChild(button);
+    },
+
+    newClientsList: (newClientSelectorDOM) => {
         for (let client of stateGame.lookingForClients.clientList) {
-            let section = document.createElement('div');
+            let div = document.createElement('div');
             let btnClass = "btn"
             let attempt = "???"
             if (client.attempt != null && client.attempt > 0) {
                 btnClass = "btn btn-sendback"
                 attempt = client.attempt
             }
-            section.innerHTML =
+            div.innerHTML =
                 `<section id="${client.name}-looking-client" class="looking-client">
                     <button id="${client.name}-newClient-menu" class="btn">${client.name}</button>
                     <div>
@@ -216,30 +234,30 @@ function renderDOM() {
                             $
                         <button id="${client.name}-offer-client-btn"
                             class="${btnClass}"
-                            btn-sudocontent="Attempts: ${attempt}">OFFER</button>
+                            btn-sudocontent="Attempts: ${attempt}">OFFER
+                        </button>
                     </div>
                 </section>`
-            renderNewClientSelectorDOM.appendChild(section);
+            newClientSelectorDOM.appendChild(div);
 
             const buttonNewClientMenu = document.getElementById(`${client.name}-newClient-menu`)
             const buttonOfferClient = document.getElementById(`${client.name}-offer-client-btn`)
             const inputOfferClient = document.getElementById(`${client.id}input`)
+
             buttonOfferClient.onclick = () => { newClientSelectorBudgetOffer(client, inputOfferClient) }
             buttonNewClientMenu.onclick = () => {
                 const menuClientBackgroundBlock = document.getElementById('menu-client-block');
                 menuClientBackgroundBlock.style.display = "block"
-                renderMenuClient(client)
+                rendererDOM.menuClient(client)
             }
         }
-    }
+    },
 
-    function renderMenuClient(targetClientIsTrue) {
-
+    menuClient: (targetClientIsTrue) => {
         menuClientStages.innerHTML = ""
         menuClientMaterialsNeeded.innerHTML = ""
         menuClientSendMoneyInput.innerHTML = ""
         menuClientMoney.innerHTML = clientMoneyDOM.innerHTML
-
 
         let clientSelected = stateGame.clients[currentClient]
         if (targetClientIsTrue) {
@@ -249,7 +267,7 @@ function renderDOM() {
             menuClientMoney.innerHTML = clientSelected.money
         }
         if (clientSelected != targetClientIsTrue) {
-            renderSendMoneyInput()
+            rendererDOM.sendMoneyInput()
             menuClientMoney.className = "client-money";
             clientMoneyDOM = document.querySelectorAll(".client-money")
         }
@@ -257,13 +275,10 @@ function renderDOM() {
 
         menuClientName.innerHTML = clientSelected.name.toUpperCase()
 
+        rendererDOM.addMaterialsNeededToArray(clientSelected)
+    },
 
-
-        addMaterialsNeededToArray(clientSelected)
-    }
-
-    function addMaterialsNeededToArray(clientSelected) {
-
+    addMaterialsNeededToArray: (clientSelected) => {
         const menuMaterialsArray = []
 
         for (let constructionSiteStage of clientSelected.construction) {
@@ -284,8 +299,6 @@ function renderDOM() {
                 }
                 document.getElementById(`stage-${stageArray.indexOf(constructionSiteStage)}`).appendChild(button);
 
-                //UPDATE menuMaterialsArray WITH REMAINING NEEDED MATERIALS IN CLIENT MENU
-
                 if (constructionSiteElement.progress < 100) {
                     for (let materialNeeded of constructionSiteElement.materialNeeded) {
                         let materialFound = menuMaterialsArray.find(itemInArray => itemInArray[0] == materialNeeded.name)
@@ -299,10 +312,10 @@ function renderDOM() {
                 }
             }
         }
-        renderMenuClientMaterialsNeeded(menuMaterialsArray)
-    }
+        rendererDOM.menuClientMaterialsNeeded(menuMaterialsArray)
+    },
 
-    function renderMenuClientMaterialsNeeded(menuMaterialsArray) {
+    menuClientMaterialsNeeded: (menuMaterialsArray) => {
         //UPDATE REMAINING NEEDED MATERIALS IN CLIENT MENU
         for (let materialArray of menuMaterialsArray) {
             let button = document.createElement('button');
@@ -310,25 +323,26 @@ function renderDOM() {
             button.setAttribute('class', "btn");
             menuClientMaterialsNeeded.appendChild(button);
         }
-    }
+    },
 
-    function renderSendMoneyInput() {
+    sendMoneyInput: () => {
         menuClientSendMoneyInput.innerHTML = `
-            <input class="form money-div" type="number" name="send-own-money" id="send-own-money" 
-            min="0"
-            max="10000" 
-            placeholder="0" 
-            step="100" 
-            value="0">
-            <button id="send-money" class="btn">Send Money</button>
-        `
+                <input class="form money-div" type="number" name="send-own-money" id="send-own-money" 
+                min="0"
+                max="10000" 
+                placeholder="0" 
+                step="100" 
+                value="0">
+                <button id="send-money" class="btn">Send Money</button>
+            `
         handleSendMoneyClient()
-    }
+    },
+
 
     //WAREHOUSE (SITE STORAGE)
     //======================================================================================//
 
-    function renderWarehouseBtn() {
+    warehouseBtn: () => {
         warehouseContainerDOM.innerHTML = ""
         if (stateGame.clients[currentClient] == null) return
         stateGame.clients[currentClient].warehouse.forEach(itemStored => {
@@ -345,14 +359,14 @@ function renderDOM() {
                 warehouseContainerDOM.appendChild(button);
             }
         })
-    }
+    },
 
-    function renderWarehouseLimit() {
+    warehouseLimit: () => {
         if (stateGame.clients[currentClient] == null) return warehouseLimitDOM.innerHTML = `SITE STORAGE`
-        warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseDisplayLimit()})`
-    }
+        warehouseLimitDOM.innerHTML = `SITE STORAGE (${rendererDOM.warehouseDisplayLimit()})`
+    },
 
-    function warehouseDisplayLimit() {
+    warehouseDisplayLimit: () => {
         if (stateGame.clients[currentClient] == null) return
         const volumeStored = stateGame.clients[currentClient].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
@@ -363,12 +377,13 @@ function renderDOM() {
         if (currentVolumeStored >= 90) { warehouseLimitDOM.style.color = "#ff2a1a" }
         if (volumeStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
         return `${currentVolumeStored}%`
-    }
+    },
+
 
     //STORE
     //======================================================================================//
 
-    function renderCategoryStoreBtn() {
+    categoryStoreBtn: () => {
         storeCategoryContainerDOM.innerHTML = ""
         for (let categoryItem of store) {
             let button = document.createElement('button');
@@ -378,28 +393,28 @@ function renderDOM() {
             if (categoryItem.service || categoryItem.service == undefined) {
                 button.setAttribute('class', 'btn-darkblue');
             }
-            button.onclick = () => { itemList(categoryItem) };
+            button.onclick = () => { rendererDOM.itemList(categoryItem) };
             storeCategoryContainerDOM.appendChild(button);
         }
-    }
+    },
 
-    function itemList(categoryItem) {
+    itemList: (categoryItem) => {
         storeBuyContainerDOM.innerHTML = ""
         categoryItem.stock.forEach(item => {
             //DRAW </li> FIRST
             let li = document.createElement('li');
             li.innerHTML = `
-                <header>${item.name}</header>
-                <section>
-                    <div>
-                        <input id="${item.name}-buyinput" type="number" class="form"
-                        min="1" max="9999" placeholder="" step="1"
-                        value=1>
-                    </div>
-                    <span id="${item.name}-buylist"></span>
-                    <div class="unit">/${item.unit}</div>
-                </section>
-                `
+                    <header>${item.name}</header>
+                    <section>
+                        <div>
+                            <input id="${item.name}-buyinput" type="number" class="form"
+                            min="1" max="9999" placeholder="" step="1"
+                            value=1>
+                        </div>
+                        <span id="${item.name}-buylist"></span>
+                        <div class="unit">/${item.unit}</div>
+                    </section>
+                    `
             storeBuyContainerDOM.appendChild(li);
             //THAN DRAW </button>
             let button = document.createElement('button');
@@ -413,9 +428,9 @@ function renderDOM() {
             buttonOnBuyList.appendChild(button);
             return
         })
-    }
+    },
 
-    function renderWorkersAndServicesBtn() {
+    workersAndServicesBtn: () => {
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
         if (stateGame.clients[currentClient] == null) return
@@ -432,9 +447,9 @@ function renderDOM() {
                 workersAndServicesContainerDOM.appendChild(button);
             }
         }
-    }
+    },
 
-    function renderCostPerHourBtn() {
+    costPerHourBtn: () => {
         costPerHourDOM.innerHTML = ""
         if (stateGame.clients[currentClient] == null) return
         let button = document.createElement('button');
@@ -444,13 +459,12 @@ function renderDOM() {
         button.setAttribute('class', `btn-darkblue`);
         button.onclick = () => { };
         costPerHourDOM.appendChild(button);
-    }
-
+    },
 
     //TASK CARDS
     //======================================================================================//
 
-    function renderConstructionTaskCards() {
+    constructionTaskCards: () => {
         constructionContainerDOM.innerHTML = ""
 
         if (stateGame.clients[currentClient] == null) return
@@ -459,9 +473,9 @@ function renderDOM() {
             constructionSiteStage.forEach(constructionSiteElement => {
 
                 if (constructionSiteElement.progress < 100) {
-                    renderTaskCard(constructionSiteElement)
-                    renderWorkersOrServicesBtn(constructionSiteElement)
-                    renderMaterialsBtn(constructionSiteElement)
+                    rendererDOM.taskCard(constructionSiteElement)
+                    rendererDOM.workersOrServicesBtn(constructionSiteElement)
+                    rendererDOM.materialsBtn(constructionSiteElement)
                 }
             })
             let stageIsCompleted = constructionSiteStage
@@ -473,13 +487,13 @@ function renderDOM() {
                     .every(constructionSiteElement => constructionSiteElement.progress >= 100))
 
             if (allStagesAreCompleted) {
-                renderFinishClientCard()
+                rendererDOM.finishClientCard()
                 break
             }
         }
-    }
+    },
 
-    function renderTaskCard({ stage, index, progress }) {
+    taskCard: ({ stage, index, progress }) => {
         let div = document.createElement('div');
         const client = stateGame.clients[currentClient].name
         div.innerHTML =
@@ -487,23 +501,23 @@ function renderDOM() {
             style="width: ${progress}%;">
             </div>
             <span id="${stage}-${index}">(${stage})</span>
-            <span id="${stage}-${currentClient}-${index}-progress">${progress} %</span>
-            
-            `
+            <span id="${stage}-${currentClient}-${index}-progress">${progress} %</span>`
         div.setAttribute('id', `${stage}-${index}`);
         div.setAttribute('class', `card center`);
         constructionContainerDOM.appendChild(div);
-    }
+    },
 
-    function renderWorkersOrServicesBtn(constructionSiteElement) {
+    workersOrServicesBtn: (constructionSiteElement) => {
         if (constructionSiteElement.workersNeeded) {
             constructionSiteElement.workersNeeded.forEach(workersNeeded => {
-                let button = document.createElement('button');
-                let idButton = `${workersNeeded.type}-${constructionSiteElement.index}`
+                const button = document.createElement('button');
+                const idButton = `${workersNeeded.type}-${constructionSiteElement.index}`
+
                 button.setAttribute('class', 'btn-darkblue');
                 button.setAttribute('value', `${workersNeeded.count}`);
                 //VERIFY IF WORKER (OR SERVICES) IS ALREADY ASSIGNED TO A JOB
-                if (workersNeeded.assigned == true) {
+                const isWorkersNeededAssigned = workersNeeded.assigned == true
+                if (isWorkersNeededAssigned) {
                     button.setAttribute('id', `${idButton}-assigned`);
                     button.setAttribute('btn-sudocontent', 'Unassign');
                     button.setAttribute('class', 'btn-darkblue btn-clear');
@@ -519,9 +533,9 @@ function renderDOM() {
                 buttonWorkersNeeded.appendChild(button);
             })
         }
-    }
+    },
 
-    function renderMaterialsBtn(constructionSiteElement) {
+    materialsBtn: (constructionSiteElement) => {
         if (constructionSiteElement.materialNeeded) {
             constructionSiteElement.materialNeeded.forEach(materialNeeded => {
                 let button = document.createElement('button');
@@ -542,9 +556,9 @@ function renderDOM() {
                 buttonMaterialsNeeded.appendChild(button);
             })
         }
-    }
+    },
 
-    function renderFinishClientCard() {
+    finishClientCard: () => {
         let div = document.createElement('div');
         div.innerHTML = `${stateGame.clients[currentClient].name.toUpperCase()}'s CONSTRUCTION COMPLETED`
         div.setAttribute('id', `${stateGame.clients[currentClient]}-completed`);
@@ -558,27 +572,40 @@ function renderDOM() {
         button.innerHTML = `CLAIM <b>$${stateGame.clients[currentClient].money}</b>`
         const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[currentClient]}-completed`)
         buttonWorkersNeeded.appendChild(button);
-    }
+    },
+
+    handleDisplayOwnMenu: () => {
+        const menuOwnCompanyButton = document.getElementById('menu-own-company');
+        const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
+
+        menuOwnCompanyButton.onclick = () => { rendererDOM.menuCompanyOn(menuOwnCompanyButtonOut) };
+
+        menuOwnCompanyButtonOut.addEventListener('click', event => {
+            const closeTarget = event.target.id
+            if (closeTarget == 'menu-own-company-block') {
+                menuOwnCompanyButtonOut.style.display = "none"
+            }
+        })
+    },
+
+    menuCompanyOn: (menuOwnCompanyButtonOut) => {
+        menuOwnCompanyButtonOut.style.display = "block"
+    },
+
+    handleDisplayClientMenu: () => {
+        menuClientBackgroundBlock.addEventListener('click', event => {
+            const closeTarget = event.target.id
+            if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
+                menuClientBackgroundBlock.style.display = "none"
+            }
+        })
+    },
+
 }
+
+
 //======================================================================================//
-renderDOM() //CALL UPDATE FUNCTION AFTER ALL CODE IS LOADED
+rendererDOM.all() //CALL UPDATE  AFTER ALL CODE IS LOADED
 //======================================================================================//
-
-
-function handleDisplayMenu() {
-    const menuOwnCompanyButton = document.getElementById('menu-own-company');
-    const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
-
-    menuOwnCompanyButton.onclick = () => { menuCompanyOn() };
-    function menuCompanyOn() { menuOwnCompanyButtonOut.style.display = "block" }
-
-    menuOwnCompanyButtonOut.addEventListener('click', event => {
-        const closeTarget = event.target.id
-        if (closeTarget == 'menu-own-company-block') {
-            menuOwnCompanyButtonOut.style.display = "none"
-        }
-    })
-}
-handleDisplayMenu()
-
-
+rendererDOM.handleDisplayOwnMenu()
+rendererDOM.handleDisplayClientMenu()
