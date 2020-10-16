@@ -42,6 +42,7 @@ clock.minute = 0
 clock.hour = 8
 clock.day = 1
 
+let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
 
 function timeRules() {
     const dayDom = document.getElementById("day")
@@ -73,13 +74,14 @@ function timeRules() {
         handleTaskProgress()
     }
 }
-let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
 
+
+setInterval(listenerFunctions, 500)
 
 function listenerFunctions() {
 
-    updateOwnCompanyPropDOM()
-    updateClientMoneyDOM()
+    rendererDOM.companyStats()
+    rendererDOM.money()
     updateNumberOfNewClientsDOM()
 
     getCurrentExperience()
@@ -87,7 +89,6 @@ function listenerFunctions() {
     rendererDOM.displaySkillBtn()
     rendererDOM.updateCurrentSkillPoints()
 }
-setInterval(listenerFunctions, 500)
 
 
 function changeTimeSpeed(timeScale = 0) {
@@ -190,11 +191,7 @@ function updateNumberOfNewClientsDOM() {
     numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
 }
 
-function updateClientMoneyDOM() {
-    if (stateGame.clients[currentClient] != null) {
-        clientMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.clients[currentClient].money)
-    }
-}
+
 
 function addSkillPoint(skillName) {
     const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
@@ -228,11 +225,7 @@ function getCurrentExperience(addExperience = 0) {
     ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
 }
 
-function updateOwnCompanyPropDOM() {
-    companyNameDOM.innerHTML = stateGame.ownCompany.name
-    ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
-    ownLevelDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.level)
-}
+
 
 function checkCostPerHour() {
     for (let targetClient of stateGame.clients) {
@@ -250,26 +243,64 @@ function checkCostPerHour() {
 
                     const costPerHourPerType = totalWorkersCount * workerTypeCost
 
-                    workersOnSite.timer++
                     targetClient.costPerHour += costPerHourPerType
 
-                    const workerCompletedHourCycle = workersOnSite.timer >= 60 || clock.hour == 16
-
-                    if (workerCompletedHourCycle) {
-                        workersOnSite.timer = 0
-                        deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType)
-                    }
+                    handleWorkerTimer(targetClient, workersOnSite, costPerHourPerType)
                 }
             }
         }
     }
-    renderCostPerHourValueDOM()
+    rendererDOM.costPerHourValue()
 }
 
-function renderCostPerHourValueDOM() {
-    const costPerHourValueDOM = document.getElementById("costperhour-value")
-    costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
+function handleWorkerTimer(targetClient, workersOnSite, costPerHourPerType) {
+    workersOnSite.timer++
+
+    const workerCompletedHourCycle =
+        workersOnSite.timer >= 60 || clock.hour == 16
+
+    if (workerCompletedHourCycle) {
+        workersOnSite.timer = 0
+        deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType)
+    }
 }
+
+function deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType) {
+    const insufficientClientMoney = targetClient.money < costPerHourPerType
+
+    if (insufficientClientMoney) {
+        unassignWorkers(targetClient, workersOnSite)
+        deduceOwnMoney(targetClient, costPerHourPerType)
+        workersOnSite.count = 0
+        rendererDOM.workersAndServicesBtn()
+        return
+    }
+    targetClient.money -= costPerHourPerType
+    rendererDOM.money()
+}
+
+function unassignWorkers(targetClient, workersOnSite) {
+    for (let constructionSiteStage of targetClient.construction) {
+        for (let constructionSiteElement of constructionSiteStage) {
+            for (let workerNeeded of constructionSiteElement.workersNeeded) {
+                if (workerNeeded.assigned == true && workerNeeded.type == workersOnSite.name) {
+                    workersOnSite.count += workerNeeded.count
+                    workerNeeded.assigned = false
+                }
+            }
+        }
+    }
+    rendererDOM.workersAndServicesBtn()
+}
+
+function deduceOwnMoney(targetClient, costPerHourPerType) {
+    targetClient.money -= costPerHourPerType
+    stateGame.ownCompany.money += targetClient.money
+    targetClient.money = 0
+    rendererDOM.money()
+}
+
+
 
 function checkAssignedWorkers(targetClient, workersOnSite) {
     let workersAssignedCount = 0
@@ -287,37 +318,9 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
     return workersAssignedCount
 }
 
-function deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType) {
-    const insufficientClientMoney = targetClient.money < costPerHourPerType
 
-    if (insufficientClientMoney) {
-        unassignWorkers(targetClient, workersOnSite)
-        deduceOwnMoney(targetClient, costPerHourPerType)
-        workersOnSite.count = 0
-        rendererDOM.all()
-        return
-    }
-    targetClient.money -= costPerHourPerType
-}
 
-function unassignWorkers(targetClient, workersOnSite) {
-    for (let constructionSiteStage of targetClient.construction) {
-        for (let constructionSiteElement of constructionSiteStage) {
-            for (let workerNeeded of constructionSiteElement.workersNeeded) {
-                if (workerNeeded.assigned == true && workerNeeded.type == workersOnSite.name) {
-                    workersOnSite.count += workerNeeded.count
-                    workerNeeded.assigned = false
-                }
-            }
-        }
-    }
-}
 
-function deduceOwnMoney(targetClient, costPerHourPerType) {
-    targetClient.money -= costPerHourPerType
-    stateGame.ownCompany.money += targetClient.money
-    targetClient.money = 0
-}
 
 //======================================================================================//
 //END CLOCK FUNCTIONS
@@ -572,19 +575,12 @@ handleSendMoneyClient()
 
 //ADD ITEMS TO WAREHOUSE(IF ITS A MATERIAL) OR SITE(IF ITS A WORKER/SERVICE)
 function buyItem(itemBought, categoryItem) {
-    const inputCountId = `${itemBought.name}-buyinput`
-    const getCount = document.getElementById(inputCountId);
-
     const noClientSelected = stateGame.clients[currentClient] == null
-    const isInvalidInput = itemBought == null || getCount == null
-    const isInvalidValue = getCount.value == null || getCount.value < 1
+    if (noClientSelected) return
 
-    if (noClientSelected) return console.log("No Client Selected")
-    if (isInvalidInput) return console.log("Invalid Input")
-    if (isInvalidValue) return getCount.value = 1
+    const getCount = document.getElementById(`${itemBought.name}-buyinput`);
 
-    const noClientMoney = stateGame.clients[currentClient].money == 0
-    if (noClientMoney) return console.log("Not Enough Client Money")
+    if (checkValidation()) return
 
     const countBought = parseInt(getCount.value)
     const moneySpent = countBought * itemBought.price
@@ -602,7 +598,24 @@ function buyItem(itemBought, categoryItem) {
     rendererDOM.all()
 
 
-    // buyItem FUNCTIONS ============================================================//
+
+    // checkValidation ===================================================//
+
+    function checkValidation() {
+        const hasClientMoney = stateGame.clients[currentClient].money > 0
+        const isValidInput = itemBought != null || getCount != null
+        const isValidValue = getCount.value != null || getCount.value > 0
+
+        const conditions = [
+            hasClientMoney,
+            isValidInput,
+            isValidValue,
+        ].some(condition => { return condition == false })
+
+        return conditions
+    }
+
+    // buyItem FUNCTIONS ===================================================//
 
     function checkWarehouseSpace() {
         const isItemBoughtMaterial = !itemBought.service
