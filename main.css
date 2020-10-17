@@ -706,8 +706,8 @@ input:focus {
     border-radius: 5px;
 
     height: 100%;
-    /* width: 100%; */
-    background: rgb(20, 30, 60, .3)
+    background: rgb(20, 30, 60, .3);
+    transition: 100ms;
 }
 
 .card button{
