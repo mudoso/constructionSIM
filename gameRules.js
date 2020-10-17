@@ -20,34 +20,20 @@
 //DEFINE ALL GLOBAL PATHS
 //==========NAV STATS PATH=============
 const clock = stateGame.clock
-const companyNameDOM = document.getElementById("own-company-name")
-const ownMoneyDOM = document.querySelectorAll(".own-money")
-const ownLevelDOM = document.querySelectorAll(".own-lvl")
-let clientMoneyDOM = document.querySelectorAll(".client-money")
-const timeSpan = document.getElementById('time');
 
 
 //DEFINE ALL GLOBAL VARIABLES
 var currentClient = 0
 var deletedModels = []
-clock.timeScale = 1000
 
 
 //======================================================================================//
 //RESPONSIBLE FOR CLOCK RELATED FUNCTIONS
 //======================================================================================//
 
-// SET TIME
-clock.minute = 0
-clock.hour = 8
-clock.day = 1
-
 let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
 
 function timeRules() {
-    const dayDom = document.getElementById("day")
-
-    dayDom.innerHTML = clock.day
 
     clock.minute++
     clock.minuteAccumulated++
@@ -66,8 +52,7 @@ function timeRules() {
         getNewLookingAttempts()
         rendererDOM.all()
     }
-    let min00 = ('0' + clock.minute).slice(-2)
-    timeSpan.textContent = `${clock.hour}:${min00}`
+    rendererDOM.time()
 
     if (stateGame.clients[currentClient] != null) {
         checkCostPerHour()
@@ -76,15 +61,14 @@ function timeRules() {
 }
 
 
-setInterval(listenerFunctions, 500)
+const changeListener = setInterval(updateDOM, 500)
 
-function listenerFunctions() {
-
-    rendererDOM.companyStats()
-    rendererDOM.money()
-    updateNumberOfNewClientsDOM()
+function updateDOM() {
 
     getCurrentExperience()
+    rendererDOM.companyStats()
+    rendererDOM.money()
+    rendererDOM.updateNumberOfNewClients()
     rendererDOM.displayAvailableSkillPoints()
     rendererDOM.displaySkillBtn()
     rendererDOM.updateCurrentSkillPoints()
@@ -106,8 +90,8 @@ function stopTime(speedPlayBtn) {
 
 function speedTime(speedPlayBtn) {
     const speedOne = 1000
-    const speedTwo = 400
-    const speedThree = 50
+    const speedTwo = speedOne * 0.3
+    const speedThree = speedTwo * 0.1
 
     switch (clock.timeScale) {
         default:
@@ -180,18 +164,6 @@ function clearNewClientsList(remainingTime) {
     }, 500);
 }
 
-function updateNumberOfNewClientsDOM() {
-    const numberNewOfClientsDOM = document.querySelector(".new-span")
-    const availableNewClients = stateGame.lookingForClients.clientList.length
-    const emojiText = stateGame.lookingForClients.emojiText
-
-    if (availableNewClients < 1) {
-        return numberNewOfClientsDOM.innerHTML = `${emojiText}`
-    }
-    numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
-}
-
-
 
 function addSkillPoint(skillName) {
     const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
@@ -208,7 +180,6 @@ function addSkillPoint(skillName) {
 }
 
 function getCurrentExperience(addExperience = 0) {
-    const ownExperience = document.querySelectorAll(".menu-own-lvl-progress")
 
     stateGame.ownCompany.experience += addExperience
     let currentExperience = stateGame.ownCompany.experience
@@ -222,7 +193,7 @@ function getCurrentExperience(addExperience = 0) {
     }
     const showExperience = (currentExperience / 1000) * 100
 
-    ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
+    rendererDOM.experience(showExperience)
 }
 
 
@@ -300,8 +271,6 @@ function deduceOwnMoney(targetClient, costPerHourPerType) {
     rendererDOM.money()
 }
 
-
-
 function checkAssignedWorkers(targetClient, workersOnSite) {
     let workersAssignedCount = 0
     for (let constructionSiteStage of targetClient.construction) {
@@ -317,9 +286,6 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
     }
     return workersAssignedCount
 }
-
-
-
 
 
 //======================================================================================//
@@ -362,7 +328,7 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
         client.attempt -= 1
 
         if (client.attempt <= 0) stateGame.lookingForClients.clientList.splice(index, 1)
-        return rendererDOM.all()
+        return rendererDOM.newClientSelector()
     }
     client.money = parseInt(inputOfferClient.value)
     stateGame.clients.unshift(client)
@@ -393,20 +359,6 @@ function handleTaskProgress() {
     }
 }
 
-function verifyAssigned(constructionSiteElement, targetClient) {
-    if (constructionSiteElement.progress < 100) {
-        const allWorkersAssigned = verifyAssignedWorkers(constructionSiteElement)
-        const allMaterialsAssigned = verifyAssignedMaterials(constructionSiteElement)
-
-        if (allWorkersAssigned) {
-            const noMaterialNeeded = allMaterialsAssigned === undefined
-            if (noMaterialNeeded || allMaterialsAssigned) {
-                startTask(constructionSiteElement, targetClient)
-            }
-        }
-    }
-}
-
 function verifyConstructionInProgress(constructionSiteStage) {
     return constructionSiteStage
         .some(constructionSiteElement => constructionSiteElement.progress < 100)
@@ -422,6 +374,20 @@ function sendBackAllWorkerOrService(targetClient) {
     targetClient.workers.forEach(workerOrServiceStored => {
         if (workerOrServiceStored.count > 0) sendBackWorkerOrService(workerOrServiceStored)
     })
+}
+
+function verifyAssigned(constructionSiteElement, targetClient) {
+    if (constructionSiteElement.progress < 100) {
+        const allWorkersAssigned = verifyAssignedWorkers(constructionSiteElement)
+        const allMaterialsAssigned = verifyAssignedMaterials(constructionSiteElement)
+
+        if (allWorkersAssigned) {
+            const noMaterialNeeded = allMaterialsAssigned === undefined
+            if (noMaterialNeeded || allMaterialsAssigned) {
+                startTask(constructionSiteElement, targetClient)
+            }
+        }
+    }
 }
 
 function verifyAssignedWorkers(constructionSiteElement) {
@@ -445,15 +411,10 @@ function verifyAssignedMaterials(constructionSiteElement) {
 function startTask(constructionSiteElement, targetClient) {
     if (constructionSiteElement.progress < 100) {
 
-        constructionSiteElement.progress += 1 //PROGRESS RULE
+        constructionSiteElement.progress += 1
 
-        drawProgressLoadingTask(constructionSiteElement, targetClient)
-
-        const cardId = `${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`
-        const cardTaskPercentage = document.getElementById(cardId)
-
-        if (cardTaskPercentage == null) return console.log('Card not found / or hidden');
-        cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+        rendererDOM.progressTaskLoading(constructionSiteElement, targetClient)
+        rendererDOM.progressTaskPercentage(constructionSiteElement, targetClient)
     }
     handleCompletedTask(constructionSiteElement, targetClient)
 }
@@ -466,6 +427,7 @@ function handleCompletedTask(constructionSiteElement, targetClient) {
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
+
                     rendererDOM.all()
                 }
             }
@@ -473,7 +435,6 @@ function handleCompletedTask(constructionSiteElement, targetClient) {
     }
 }
 
-//SEND THE WORKER(OR SERVICE) BACK AND DEDUCE COST
 function sendBackWorkerOrService(workerOrServiceStored) {
     stateGame.clients[currentClient].costPerHour -= workerOrServiceStored.price
 
@@ -481,37 +442,50 @@ function sendBackWorkerOrService(workerOrServiceStored) {
     console.log(workerOrServiceStored.timer)
     stateGame.clients[currentClient].money -= workerOrServiceStored.price
     workerOrServiceStored.count--
-    rendererDOM.all()
+
+    rendererDOM.costPerHourBtn()
+    rendererDOM.workersAndServicesBtn()
 }
 
-function assignWorkerOrService(workersNeeded, idButton) {
+function assignWorkerOrService(workersNeeded) {
+    const workersOnSite = stateGame.clients[currentClient].workers
+        .find(workerOnSite => workerOnSite.name == workersNeeded.type)
 
-    for (let workersOnSite of stateGame.clients[currentClient].workers) {
-        //ASSIGN WORKER TO A TASK
-        if (workersOnSite.name == workersNeeded.type &&
-            workersOnSite.count >= workersNeeded.count) {
-            workersNeeded.assigned = true
-            workersOnSite.count -= workersNeeded.count
-            return rendererDOM.all()
-        }
-        //UNASSIGN WORKER TO A TASK
-        if (workersOnSite.name == workersNeeded.type &&
-            workersNeeded.assigned == true) {
-            workersNeeded.assigned = false
-            workersOnSite.count += workersNeeded.count
-            return rendererDOM.all()
-        }
-    }
+    if (!workersOnSite) return
+    if (workersOnSite.count < workersNeeded.count) return
+
+    workersNeeded.assigned = true
+    workersOnSite.count -= workersNeeded.count
+
+    rendererDOM.workersAndServicesBtn()
+    rendererDOM.constructionTaskCards()
 }
 
-function assignMaterial(materialNeeded, idButton) {
+function unassignWorkerOrService(workersNeeded) {
+    const workersOnSite = stateGame.clients[currentClient].workers
+        .find(workerOnSite => workerOnSite.name == workersNeeded.type)
+
+    if (!workersOnSite) return
+    if (workersNeeded.assigned != true) return
+
+    workersNeeded.assigned = false
+    workersOnSite.count += workersNeeded.count
+
+    rendererDOM.workersAndServicesBtn()
+    rendererDOM.constructionTaskCards()
+}
+
+function assignMaterial(materialNeeded) {
     for (let materialOnWarehouse of stateGame.clients[currentClient].warehouse) {
         if (materialOnWarehouse.name == materialNeeded.name &&
             materialOnWarehouse.count >= materialNeeded.count) {
             //ASSIGN MATERIAL TO A TASK
             materialNeeded.assigned = true
             materialOnWarehouse.count -= materialNeeded.count
-            return rendererDOM.all()
+
+            rendererDOM.warehouseBtn()
+            rendererDOM.constructionTaskCards()
+            return
         }
     }
 }
@@ -531,13 +505,6 @@ function completeClientConstruction() {
     rendererDOM.all()
 }
 
-function drawProgressLoadingTask(constructionSiteElement, targetClient) {
-    const cardId = `${constructionSiteElement.stage}-${targetClient.name}-${constructionSiteElement.index}-progressLoading`
-    const cardTaskLoadingDiv = document.getElementById(cardId)
-    if (cardTaskLoadingDiv) {
-        cardTaskLoadingDiv.style.width = `${constructionSiteElement.progress}%`
-    }
-}
 
 
 //======================================================================================//
@@ -588,14 +555,17 @@ function buyItem(itemBought, categoryItem) {
     const isItemBoughtMaterial = !itemBought.service
     if (isItemBoughtMaterial) {
         const isWarehouseFull = checkWarehouseSpace()
-        if (isWarehouseFull) return ("Warehouse Full")
+        if (isWarehouseFull) return
         handleBoughtMaterials()
     }
 
     getCount.value = 1
 
     addItemBoughtToContainer()
-    rendererDOM.all()
+
+    rendererDOM.warehouseBtn()
+    rendererDOM.costPerHourBtn()
+    rendererDOM.workersAndServicesBtn()
 
 
 
@@ -618,15 +588,13 @@ function buyItem(itemBought, categoryItem) {
     // buyItem FUNCTIONS ===================================================//
 
     function checkWarehouseSpace() {
-        const isItemBoughtMaterial = !itemBought.service
 
-        if (isItemBoughtMaterial) {
-            const volumeStored = stateGame.clients[currentClient].warehouse
-                .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
+        const volumeStored = stateGame.clients[currentClient].warehouse
+            .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
+        const totalVolume = volumeStored + countBought * itemBought.volume
+        const warehouseLimit = stateGame.clients[currentClient].warehouseLimit
 
-            const isVolumeHigherThanWarehouseLimit = (volumeStored + countBought * itemBought.volume) > stateGame.clients[currentClient].warehouseLimit
-            return isVolumeHigherThanWarehouseLimit
-        }
+        return isVolumeHigherThanWarehouseLimit = totalVolume > warehouseLimit
     }
 
     function handleBoughtMaterials() {
