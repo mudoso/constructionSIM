@@ -1,35 +1,3 @@
-//======================================================================================//
-//RESPONSIBLE FOR UPDATE TASKS AND BUTTONS
-//START THE GAME AFTER ALL CODE IS LOADED
-//======================================================================================//
-
-
-//DEFINE ALL GLOBAL PATHS
-//==========NAV CLIENT PATH=============
-const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')
-const clientSelectedButtonDOM = document.getElementById('btn-clients')
-const clientRightArrowButtonDOM = document.getElementById('btn-clients-right')
-const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-const menuClientButtonDOMOut = document.getElementById('menu-client-close');
-const menuClientButton = document.getElementById('btn-clients');
-const menuClientName = document.getElementById('menu-client-name')
-const menuClientMoney = document.getElementById('client-money-menu')
-const menuClientStages = document.getElementById('menu-client-stages')
-const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
-const menuClientSendMoneyInput = document.getElementById('send-money-input')
-const costPerHourDOM = document.getElementById('cost-per-hour')
-const menuOwnClients = document.querySelector('.menu-own-company-clients')
-const menuOwnSkills = document.querySelector('.menu-own-company-skills')
-const storeCategoryContainerDOM = document.getElementById('store-category')
-const storeBuyContainerDOM = document.getElementById('store-buy-items')
-const warehouseContainerDOM = document.getElementById('warehouse-container')
-const warehouseLimitDOM = document.getElementById('warehouse-limit')
-const workersAndServicesContainerDOM = document.getElementById('workers-services')
-const constructionContainerDOM = document.getElementById('construction-container')
-const speedPauseBtn = document.querySelector('#pause-btn')
-const speedPlayBtn = document.querySelector('#speed-btn')
-
-
 const rendererDOM = {
     all() {
         rendererDOM.money()
@@ -45,18 +13,27 @@ const rendererDOM = {
         rendererDOM.addListenerToSpeedPanel()
         rendererDOM.menuClient()
         rendererDOM.constructionTaskCards()
+        rendererDOM.handleDisplayOwnMenu()
+        rendererDOM.handleDisplayClientMenu()
     },
 
-    companyStats() {
-        companyNameDOM.innerHTML = stateGame.ownCompany.name
-        ownLevelDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.level)
+    time() {
+        const timeSpan = document.getElementById('time');
+        const dayDom = document.getElementById("day")
+
+        const min00 = ('0' + clock.minute).slice(-2)
+        timeSpan.textContent = `${clock.hour}:${min00}`
+        dayDom.innerHTML = clock.day
     },
 
     money() {
-        const hasClientSelected = stateGame.clients[currentClient]
+        const ownMoneyDOM = document.querySelectorAll(".own-money")
+        let clientMoneyDOM = document.querySelectorAll(".client-money")
 
         ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
         clientMoneyDOM.innerHTML = 0
+
+        const hasClientSelected = stateGame.clients[currentClient]
 
         !hasClientSelected
             ? clientMoneyDOM.innerHTML = 0
@@ -64,18 +41,26 @@ const rendererDOM = {
                 DOM.innerHTML = stateGame.clients[currentClient].money)
     },
 
-    // updateClientMoneyDOM() {
-    //     if (stateGame.clients[currentClient] != null) {
-    //         clientMoneyDOM.forEach(DOM =>
-    //             DOM.innerHTML = stateGame.clients[currentClient].money)
-    //     }
-    // },
+    experience(showExperience) {
+        const ownExperience = document.querySelectorAll(".menu-own-lvl-progress")
+        ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
+    },
+
+    companyStats() {
+        const companyNameDOM = document.getElementById("own-company-name")
+        const ownLevelDOM = document.querySelectorAll(".own-lvl")
+
+        companyNameDOM.innerHTML = stateGame.ownCompany.name
+        ownLevelDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.level)
+    },
 
 
     //COMPANY MENU
     //======================================================================================//
 
     ownCompanyMenuClients() {
+        const menuOwnClients = document.querySelector('.menu-own-company-clients')
+
         menuOwnClients.innerHTML = ""
         for (let clients of stateGame.clients) {
             const stageItemsProgressList = clients.construction
@@ -98,6 +83,8 @@ const rendererDOM = {
     },
 
     ownCompanySkills() {
+        const menuOwnSkills = document.querySelector('.menu-own-company-skills')
+
         menuOwnSkills.innerHTML = ""
         const companySkills = Object.entries(stateGame.ownCompany.skills)
 
@@ -132,8 +119,8 @@ const rendererDOM = {
     },
 
     displaySkillBtn() {
-        const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
         const addSkillButton = document.querySelectorAll(`.add-skill`)
+        const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
 
         isSkillPointAvailable
             ? addSkillButton.forEach(button => button.style.display = 'block')
@@ -157,6 +144,9 @@ const rendererDOM = {
     },
 
     addListenerToSpeedPanel() {
+        const speedPauseBtn = document.querySelector('#pause-btn')
+        const speedPlayBtn = document.querySelector('#speed-btn')
+
         speedPauseBtn.onclick = () => stopTime(speedPlayBtn)
         speedPlayBtn.onclick = () => speedTime(speedPlayBtn)
     },
@@ -166,6 +156,10 @@ const rendererDOM = {
     //======================================================================================//
 
     clientSelectorMenu() {
+        const clientSelectedButtonDOM = document.getElementById('btn-clients')
+        const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')
+        const clientRightArrowButtonDOM = document.getElementById('btn-clients-right')
+
         if (stateGame.clients[currentClient] == null) {
             clientSelectedButtonDOM.onclick = () => { };
             return clientSelectedButtonDOM.innerHTML = "NONE"
@@ -173,33 +167,47 @@ const rendererDOM = {
         clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
         clientLeftArrowButtonDOM.onclick = () => { rendererDOM.selectClientLeft() };
         clientRightArrowButtonDOM.onclick = () => { rendererDOM.selectClientRight() };
-        clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn(menuClientBackgroundBlock) };
+        clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn() };
     },
 
     selectClientRight() {
         currentClient++
-        if (stateGame.clients[currentClient] != null) return rendererDOM.all()
+        if (stateGame.clients[currentClient] != null)
+            return rendererDOM.all()
 
         currentClient = 0
         rendererDOM.all()
-
     },
 
     selectClientLeft() {
         currentClient--
-        if (stateGame.clients[currentClient] != null) return rendererDOM.all()
+        if (stateGame.clients[currentClient] != null)
+            return rendererDOM.all()
 
         currentClient = stateGame.clients.length - 1
         rendererDOM.all()
     },
 
-    menuClientOn: (menuClientBackgroundBlock) => {
+    menuClientOn: () => {
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+
         menuClientBackgroundBlock.style.display = "block"
     },
 
 
     //CLIENT SEARCH
     //======================================================================================//
+
+    updateNumberOfNewClients() {
+        const numberNewOfClientsDOM = document.querySelector(".new-span")
+        const availableNewClients = stateGame.lookingForClients.clientList.length
+        const emojiText = stateGame.lookingForClients.emojiText
+
+        if (availableNewClients < 1) {
+            return numberNewOfClientsDOM.innerHTML = emojiText
+        }
+        numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
+    },
 
     newClientSelector() {
         const newClientSelectorDOM = document.getElementById("looking-for-client")
@@ -254,23 +262,32 @@ const rendererDOM = {
                     </div>
                 </section>`
             newClientSelectorDOM.appendChild(div);
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
             const buttonNewClientMenu = document.getElementById(`${client.name}-newClient-menu`)
             const buttonOfferClient = document.getElementById(`${client.name}-offer-client-btn`)
             const inputOfferClient = document.getElementById(`${client.id}input`)
 
-            buttonOfferClient.onclick = () => { newClientSelectorBudgetOffer(client, inputOfferClient) }
-            buttonNewClientMenu.onclick = () => {
-                const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-                menuClientBackgroundBlock.style.display = "block"
-                rendererDOM.menuClient(client)
+            buttonNewClientMenu.onclick = () => rendererDOM.menuNewClient(client)
+            buttonOfferClient.onclick = () => {
+                newClientSelectorBudgetOffer(client, inputOfferClient)
             }
         }
     },
 
+    menuNewClient(client) {
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+
+        menuClientBackgroundBlock.style.display = "block"
+        rendererDOM.menuClient(client)
+    },
+
     menuClient(targetClientIsTrue) {
-        menuClientStages.innerHTML = ""
-        menuClientMaterialsNeeded.innerHTML = ""
+        let clientMoneyDOM = document.querySelectorAll(".client-money")
+        const menuClientName = document.getElementById('menu-client-name')
+        const menuClientMoney = document.getElementById('client-money-menu')
+        const menuClientSendMoneyInput = document.getElementById('send-money-input')
+
         menuClientSendMoneyInput.innerHTML = ""
         menuClientMoney.innerHTML = clientMoneyDOM.innerHTML
 
@@ -282,7 +299,7 @@ const rendererDOM = {
             menuClientMoney.innerHTML = clientSelected.money
         }
         if (clientSelected != targetClientIsTrue) {
-            rendererDOM.sendMoneyInput()
+            rendererDOM.sendMoneyInput(menuClientSendMoneyInput)
             menuClientMoney.className = "client-money";
             clientMoneyDOM = document.querySelectorAll(".client-money")
         }
@@ -290,67 +307,87 @@ const rendererDOM = {
 
         menuClientName.innerHTML = clientSelected.name.toUpperCase()
 
-        rendererDOM.addMaterialsNeededToArray(clientSelected)
+        rendererDOM.menuClientMaterialsNeeded(clientSelected)
     },
 
-    addMaterialsNeededToArray(clientSelected) {
-        const menuMaterialsArray = []
-
-        for (let constructionSiteStage of clientSelected.construction) {
-            let button = document.createElement('ul');
-            let stageArray = clientSelected.construction
-            button.innerHTML = `STAGE ${stageArray.indexOf(constructionSiteStage) + 1}:`
-            button.setAttribute('id', `stage-${stageArray.indexOf(constructionSiteStage)}`);
-            button.setAttribute('class', "margin");
-            menuClientStages.appendChild(button);
-
-            for (let constructionSiteElement of constructionSiteStage) {
-                let button = document.createElement('li');
-                button.innerHTML = `${constructionSiteElement.stage}`
-                button.setAttribute('class', "btn");
-                if (constructionSiteElement.progress >= 100) {
-                    button.setAttribute('class', "btn btn-clear");
-                    button.setAttribute('btn-sudocontent', 'Task Done');
-                }
-                document.getElementById(`stage-${stageArray.indexOf(constructionSiteStage)}`).appendChild(button);
-
-                if (constructionSiteElement.progress < 100) {
-                    for (let materialNeeded of constructionSiteElement.materialNeeded) {
-                        let materialFound = menuMaterialsArray.find(itemInArray => itemInArray[0] == materialNeeded.name)
-                        if (materialFound != undefined) {
-                            let materialFoundCount = materialFound[1]
-                            materialFoundCount += materialNeeded.count
-                        } else {
-                            menuMaterialsArray.push([materialNeeded.name, materialNeeded.count])
-                        }
-                    }
-                }
-            }
-        }
-        rendererDOM.menuClientMaterialsNeeded(menuMaterialsArray)
-    },
-
-    menuClientMaterialsNeeded(menuMaterialsArray) {
-        //UPDATE REMAINING NEEDED MATERIALS IN CLIENT MENU
-        for (let materialArray of menuMaterialsArray) {
-            let button = document.createElement('button');
-            button.innerHTML = `${materialArray[0]} (${materialArray[1]})`
-            button.setAttribute('class', "btn");
-            menuClientMaterialsNeeded.appendChild(button);
-        }
-    },
-
-    sendMoneyInput() {
-        menuClientSendMoneyInput.innerHTML = `
-                <input class="form money-div" type="number" name="send-own-money" id="send-own-money" 
+    sendMoneyInput(menuClientSendMoneyInput) {
+        menuClientSendMoneyInput.innerHTML =
+            `<input class="form money-div" 
+                type="number" 
+                name="send-own-money" id="send-own-money" 
                 min="0"
                 max="10000" 
                 placeholder="0" 
                 step="100" 
                 value="0">
-                <button id="send-money" class="btn">Send Money</button>
-            `
+            <button id="send-money" class="btn">Send Money</button>`
         handleSendMoneyClient()
+    },
+
+    menuClientMaterialsNeeded(clientSelected) {
+        const menuClientMaterialsNeeded = document.getElementById(`menu-client-materials`)
+        const menuMaterialsArray = rendererDOM.materialsNeededList(clientSelected)
+        menuClientMaterialsNeeded.innerHTML = ""
+
+        for (const [name, count] of menuMaterialsArray) {
+            let button = document.createElement('button');
+            button.innerHTML = `${name} (${count})`
+            button.setAttribute('class', "btn");
+            menuClientMaterialsNeeded.appendChild(button);
+        }
+    },
+
+    materialsNeededList(clientSelected) {
+        const menuClientStages = document.getElementById('menu-client-stages')
+        menuClientStages.innerHTML = ""
+
+        const menuMaterialsArray = []
+
+        for (const constructionSiteStage of clientSelected.construction) {
+            const stageArrayIndex = clientSelected.construction.indexOf(constructionSiteStage)
+
+            const stageContainer = rendererDOM.createStageContainerHTML(stageArrayIndex)
+            menuClientStages.appendChild(stageContainer);
+
+            for (const constructionSiteElement of constructionSiteStage) {
+                const stageContainerDOM = document.getElementById(`stage-${stageArrayIndex}`)
+
+                const StageElement = rendererDOM.createStageElementHTML(constructionSiteElement)
+                stageContainerDOM.appendChild(StageElement);
+
+                if (constructionSiteElement.progress < 100) {
+                    for (const materialNeeded of constructionSiteElement.materialNeeded) {
+                        const alreadyInList = menuMaterialsArray
+                            .find(itemInArray => itemInArray[0] == materialNeeded.name)
+
+                        alreadyInList
+                            ? alreadyInList[1] += materialNeeded.count
+                            : menuMaterialsArray
+                                .push([materialNeeded.name, materialNeeded.count])
+                    }
+                }
+            }
+        }
+        return menuMaterialsArray
+    },
+
+    createStageContainerHTML(stageArrayIndex) {
+        const ul = document.createElement('ul');
+        ul.innerHTML = `STAGE ${stageArrayIndex + 1}:`
+        ul.setAttribute('id', `stage-${stageArrayIndex}`);
+        ul.setAttribute('class', "margin");
+        return ul
+    },
+
+    createStageElementHTML(constructionSiteElement) {
+        const li = document.createElement('li');
+        li.innerHTML = `${constructionSiteElement.stage}`
+        li.setAttribute('class', "btn");
+        if (constructionSiteElement.progress >= 100) {
+            li.setAttribute('class', "btn btn-clear");
+            li.setAttribute('btn-sudocontent', 'Task Done');
+        }
+        return li
     },
 
 
@@ -358,6 +395,8 @@ const rendererDOM = {
     //======================================================================================//
 
     warehouseBtn() {
+        const warehouseContainerDOM = document.getElementById('warehouse-container')
+
         warehouseContainerDOM.innerHTML = ""
         if (stateGame.clients[currentClient] == null) return
         stateGame.clients[currentClient].warehouse.forEach(itemStored => {
@@ -374,23 +413,32 @@ const rendererDOM = {
                 warehouseContainerDOM.appendChild(button);
             }
         })
+        rendererDOM.warehouseLimit()
     },
 
     warehouseLimit() {
-        if (stateGame.clients[currentClient] == null) return warehouseLimitDOM.innerHTML = `SITE STORAGE`
-        warehouseLimitDOM.innerHTML = `SITE STORAGE (${rendererDOM.warehouseDisplayLimit()})`
+        const warehouseLimitDOM = document.getElementById('warehouse-limit')
+
+        if (stateGame.clients[currentClient] == null)
+            return warehouseLimitDOM.innerHTML = `SITE STORAGE`
+
+        warehouseLimitDOM.style.color = "var(--text-base-color)"
+
+        const warehouseLimit = rendererDOM.warehouseDisplayLimit()
+        warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseLimit})`
     },
 
     warehouseDisplayLimit() {
-        if (stateGame.clients[currentClient] == null) return
         const volumeStored = stateGame.clients[currentClient].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
-        const currentVolumeStored = `${Math.floor(volumeStored / stateGame.clients[currentClient].warehouseLimit * 1000) / 10}`
+        const stateWarehouseLimit = stateGame.clients[currentClient].warehouseLimit
+        const currentVolumeStored = Math.floor(volumeStored / stateWarehouseLimit * 1000) / 10
 
-        warehouseLimitDOM.style.color = "var(--text-base-color)"
         if (stateGame.clients[currentClient].warehouse[0] == null) return "EMPTY"
-        if (currentVolumeStored >= 90) { warehouseLimitDOM.style.color = "#ff2a1a" }
         if (volumeStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
+
+        if (currentVolumeStored >= 90) warehouseLimitDOM.style.color = "#ff2a1a"
+
         return `${currentVolumeStored}%`
     },
 
@@ -399,6 +447,8 @@ const rendererDOM = {
     //======================================================================================//
 
     categoryStoreBtn() {
+        const storeCategoryContainerDOM = document.getElementById('store-category')
+
         storeCategoryContainerDOM.innerHTML = ""
         for (let categoryItem of store) {
             let button = document.createElement('button');
@@ -414,6 +464,8 @@ const rendererDOM = {
     },
 
     itemList(categoryItem) {
+        const storeBuyContainerDOM = document.getElementById('store-buy-items')
+
         storeBuyContainerDOM.innerHTML = ""
         categoryItem.stock.forEach(item => {
             //DRAW </li> FIRST
@@ -446,6 +498,8 @@ const rendererDOM = {
     },
 
     workersAndServicesBtn() {
+        const workersAndServicesContainerDOM = document.getElementById('workers-services')
+
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
         if (stateGame.clients[currentClient] == null) return
@@ -465,7 +519,9 @@ const rendererDOM = {
     },
 
     costPerHourBtn() {
+        const costPerHourDOM = document.getElementById('cost-per-hour')
         costPerHourDOM.innerHTML = ""
+
         if (stateGame.clients[currentClient] == null) return
         let button = document.createElement('button');
         button.innerHTML =
@@ -485,35 +541,37 @@ const rendererDOM = {
     //======================================================================================//
 
     constructionTaskCards() {
+        const constructionContainerDOM = document.getElementById('construction-container')
         constructionContainerDOM.innerHTML = ""
 
         if (stateGame.clients[currentClient] == null) return
 
-        for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
+        const currentConstruction = stateGame.clients[currentClient].construction
+        for (const constructionSiteStage of currentConstruction) {
             constructionSiteStage.forEach(constructionSiteElement => {
 
                 if (constructionSiteElement.progress < 100) {
-                    rendererDOM.taskCard(constructionSiteElement)
+                    rendererDOM.taskCard(constructionSiteElement, constructionContainerDOM)
                     rendererDOM.workersOrServicesBtn(constructionSiteElement)
                     rendererDOM.materialsBtn(constructionSiteElement)
                 }
             })
-            let stageIsCompleted = constructionSiteStage
+            const stageIsCompleted = constructionSiteStage
                 .every(constructionSiteElement => constructionSiteElement.progress >= 100);
             if (!stageIsCompleted) break
 
-            let allStagesAreCompleted = stateGame.clients[currentClient].construction
+            const allStagesAreCompleted = currentConstruction
                 .every(constructionSiteStage => constructionSiteStage
                     .every(constructionSiteElement => constructionSiteElement.progress >= 100))
 
             if (allStagesAreCompleted) {
-                rendererDOM.finishClientCard()
+                rendererDOM.finishClientCard(constructionContainerDOM)
                 break
             }
         }
     },
 
-    taskCard({ stage, index, progress }) {
+    taskCard({ stage, index, progress }, constructionContainerDOM) {
         let div = document.createElement('div');
         const client = stateGame.clients[currentClient].name
         div.innerHTML =
@@ -535,13 +593,13 @@ const rendererDOM = {
 
                 button.setAttribute('class', 'btn-darkblue');
                 button.setAttribute('value', `${workersNeeded.count}`);
-                //VERIFY IF WORKER (OR SERVICES) IS ALREADY ASSIGNED TO A JOB
+
                 const isWorkersNeededAssigned = workersNeeded.assigned == true
                 if (isWorkersNeededAssigned) {
                     button.setAttribute('id', `${idButton}-assigned`);
                     button.setAttribute('btn-sudocontent', 'Unassign');
                     button.setAttribute('class', 'btn-darkblue btn-clear');
-                    button.onclick = () => { assignWorkerOrService(workersNeeded, idButton) };
+                    button.onclick = () => { unassignWorkerOrService(workersNeeded, idButton) };
                     button.innerHTML = `${workersNeeded.count} ${workersNeeded.type} Assigned`
                 }
                 else {
@@ -564,21 +622,37 @@ const rendererDOM = {
                 button.setAttribute('id', idButton);
                 button.setAttribute('class', 'btn');
                 button.setAttribute('value', `${materialNeeded.count}`);
-                //VERIFY IF MATERIAL IS ALREADY ASSIGNED TO A JOB
+                button.onclick = () => { assignMaterial(materialNeeded, idButton) };
+
                 if (materialNeeded.assigned == true) {
                     button.setAttribute('btn-sudocontent', 'Used');
-                    button.setAttribute('class', 'btn-darkblue btn-clear');
+                    button.setAttribute('class', 'btn-clear btn-darkblue');
                     button.onclick = () => { };
                     button.innerHTML = `${materialNeeded.count} ${materialNeeded.name}`
                 }
-                button.onclick = () => { assignMaterial(materialNeeded, idButton) };
                 const buttonMaterialsNeeded = document.getElementById(`${constructionSiteElement.stage}-${constructionSiteElement.index}`)
                 buttonMaterialsNeeded.appendChild(button);
             })
         }
     },
 
-    finishClientCard() {
+    progressTaskLoading(constructionSiteElement, targetClient) {
+        const cardId = `${constructionSiteElement.stage}-${targetClient.name}-${constructionSiteElement.index}-progressLoading`
+        const cardTaskLoadingDiv = document.getElementById(cardId)
+        if (cardTaskLoadingDiv) {
+            cardTaskLoadingDiv.style.width = `${constructionSiteElement.progress}%`
+        }
+    },
+
+    progressTaskPercentage(constructionSiteElement, targetClient) {
+        const cardId = `${constructionSiteElement.stage}-${stateGame.clients.indexOf(targetClient)}-${constructionSiteElement.index}-progress`
+        const cardTaskPercentage = document.getElementById(cardId)
+
+        if (cardTaskPercentage == null) return console.log('Card not found / or hidden');
+        cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+    },
+
+    finishClientCard(constructionContainerDOM) {
         let div = document.createElement('div');
         div.innerHTML = `${stateGame.clients[currentClient].name.toUpperCase()}'s CONSTRUCTION COMPLETED`
         div.setAttribute('id', `${stateGame.clients[currentClient]}-completed`);
@@ -613,6 +687,8 @@ const rendererDOM = {
     },
 
     handleDisplayClientMenu() {
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+
         menuClientBackgroundBlock.addEventListener('click', event => {
             const closeTarget = event.target.id
             if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
@@ -623,9 +699,6 @@ const rendererDOM = {
 
 }
 
-
 //======================================================================================//
 rendererDOM.all() //CALL UPDATE  AFTER ALL CODE IS LOADED
 //======================================================================================//
-rendererDOM.handleDisplayOwnMenu()
-rendererDOM.handleDisplayClientMenu()
