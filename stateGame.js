@@ -2,7 +2,7 @@ const stateGame = {
     "clock": {
         "timeScale": 1000,
         "day": 1,
-        "hour": 0,
+        "hour": 8,
         "minute": 0,
         "minuteAccumulated": 0
     },
