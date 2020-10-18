@@ -1,4 +1,4 @@
-const stateGame = {
+let stateGame = {
     "clock": {
         "timeScale": 1000,
         "day": 1,
@@ -31,7 +31,10 @@ const stateGame = {
         // { ...new Client("Jiraya") },
         // { ...new Client("Marcia") },
     ],
-
+    "THREEmodels": {
+        "clients": [],
+        "deletedModels": [],
+    }
 }
 
 // {

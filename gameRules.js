@@ -24,7 +24,6 @@ const clock = stateGame.clock
 
 //DEFINE ALL GLOBAL VARIABLES
 var currentClient = 0
-var deletedModels = []
 
 
 //======================================================================================//
@@ -75,13 +74,37 @@ function updateDOM() {
 }
 
 
-function changeTimeSpeed(timeScale = 0) {
-    clock.timeScale = timeScale
-    clearInterval(timeClockRules)
-    if (timeScale > 0) {
-        timeClockRules = setInterval(timeRules, clock.timeScale);
-    }
+function saveGame() {
+    const savedGame = JSON.stringify({
+        clock: {
+            ...stateGame.clock
+        },
+        ownCompany: {
+            ...stateGame.ownCompany
+        },
+        clients: [
+            ...stateGame.clients
+        ],
+        lookingForClients: {
+            ...stateGame.lookingForClients
+        },
+
+    })
+
+    localStorage.setItem('save1', savedGame);
 }
+
+function loadGame() {
+    const loadGame = JSON.parse(localStorage.getItem('save1'))
+    console.log("loadGame -> loadGame", loadGame)
+
+    stateGame = loadGame
+    rendererDOM.all()
+}
+
+
+
+
 
 function stopTime(speedPlayBtn) {
     speedPlayBtn.innerHTML = '&#8213;'
@@ -108,6 +131,15 @@ function speedTime(speedPlayBtn) {
             break;
     }
 }
+
+function changeTimeSpeed(timeScale = 0) {
+    clock.timeScale = timeScale
+    clearInterval(timeClockRules)
+    if (timeScale > 0) {
+        timeClockRules = setInterval(timeRules, clock.timeScale);
+    }
+}
+
 
 function researchNewClients(targetHTML) {
     if (clock.timeScale <= 0) return
@@ -497,8 +529,10 @@ function completeClientConstruction() {
 
     getCurrentExperience(200)
 
-    deletedModels.push(stateGame.clients[currentClient].THREEmodel)
-    deletedModels.push(stateGame.clients[currentClient].THREEsite)
+    const clientName = stateGame.clients[currentClient].name
+    const THREE = stateGame.THREEmodels
+    THREE.deletedModels.push(THREE.clients[clientName].THREEmodel)
+    THREE.deletedModels.push(THREE.clients[clientName].THREEsite)
     stateGame.clients[currentClient] = null
     stateGame.clients.splice(currentClient, 1)
     if (currentClient > 0) currentClient--
