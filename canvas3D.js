@@ -13,11 +13,13 @@ import Stats from 'https://unpkg.com/three@0.120.1/examples/jsm/libs/stats.modul
 
 function main() {
 
+    const THREEPath = stateGame.THREEmodels
+
     //TARGET CANVAS, RENDERER, SCENE AND CAMERA
     //======================================================================================//
     const canvas = document.querySelector('canvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
     renderer.setClearColor("#bed2ab"); // BACKGROUND COLOR
     renderer.setPixelRatio(window.devicePixelRatio * 1); // CONTROLS RESOLUTION
@@ -31,18 +33,6 @@ function main() {
     let axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
 
-    //DISPLAY FRAMES PER SECOND
-    const stats = createStats();
-    document.body.appendChild(stats.domElement);
-
-    function createStats() {
-        let stats = new Stats();
-        stats.setMode(0);
-        stats.domElement.style.position = 'absolute';
-        stats.domElement.style.left = '0';
-        stats.domElement.style.top = '0';
-        return stats;
-    }
 
     //ORTHOGONAL CAMERA POSITION
     let aspect = window.innerWidth / window.innerHeight;
@@ -74,7 +64,6 @@ function main() {
     //CREATED LIGHTS
     //======================================================================================//
 
-
     const ambientLight = new THREE.AmbientLight(0x404040)
     scene.add(ambientLight);
     const light = new THREE.DirectionalLight(0xbbbbbb);
@@ -97,56 +86,86 @@ function main() {
         renderer.setSize(window.innerWidth, window.innerHeight);
         render()
     }
+
     //LISTEN TO RESIZE WINDOW
     window.addEventListener('resize', onWindowResize, false);
+
+
+
+    let loadingManager = new THREE.LoadingManager()
+
+
+
+    //DISPLAY FRAMES PER SECOND
+    const stats = createStats();
+    document.body.appendChild(stats.domElement);
+
+    function createStats() {
+        let stats = new Stats();
+        stats.setMode(0);
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0';
+        stats.domElement.style.top = '0';
+        return stats;
+    }
 
     //TARGET CANVAS, RENDERER AND CAMERA
     //======================================================================================//
 
-    //THREE.js "GLOBAL" VARIABLES BEFORE RENDER STARTS
-    let clientCameraX
-    let clientX
-    let loadingManager = new THREE.LoadingManager()
-
     function fps() {
-        //UPDATES FRAMES PER SECOND
         requestAnimationFrame(fps)
         stats.update();
     }
 
-    function render(time) {
-        time *= 0.001;  // convert time to seconds
 
-        for (let client of stateGame.clients) {
+    function render() {
 
-            function createTHREEModel() {
-                if (client.THREEsite == null) {
-                    client.THREEsite = {}
-                    //CREATE ROAD FOR NEW CLIENT
-                    new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`, collada => {
-                        console.log(`CREATE roadSite (${client.name})`)
-                        client.THREEsite = collada.scene
-                        client.THREEsite.position.set(0, 0, 0);
-                        client.THREEsite.name = `${client.name}-roadSite`
-                        scene.add(client.THREEsite)
-                    })
-                    //CREATE THREE MODEL FOR NEW CLIENT
-                    // new ColladaLoader(loadingManager).load(`https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`, (collada) => {
-                    new ColladaLoader(loadingManager).load(`models/${client.constructionType}.dae`, collada => {
-                        console.log(`CREATE THREEmodel (${client.name})`)
-                        client.THREEmodel = collada.scene
-                        client.THREEmodel.position.set(0, 0, 0);
-                        client.THREEmodel.name = `${client.name}`
-                        scene.add(client.THREEmodel)
-                    })
+
+        for (const client of stateGame.clients) {
+
+            if (stateGame.clients.length == 0)
+                return effect.render(scene, camera)
+
+            const hasClient = Object.keys(THREEPath.clients)
+                .find(item => item == client.name)
+            if (!hasClient) THREEPath.clients[client.name] = {}
+
+            function createTHREEModel(client) {
+                if (THREEPath.clients[client.name].THREEsite == null) {
+                    const roadSiteUrl = `https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`
+                    const THREEmodelUrl = `models/${client.constructionType}.dae`
+                    // const THREEmodelUrl = `https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`
+
+                    loadSiteModel(client, roadSiteUrl)
+                    loadTHREEModel(client, THREEmodelUrl)
+
+                    function loadSiteModel(client, roadSiteUrl) {
+                        new ColladaLoader(loadingManager).load(roadSiteUrl, collada => {
+                            console.log(`CREATE roadSite (${client.name})`)
+                            THREEPath.clients[client.name].THREEsite = collada.scene
+                            THREEPath.clients[client.name].THREEsite.position.set(0, 0, 0);
+                            THREEPath.clients[client.name].THREEsite.name = `${client.name}-roadSite`
+                            scene.add(THREEPath.clients[client.name].THREEsite)
+                        })
+                    }
+                    function loadTHREEModel(client, THREEmodelUrl) {
+                        new ColladaLoader(loadingManager).load(THREEmodelUrl, collada => {
+                            console.log(`CREATE THREEmodel (${client.name})`)
+                            THREEPath.clients[client.name].THREEmodel = collada.scene
+                            THREEPath.clients[client.name].THREEmodel.position.set(0, 0, 0);
+                            THREEPath.clients[client.name].THREEmodel.name = `${client.name}`
+                            scene.add(THREEPath.clients[client.name].THREEmodel)
+                        })
+                    }
                 }
             }
-            createTHREEModel()
+            createTHREEModel(client)
 
-            if (!client.THREEsite) return console.log(`LOADING roadSite.dae (${client.name})`);
-            if (!client.THREEmodel) return console.log(`LOADING ${client.constructionType}.dae (${client.name})`);
 
-            const sketchUpModels = client.THREEmodel.children[0].children
+            if (!THREEPath.clients[client.name].THREEsite) return console.log(`LOADING roadSite.dae (${client.name})`);
+            if (!THREEPath.clients[client.name].THREEmodel) return console.log(`LOADING ${client.constructionType}.dae (${client.name})`);
+
+            const sketchUpModels = THREEPath.clients[client.name].THREEmodel.children[0].children
             for (let construction of sketchUpModels) {
                 //HIDE ALL constructionDone
                 if (construction.name == "constructionDone") {
@@ -160,42 +179,45 @@ function main() {
                 if (construction.name == "terrainSite") construction.visible = false
             }
             //HIDE ALL ROAD
-            client.THREEsite.visible = false
+            THREEPath.clients[client.name].THREEsite.visible = false
         }
 
-        if (deletedModels.length > 0) {
-            for (let THREEmodel of deletedModels) {
+
+        if (THREEPath.deletedModels.length > 0) {
+            for (let THREEmodel of THREEPath.deletedModels) {
                 console.log("DELETED", THREEmodel);
                 scene.remove(THREEmodel)
-                deletedModels.splice(THREEmodel, 1)
+                THREEPath.deletedModels.splice(THREEmodel, 1)
             }
         }
 
-        let noClientsWithTHREEModel = stateGame.clients
-            .every(client => { client.THREEmodel == null })
-        if (noClientsWithTHREEModel) return effect.render(scene, camera);
 
-        if (!stateGame.clients[currentClient].THREEmodel) return effect.render(scene, camera)
+        if (stateGame.clients.length == 0)
+            return effect.render(scene, camera)
+
+        const THREEclient = stateGame.clients[currentClient].name
+
+        if (!THREEPath.clients[THREEclient].THREEmodel) return effect.render(scene, camera)
 
         //FIND THREE IN PROGRESS GROUP OF ELEMENTS
-        let THREEInProgress = stateGame.clients[currentClient].THREEmodel.children[0].children
+        let THREEInProgress = THREEPath.clients[THREEclient].THREEmodel.children[0].children
             .find(item => item.name == "constructionInProgress")
         //FIND THREE DONE GROUP OF ELEMENTS
-        let THREEDone = stateGame.clients[currentClient].THREEmodel.children[0].children
+        let THREEDone = THREEPath.clients[THREEclient].THREEmodel.children[0].children
             .find(item => item.name == "constructionDone")
         //FIND THREE TERRAIN ELEMENT
-        let THREETerrain = stateGame.clients[currentClient].THREEmodel.children[0].children
+        let THREETerrain = THREEPath.clients[THREEclient].THREEmodel.children[0].children
             .find(item => item.name == "terrainSite")
 
         THREETerrain.visible = false
         if (THREETerrain.visible) THREETerrain.visible = false
 
 
+
         for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
             for (let constructionSiteElement of constructionSiteStage) {
-
                 //SHOW ROAD
-                stateGame.clients[currentClient].THREEsite.visible = true
+                THREEPath.clients[THREEclient].THREEsite.visible = true
 
                 //FIND THREE IN PROGRESS ELEMENTS
                 let THREEConstructionElementInProgress = THREEInProgress.children
