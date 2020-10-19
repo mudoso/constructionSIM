@@ -195,7 +195,7 @@ function main() {
         if (stateGame.clients.length == 0)
             return effect.render(scene, camera)
 
-        const THREEclient = stateGame.clients[currentClient].name
+        const THREEclient = stateGame.clients[stateGame.clientIndex].name
 
         if (!THREEPath.clients[THREEclient].THREEmodel) return effect.render(scene, camera)
 
@@ -214,7 +214,7 @@ function main() {
 
 
 
-        for (let constructionSiteStage of stateGame.clients[currentClient].construction) {
+        for (let constructionSiteStage of stateGame.clients[stateGame.clientIndex].construction) {
             for (let constructionSiteElement of constructionSiteStage) {
                 //SHOW ROAD
                 THREEPath.clients[THREEclient].THREEsite.visible = true
