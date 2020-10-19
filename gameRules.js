@@ -3,6 +3,7 @@
 // ADDED A FRONT PAGE TO INPUT COMPANY NAME, START NEW GAME OR LOAD GAME
 // MAKE A SAVE SYSTEM TO LocalStorage
 // MAKE A HELP TOOLTIP TO SHOW INFORMATION ABOUT THE COMPONENTS
+// MAKE CLIENT DUE DATE WITH FINE IF DUE DATE IS NOT ACCOMPLISHED
 // MAKES SKILLS IMPACT IN THE GAME
 // CHANGE TASK PROGRESS FORMULA TO WORK IN ACCORD WITH SKILLS AND DIFFICULT OF THE TASK
 // getNewAvailableClients() SHOW "NO CLIENT WHEN THERE IS NO CLIENT IN THAT DAY"
@@ -13,10 +14,10 @@
 // REFACTORING THE CODE AND GET RID OF EXCESSIVE COMMENTS
 
 
+//============================================================================//
+//CLOCK RELATED FUNCTIONS
+//============================================================================//
 
-//======================================================================================//
-//RESPONSIBLE FOR CLOCK RELATED FUNCTIONS
-//======================================================================================//
 
 let timeClockRules = setInterval(timeRules, stateGame.clock.timeScale); //START CLOCK
 
@@ -63,8 +64,11 @@ function updateDOM() {
     rendererDOM.updateCurrentSkillPoints()
 }
 
-//======================================================================================//
-//END CLOCK FUNCTIONS
+
+
+//============================================================================//
+//MENU / UI FUNCTIONS
+//============================================================================//
 
 
 function saveGame() {
@@ -131,14 +135,6 @@ function changeTimeSpeed(timeScale = 0) {
     }
 }
 
-// function handleSendMoneyClient() {
-//     const sendMoneyBtn = document.getElementById('send-money');
-//     const sendMoneyInput = document.getElementById('send-own-money');
-
-//     sendMoneyBtn.onclick = () => { sendMoneyToClient(sendMoneyInput) };
-// }
-// handleSendMoneyClient()
-
 function sendMoneyToClient(sendMoneyInput) {
     const countSent = parseInt(sendMoneyInput.value)
     sendMoneyInput.value = 0
@@ -148,9 +144,25 @@ function sendMoneyToClient(sendMoneyInput) {
     stateGame.clients[stateGame.clientIndex].money += countSent
 }
 
-//======================================================================================//
-//RESPONSIBLE FOR GET NEW CLIENTS OF THE DAY
-//======================================================================================//
+function addSkillPoint(skillName) {
+    const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
+
+    if (isSkillPointAvailable) {
+        stateGame.ownCompany.skillPoints--
+        stateGame.ownCompany.skills[skillName.toLowerCase()]++
+
+        rendererDOM.displayAvailableSkillPoints()
+        rendererDOM.displaySkillBtn()
+        rendererDOM.updateCurrentSkillPoints()
+
+    }
+}
+
+
+
+//============================================================================//
+//NEW CLIENTS FUNCTIONS
+//============================================================================//
 
 
 function researchNewClients() {
@@ -187,7 +199,6 @@ function checkResearchTime() {
 
         stateGame.lookingForClients.remainingTime = setRemainingTime
         stateGame.lookingForClients.lookingAttempts--
-
         stateGame.lookingForClients.research = false
 
         const hasSomeClient = stateGame.clients.length > 0
@@ -237,7 +248,8 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
     const maxClientBudget = client.money * ownCompanyLevelDelta
     const minClientBudget = client.money * 0.5
 
-    if (client.attempt == null) client.attempt = randomCount(stateGame.ownCompany.level) + 1
+    if (client.attempt == null)
+        client.attempt = randomCount(stateGame.ownCompany.level) + 1
     if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
         client.attempt -= 1
 
@@ -248,21 +260,6 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
     stateGame.clients.unshift(client)
     stateGame.lookingForClients.clientList.splice(index, 1);
     rendererDOM.all()
-}
-
-
-function addSkillPoint(skillName) {
-    const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
-
-    if (isSkillPointAvailable) {
-        stateGame.ownCompany.skillPoints--
-        stateGame.ownCompany.skills[skillName.toLowerCase()]++
-
-        rendererDOM.displayAvailableSkillPoints()
-        rendererDOM.displaySkillBtn()
-        rendererDOM.updateCurrentSkillPoints()
-
-    }
 }
 
 function getCurrentExperience(addExperience = 0) {
@@ -282,12 +279,10 @@ function getCurrentExperience(addExperience = 0) {
     rendererDOM.experience(showExperience)
 }
 
-
-
 function checkCostPerHour() {
-    for (let targetClient of stateGame.clients) {
+    for (const targetClient of stateGame.clients) {
         targetClient.costPerHour = 0
-        for (let workersOnSite of targetClient.workers) {
+        for (const workersOnSite of targetClient.workers) {
             const workerTypeExists = workersOnSite != null
 
             if (workerTypeExists) {
@@ -337,9 +332,9 @@ function deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType) {
 }
 
 function unassignWorkers(targetClient, workersOnSite) {
-    for (let constructionSiteStage of targetClient.construction) {
-        for (let constructionSiteElement of constructionSiteStage) {
-            for (let workerNeeded of constructionSiteElement.workersNeeded) {
+    for (const constructionSiteStage of targetClient.construction) {
+        for (const constructionSiteElement of constructionSiteStage) {
+            for (const workerNeeded of constructionSiteElement.workersNeeded) {
                 if (workerNeeded.assigned == true && workerNeeded.type == workersOnSite.name) {
                     workersOnSite.count += workerNeeded.count
                     workerNeeded.assigned = false
@@ -359,9 +354,9 @@ function deduceOwnMoney(targetClient, costPerHourPerType) {
 
 function checkAssignedWorkers(targetClient, workersOnSite) {
     let workersAssignedCount = 0
-    for (let constructionSiteStage of targetClient.construction) {
-        for (let constructionSiteElement of constructionSiteStage) {
-            for (let workersAssigned of constructionSiteElement.workersNeeded) {
+    for (const constructionSiteStage of targetClient.construction) {
+        for (const constructionSiteElement of constructionSiteStage) {
+            for (const workersAssigned of constructionSiteElement.workersNeeded) {
                 const isWorkerAssigned = workersAssigned.type == workersOnSite.name && workersAssigned.assigned == true
 
                 if (isWorkerAssigned) {
@@ -375,16 +370,15 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
 
 
 
-
-//======================================================================================//
-//RESPONSIBLE FOR ALL TASKS FUNCTIONS RULES RELATED
-//======================================================================================//
+//============================================================================//
+//TASKS FUNCTIONS
+//============================================================================//
 
 
 function handleTaskProgress() {
-    for (let targetClient of stateGame.clients) {
-        for (let constructionSiteStage of targetClient.construction) {
-            for (let constructionSiteElement of constructionSiteStage) {
+    for (const targetClient of stateGame.clients) {
+        for (const constructionSiteStage of targetClient.construction) {
+            for (const constructionSiteElement of constructionSiteStage) {
 
                 verifyAssigned(constructionSiteElement, targetClient)
             }
@@ -392,9 +386,8 @@ function handleTaskProgress() {
             if (hasConstructionInProgress) break
         }
         const hasStageInProgress = verifyStageInProgress(targetClient)
-        if (hasStageInProgress) break
-
-        sendBackAllWorkerOrService(targetClient)
+        if (!hasStageInProgress)
+            sendBackAllWorkerOrService(targetClient)
     }
 }
 
@@ -411,7 +404,8 @@ function verifyStageInProgress(targetClient) {
 
 function sendBackAllWorkerOrService(targetClient) {
     targetClient.workers.forEach(workerOrServiceStored => {
-        if (workerOrServiceStored.count > 0) sendBackWorkerOrService(workerOrServiceStored)
+        if (workerOrServiceStored.count > 0)
+            sendBackWorkerOrService(workerOrServiceStored)
     })
 }
 
@@ -460,8 +454,8 @@ function startTask(constructionSiteElement, targetClient) {
 
 function handleCompletedTask(constructionSiteElement, targetClient) {
     if (constructionSiteElement.progress >= 100) {
-        for (let workerAssigned of constructionSiteElement.workersNeeded) {
-            for (let workersOnSite of targetClient.workers) {
+        for (const workerAssigned of constructionSiteElement.workersNeeded) {
+            for (const workersOnSite of targetClient.workers) {
                 if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
@@ -515,10 +509,10 @@ function unassignWorkerOrService(workersNeeded) {
 }
 
 function assignMaterial(materialNeeded) {
-    for (let materialOnWarehouse of stateGame.clients[stateGame.clientIndex].warehouse) {
+    for (const materialOnWarehouse of stateGame.clients[stateGame.clientIndex].warehouse) {
         if (materialOnWarehouse.name == materialNeeded.name &&
             materialOnWarehouse.count >= materialNeeded.count) {
-            //ASSIGN MATERIAL TO A TASK
+
             materialNeeded.assigned = true
             materialOnWarehouse.count -= materialNeeded.count
 
@@ -548,125 +542,107 @@ function completeClientConstruction() {
 
 
 
-//RESPONSIBLE FOR HANDLE SEND MONEY TO CLIENT FUNCTION
-//======================================================================================//
+//============================================================================//
+//STORE AND WAREHOUSE FUNCTIONS
+//============================================================================//
 
 
-
-
-
-//======================================================================================//
-//RESPONSIBLE FOR ALL STORE AND WAREHOUSE FUNCTIONS RULES RELATED
-//======================================================================================//
-
-
-
-//ADD ITEMS TO WAREHOUSE(IF ITS A MATERIAL) OR SITE(IF ITS A WORKER/SERVICE)
 function buyItem(itemBought, categoryItem) {
     const noClientSelected = stateGame.clients[stateGame.clientIndex] == null
     if (noClientSelected) return
 
     const getCount = document.getElementById(`${itemBought.name}-buyinput`);
 
-    if (checkValidation()) return
+    if (checkValidation(itemBought, getCount)) return
 
     const countBought = parseInt(getCount.value)
     const moneySpent = countBought * itemBought.price
 
     const isItemBoughtMaterial = !itemBought.service
     if (isItemBoughtMaterial) {
-        const isWarehouseFull = checkWarehouseSpace()
+        const isWarehouseFull = checkWarehouseSpace(itemBought, countBought)
         if (isWarehouseFull) return
-        handleBoughtMaterials()
+        handleBoughtMaterials(moneySpent)
     }
 
     getCount.value = 1
 
-    addItemBoughtToContainer()
+    addItemBoughtToContainer(itemBought, countBought)
 
     rendererDOM.warehouseBtn()
     rendererDOM.costPerHourBtn()
     rendererDOM.workersAndServicesBtn()
+}
 
+function checkValidation(itemBought, getCount) {
+    const hasClientMoney = stateGame.clients[stateGame.clientIndex].money > 0
+    const isValidInput = itemBought != null || getCount != null
+    const isValidValue = getCount.value != null || getCount.value > 0
 
+    const conditions = [
+        hasClientMoney,
+        isValidInput,
+        isValidValue,
+    ].some(condition => condition == false)
 
-    // checkValidation ===================================================//
+    return conditions
+}
 
-    function checkValidation() {
-        const hasClientMoney = stateGame.clients[stateGame.clientIndex].money > 0
-        const isValidInput = itemBought != null || getCount != null
-        const isValidValue = getCount.value != null || getCount.value > 0
+function checkWarehouseSpace(itemBought, countBought) {
 
-        const conditions = [
-            hasClientMoney,
-            isValidInput,
-            isValidValue,
-        ].some(condition => { return condition == false })
+    const volumeStored = stateGame.clients[stateGame.clientIndex].warehouse
+        .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
+    const totalVolume = volumeStored + countBought * itemBought.volume
+    const warehouseLimit = stateGame.clients[stateGame.clientIndex].warehouseLimit
 
-        return conditions
-    }
+    return isVolumeHigherThanWarehouseLimit = totalVolume > warehouseLimit
+}
 
-    // buyItem FUNCTIONS ===================================================//
+function handleBoughtMaterials(moneySpent) {
+    const notEnoughClientMoney =
+        stateGame.clients[stateGame.clientIndex].money <= moneySpent
 
-    function checkWarehouseSpace() {
+    if (notEnoughClientMoney) return deduceOwnAndClientMoney(moneySpent)
+    stateGame.clients[stateGame.clientIndex].money -= moneySpent
+}
 
-        const volumeStored = stateGame.clients[stateGame.clientIndex].warehouse
-            .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
-        const totalVolume = volumeStored + countBought * itemBought.volume
-        const warehouseLimit = stateGame.clients[stateGame.clientIndex].warehouseLimit
+function deduceOwnAndClientMoney(moneySpent) {
+    stateGame.clients[stateGame.clientIndex].money -= moneySpent
+    stateGame.ownCompany.money += stateGame.clients[stateGame.clientIndex].money
+    stateGame.clients[stateGame.clientIndex].money = 0
+}
 
-        return isVolumeHigherThanWarehouseLimit = totalVolume > warehouseLimit
-    }
+function addItemBoughtToContainer(itemBought, countBought) {
+    const warehouseOrSiteContainer = checkContainer(itemBought)
+    createItemObject(itemBought, warehouseOrSiteContainer)
 
-    function handleBoughtMaterials() {
-        const notEnoughClientMoney = stateGame.clients[stateGame.clientIndex].money <= moneySpent
+    const ItemStored = warehouseOrSiteContainer
+        .find(itemStored => itemStored.name === itemBought.name)
 
-        if (notEnoughClientMoney) return deduceOwnAndClientMoney()
-        stateGame.clients[stateGame.clientIndex].money -= moneySpent
-    }
+    ItemStored.count = ItemStored.count + countBought;
+}
 
-    function deduceOwnAndClientMoney() {
-        stateGame.clients[stateGame.clientIndex].money -= moneySpent
-        stateGame.ownCompany.money += stateGame.clients[stateGame.clientIndex].money
-        stateGame.clients[stateGame.clientIndex].money = 0
-    }
+function checkContainer(itemBought) {
+    const isService = itemBought.service
 
-    function addItemBoughtToContainer() {
-        const warehouseOrSiteContainer = checkContainer()
-        createItemObject(warehouseOrSiteContainer)
+    if (isService) return stateGame.clients[stateGame.clientIndex].workers
+    return stateGame.clients[stateGame.clientIndex].warehouse
+}
 
-        const ItemStored = warehouseOrSiteContainer
-            .find(itemStored => itemStored.name === itemBought.name)
+function createItemObject(itemBought, warehouseOrSiteContainer) {
+    const isItemStored = warehouseOrSiteContainer
+        .some(itemStored => itemStored.name === itemBought.name)
 
-        ItemStored.count = ItemStored.count + countBought;
-    }
-
-    function checkContainer() {
-        const isService = itemBought.service
-
-        if (isService) return stateGame.clients[stateGame.clientIndex].workers
-        return stateGame.clients[stateGame.clientIndex].warehouse
-    }
-
-    function createItemObject(warehouseOrSiteContainer) {
-        const isItemStored = warehouseOrSiteContainer
-            .some(itemStored => itemStored.name === itemBought.name)
-
-        if (!isItemStored) {
-            const newItemStored = { ...itemBought, "count": 0, "volumeTotal": 0, }
-            warehouseOrSiteContainer.unshift(newItemStored)
-        }
+    if (!isItemStored) {
+        const newItemStored = { ...itemBought, "count": 0, "volumeTotal": 0, }
+        warehouseOrSiteContainer.unshift(newItemStored)
     }
 }
 
 function discardWarehouseItem(materialStored) {
     const warehouseContainer = stateGame.clients[stateGame.clientIndex].warehouse
     const indexOfItemSelected = warehouseContainer.indexOf(materialStored)
+
     warehouseContainer.splice(indexOfItemSelected, 1)
     rendererDOM.all()
 }
-
-
-
-//======================================================================================//
-//END STORE FUNCTIONS RULES
