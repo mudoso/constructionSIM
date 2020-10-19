@@ -6,7 +6,7 @@ const rendererDOM = {
         rendererDOM.categoryStoreBtn()
         rendererDOM.warehouseBtn()
         rendererDOM.warehouseLimit()
-        rendererDOM.workersAndServicesBtn()
+        rendererDOM.idleWorkersAndServices()
         rendererDOM.costPerHourBtn()
         rendererDOM.ownCompanyMenuClients()
         rendererDOM.ownCompanySkills()
@@ -446,20 +446,41 @@ const rendererDOM = {
 
         warehouseContainerDOM.innerHTML = ""
         if (stateGame.clients[stateGame.clientIndex] == null) return
-        stateGame.clients[stateGame.clientIndex].warehouse.forEach(itemStored => {
-            if (itemStored.count > 0) {
-                let button = document.createElement('button');
+        // stateGame.clients[stateGame.clientIndex].warehouse.forEach(itemStored => {
+        for (const itemStored of stateGame.clients[stateGame.clientIndex].warehouse) {
+
+            const isTransporting = itemStored.transport.length > 0
+
+            if (itemStored.count > 0 || isTransporting) {
+
+                const materialComing = itemStored.transport
+                    .reduce((acc, worker) => acc + worker.count, 0)
+
+                let emoji = ''
+
+                isTransporting
+                    ? emoji = ` [${materialComing}...🚚]`
+                    : emoji = ''
+
+                let button = document.createElement('button')
+                button.setAttribute('id', itemStored.name)
+                button.setAttribute('class', `btn btn-sendback`)
+                button.setAttribute('btn-sudocontent', '')
+                button.onclick = false
+                if (itemStored.count > 0) {
+                    button.setAttribute('btn-sudocontent', `Discard`)
+                    button.onclick = () => { discardWarehouseItem(itemStored) }
+                }
                 button.innerHTML =
                     `${itemStored.name} <span id="${itemStored.name}">
-                ${itemStored.count}
-                </span>${itemStored.unit}`
-                button.setAttribute('id', itemStored.name);
-                button.setAttribute('class', `btn btn-sendback`);
-                button.setAttribute('btn-sudocontent', `Discard`);
-                button.onclick = () => { discardWarehouseItem(itemStored) };
-                warehouseContainerDOM.appendChild(button);
+                    ${itemStored.count}
+                    </span>${itemStored.unit}${emoji}`
+
+                warehouseContainerDOM.appendChild(button)
             }
-        })
+            // })
+        }
+
         rendererDOM.warehouseLimit()
     },
 
@@ -544,22 +565,42 @@ const rendererDOM = {
         })
     },
 
-    workersAndServicesBtn() {
+    idleWorkersAndServices() {
         const workersAndServicesContainerDOM = document.getElementById('workers-services')
 
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
         if (stateGame.clients[stateGame.clientIndex] == null) return
         for (const workerOrServiceStored of stateGame.clients[stateGame.clientIndex].workers) {
-            if (workerOrServiceStored.count > 0) {
+
+            const isTransporting = workerOrServiceStored.transport.length > 0
+
+            if (workerOrServiceStored.count > 0 || isTransporting) {
+
+                const workersComing = workerOrServiceStored.transport
+                    .reduce((acc, worker) => acc + worker.count, 0)
+
+                let costPerHourAndIdle = ''
+                let emoji = ''
+
+                isTransporting
+                    ? emoji = ` [${workersComing}...🚗]`
+                    : emoji = ''
+
                 workersAndServicesContainerDOM.style.display = 'grid'
-                let button = document.createElement('button');
-                button.innerHTML =
-                    `${workerOrServiceStored.count} ${workerOrServiceStored.name} $${workerOrServiceStored.price}/${workerOrServiceStored.unit} (Idle)`
+                const button = document.createElement('button');
                 button.setAttribute('id', workerOrServiceStored.name);
                 button.setAttribute('class', `btn-darkblue btn-sendback btn-${workerOrServiceStored.category}`);
-                button.setAttribute('btn-sudocontent', `Send Back $${workerOrServiceStored.price}`);
-                button.onclick = () => { sendBackWorkerOrService(workerOrServiceStored) };
+                button.setAttribute('btn-sudocontent', '');
+                button.onclick = false
+                if (workerOrServiceStored.count > 0) {
+                    costPerHourAndIdle = `$${workerOrServiceStored.price}/${workerOrServiceStored.unit} (Idle)`
+                    button.setAttribute('btn-sudocontent', `Send Back $${workerOrServiceStored.price}`);
+                    button.onclick = () => { sendBackWorkerOrService(workerOrServiceStored) }
+                }
+                button.innerHTML =
+                    `${workerOrServiceStored.count} ${workerOrServiceStored.name} ${costPerHourAndIdle}${emoji}`
+
                 workersAndServicesContainerDOM.appendChild(button);
             }
         }

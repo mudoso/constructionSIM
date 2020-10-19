@@ -49,9 +49,10 @@ function timeRules() {
 }
 
 
-const changeListener = setInterval(updateDOM, 500)
+const changeListener = setInterval(listener, 500)
 
-function updateDOM() {
+function listener() {
+    transportItemToContainer()
 
     checkResearchTime()
     rendererDOM.updateNumberOfNewClients()
@@ -82,10 +83,10 @@ function saveGame() {
         clients: [
             ...stateGame.clients
         ],
+        clientIndex: stateGame.clientIndex,
         lookingForClients: {
             ...stateGame.lookingForClients
         },
-
     })
     const size = new TextEncoder().encode(savedGame).length
     console.log("saveGame -> size", size)
@@ -324,7 +325,7 @@ function deduceCostPerHour(targetClient, workersOnSite, costPerHourPerType) {
         unassignWorkers(targetClient, workersOnSite)
         deduceOwnMoney(targetClient, costPerHourPerType)
         workersOnSite.count = 0
-        rendererDOM.workersAndServicesBtn()
+        rendererDOM.idleWorkersAndServices()
         return
     }
     targetClient.money -= costPerHourPerType
@@ -342,7 +343,7 @@ function unassignWorkers(targetClient, workersOnSite) {
             }
         }
     }
-    rendererDOM.workersAndServicesBtn()
+    rendererDOM.idleWorkersAndServices()
 }
 
 function deduceOwnMoney(targetClient, costPerHourPerType) {
@@ -456,7 +457,10 @@ function handleCompletedTask(constructionSiteElement, targetClient) {
     if (constructionSiteElement.progress >= 100) {
         for (const workerAssigned of constructionSiteElement.workersNeeded) {
             for (const workersOnSite of targetClient.workers) {
-                if (workerAssigned.type == workersOnSite.name && workerAssigned.assigned == true) {
+                const isSameWorker = workerAssigned.type == workersOnSite.name
+                const isWorkerAssigned = workerAssigned.assigned == true
+
+                if (isSameWorker && isWorkerAssigned) {
                     workersOnSite.count += workerAssigned.count
                     workerAssigned.count = 0
                     workerAssigned.assigned = false
@@ -477,7 +481,7 @@ function sendBackWorkerOrService(workerOrServiceStored) {
     workerOrServiceStored.count--
 
     rendererDOM.costPerHourBtn()
-    rendererDOM.workersAndServicesBtn()
+    rendererDOM.idleWorkersAndServices()
 }
 
 function assignWorkerOrService(workersNeeded) {
@@ -490,7 +494,7 @@ function assignWorkerOrService(workersNeeded) {
     workersNeeded.assigned = true
     workersOnSite.count -= workersNeeded.count
 
-    rendererDOM.workersAndServicesBtn()
+    rendererDOM.idleWorkersAndServices()
     rendererDOM.constructionTaskCards()
 }
 
@@ -504,7 +508,7 @@ function unassignWorkerOrService(workersNeeded) {
     workersNeeded.assigned = false
     workersOnSite.count += workersNeeded.count
 
-    rendererDOM.workersAndServicesBtn()
+    rendererDOM.idleWorkersAndServices()
     rendererDOM.constructionTaskCards()
 }
 
@@ -571,7 +575,7 @@ function buyItem(itemBought, categoryItem) {
 
     rendererDOM.warehouseBtn()
     rendererDOM.costPerHourBtn()
-    rendererDOM.workersAndServicesBtn()
+    rendererDOM.idleWorkersAndServices()
 }
 
 function checkValidation(itemBought, getCount) {
@@ -613,16 +617,16 @@ function deduceOwnAndClientMoney(moneySpent) {
 }
 
 function addItemBoughtToContainer(itemBought, countBought) {
-    const warehouseOrSiteContainer = checkContainer(itemBought)
+    const warehouseOrSiteContainer = getContainer(itemBought)
     createItemObject(itemBought, warehouseOrSiteContainer)
 
     const ItemStored = warehouseOrSiteContainer
         .find(itemStored => itemStored.name === itemBought.name)
 
-    ItemStored.count = ItemStored.count + countBought;
+    createTransportItem(ItemStored, countBought)
 }
 
-function checkContainer(itemBought) {
+function getContainer(itemBought) {
     const isService = itemBought.service
 
     if (isService) return stateGame.clients[stateGame.clientIndex].workers
@@ -634,9 +638,57 @@ function createItemObject(itemBought, warehouseOrSiteContainer) {
         .some(itemStored => itemStored.name === itemBought.name)
 
     if (!isItemStored) {
-        const newItemStored = { ...itemBought, "count": 0, "volumeTotal": 0, }
+        const newItemStored = {
+            ...itemBought,
+            "count": 0,
+            "volumeTotal": 0,
+            "transport": []
+        }
         warehouseOrSiteContainer.unshift(newItemStored)
     }
+}
+
+function createTransportItem(ItemStored, countBought) {
+    const skillValue = stateGame.ownCompany.skills.management
+    const transportTime = stateGame.clock.minuteAccumulated + (60 - skillValue * 2)
+
+    const newTransportItem = {
+        "count": countBought,
+        "timer": transportTime,
+    }
+    ItemStored.transport.unshift(newTransportItem)
+}
+
+function transportItemToContainer() {
+    for (const client of stateGame.clients) {
+        for (const materialStored of client.warehouse) {
+            const isTransporting = materialStored.transport.length > 0
+
+            if (isTransporting)
+                transportItem(materialStored)
+        }
+        for (const workerStored of client.workers) {
+            const isTransporting = workerStored.transport.length > 0
+
+            if (isTransporting)
+                transportItem(workerStored)
+        }
+    }
+}
+
+function transportItem(itemStored) {
+    itemStored.transport.forEach((transportItem, index) => {
+
+        const transportTime = transportItem.timer
+        const hasTransportTime = transportTime > stateGame.clock.minuteAccumulated
+
+        if (hasTransportTime) return
+
+        itemStored.count = itemStored.count + transportItem.count;
+        itemStored.transport.splice(index, 1)
+        rendererDOM.warehouseBtn()
+        rendererDOM.idleWorkersAndServices()
+    })
 }
 
 function discardWarehouseItem(materialStored) {
