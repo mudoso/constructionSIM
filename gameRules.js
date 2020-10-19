@@ -13,17 +13,6 @@
 // REFACTORING THE CODE AND GET RID OF EXCESSIVE COMMENTS
 
 
-//======================================================================================//
-//RESPONSIBLE FOR DEFINE ALL GAME RULES
-//======================================================================================//
-
-//DEFINE ALL GLOBAL PATHS
-//==========NAV STATS PATH=============
-
-
-//DEFINE ALL GLOBAL VARIABLES
-var currentClient = 0
-
 
 //======================================================================================//
 //RESPONSIBLE FOR CLOCK RELATED FUNCTIONS
@@ -52,7 +41,7 @@ function timeRules() {
     }
     rendererDOM.time()
 
-    if (stateGame.clients[currentClient] != null) {
+    if (stateGame.clients[stateGame.clientIndex] != null) {
         checkCostPerHour()
         handleTaskProgress()
     }
@@ -142,62 +131,26 @@ function changeTimeSpeed(timeScale = 0) {
     }
 }
 
+// function handleSendMoneyClient() {
+//     const sendMoneyBtn = document.getElementById('send-money');
+//     const sendMoneyInput = document.getElementById('send-own-money');
 
-
-// function researchNewClients(targetHTML) {
-//     if (stateGame.clock.timeScale <= 0) return
-
-//     const reticenceCounter = drawReticence(targetHTML)
-
-//     const skillValue = stateGame.ownCompany.skills.network
-//     const researchTime = stateGame.clock.minuteAccumulated + (60 - skillValue * 2)
-
-//     const researchNewClients = setInterval(() => {
-//         if (stateGame.clock.minuteAccumulated < researchTime) return
-
-//         const hasSomeClient = stateGame.clients.length > 0
-//         const SkillDelta = Math.floor(120 * skillValue / 10)
-//         const remainingTime = stateGame.clock.minuteAccumulated + 60 + SkillDelta
-
-//         stateGame.lookingForClients.lookingAttempts--
-//         stateGame.lookingForClients.emojiText = ''
-//         hasSomeClient
-//             ? getNewAvailableClients()
-//             : getNewAvailableClients(1)
-//         clearNewClientsList(remainingTime)
-//         rendererDOM.newClientSelector()
-
-//         clearInterval(reticenceCounter)
-//         clearInterval(researchNewClients)
-//     }, 500)
+//     sendMoneyBtn.onclick = () => { sendMoneyToClient(sendMoneyInput) };
 // }
+// handleSendMoneyClient()
 
-// function drawReticence(targetHTML) {
-//     targetHTML.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
-//     targetHTML.onclick = false
-//     let reticence = '...'
+function sendMoneyToClient(sendMoneyInput) {
+    const countSent = parseInt(sendMoneyInput.value)
+    sendMoneyInput.value = 0
+    if (countSent > stateGame.ownCompany.money) return console.log("Not enough money");
 
-//     return setInterval(() => {
-//         reticence = reticence + '.'
-//         if (reticence.length > 3) reticence = ''
-//         stateGame.lookingForClients.emojiText = `(🔍${reticence})`
-//     }, 500);
-// }
+    stateGame.ownCompany.money -= countSent
+    stateGame.clients[stateGame.clientIndex].money += countSent
+}
 
-// function getNewLookingAttempts() {
-//     const relatedSkill = stateGame.ownCompany.skills.network
-//     const skillDelta = Math.floor(relatedSkill / 3)
-//     stateGame.lookingForClients.lookingAttempts = 1 + skillDelta
-// }
-
-// function clearNewClientsList(remainingTime) {
-//     const clearNewClients = setInterval(() => {
-//         if (stateGame.clock.minuteAccumulated < remainingTime) return
-//         getNewAvailableClients(0)
-//         rendererDOM.newClientSelector()
-//         clearInterval(clearNewClients)
-//     }, 500);
-// }
+//======================================================================================//
+//RESPONSIBLE FOR GET NEW CLIENTS OF THE DAY
+//======================================================================================//
 
 
 function researchNewClients() {
@@ -223,7 +176,6 @@ function checkResearchTime() {
 
     if (!hasRemainingTime && hasAvailableClient) {
         getNewAvailableClients(0)
-        rendererDOM.newClientSelector()
     }
 
     if (!isSearchActive || hasResearchTime) return
@@ -242,7 +194,6 @@ function checkResearchTime() {
         hasSomeClient
             ? getNewAvailableClients()
             : getNewAvailableClients(1)
-        // rendererDOM.newClientSelector()
     }
 }
 
@@ -425,16 +376,6 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
 
 
 
-
-
-//======================================================================================//
-//RESPONSIBLE FOR GET NEW CLIENTS OF THE DAY
-//======================================================================================//
-
-
-
-
-
 //======================================================================================//
 //RESPONSIBLE FOR ALL TASKS FUNCTIONS RULES RELATED
 //======================================================================================//
@@ -534,11 +475,11 @@ function handleCompletedTask(constructionSiteElement, targetClient) {
 }
 
 function sendBackWorkerOrService(workerOrServiceStored) {
-    stateGame.clients[currentClient].costPerHour -= workerOrServiceStored.price
+    stateGame.clients[stateGame.clientIndex].costPerHour -= workerOrServiceStored.price
 
     remainingCost = workerOrServiceStored.timer / 60
     console.log(workerOrServiceStored.timer)
-    stateGame.clients[currentClient].money -= workerOrServiceStored.price
+    stateGame.clients[stateGame.clientIndex].money -= workerOrServiceStored.price
     workerOrServiceStored.count--
 
     rendererDOM.costPerHourBtn()
@@ -546,7 +487,7 @@ function sendBackWorkerOrService(workerOrServiceStored) {
 }
 
 function assignWorkerOrService(workersNeeded) {
-    const workersOnSite = stateGame.clients[currentClient].workers
+    const workersOnSite = stateGame.clients[stateGame.clientIndex].workers
         .find(workerOnSite => workerOnSite.name == workersNeeded.type)
 
     if (!workersOnSite) return
@@ -560,7 +501,7 @@ function assignWorkerOrService(workersNeeded) {
 }
 
 function unassignWorkerOrService(workersNeeded) {
-    const workersOnSite = stateGame.clients[currentClient].workers
+    const workersOnSite = stateGame.clients[stateGame.clientIndex].workers
         .find(workerOnSite => workerOnSite.name == workersNeeded.type)
 
     if (!workersOnSite) return
@@ -574,7 +515,7 @@ function unassignWorkerOrService(workersNeeded) {
 }
 
 function assignMaterial(materialNeeded) {
-    for (let materialOnWarehouse of stateGame.clients[currentClient].warehouse) {
+    for (let materialOnWarehouse of stateGame.clients[stateGame.clientIndex].warehouse) {
         if (materialOnWarehouse.name == materialNeeded.name &&
             materialOnWarehouse.count >= materialNeeded.count) {
             //ASSIGN MATERIAL TO A TASK
@@ -589,48 +530,28 @@ function assignMaterial(materialNeeded) {
 }
 
 function completeClientConstruction() {
-    stateGame.clients[currentClient].money
-    stateGame.ownCompany.money += stateGame.clients[currentClient].money
-    stateGame.clients[currentClient].money = 0
+    stateGame.clients[stateGame.clientIndex].money
+    stateGame.ownCompany.money += stateGame.clients[stateGame.clientIndex].money
+    stateGame.clients[stateGame.clientIndex].money = 0
 
     getCurrentExperience(200)
 
-    const clientName = stateGame.clients[currentClient].name
+    const clientName = stateGame.clients[stateGame.clientIndex].name
     const THREE = stateGame.THREEmodels
     THREE.deletedModels.push(THREE.clients[clientName].THREEmodel)
     THREE.deletedModels.push(THREE.clients[clientName].THREEsite)
-    stateGame.clients[currentClient] = null
-    stateGame.clients.splice(currentClient, 1)
-    if (currentClient > 0) currentClient--
+    stateGame.clients[stateGame.clientIndex] = null
+    stateGame.clients.splice(stateGame.clientIndex, 1)
+    if (stateGame.clientIndex > 0) stateGame.clientIndex--
     rendererDOM.all()
 }
-
-
-
-//======================================================================================//
-//END TASKS FUNCTIONS RULES
 
 
 
 //RESPONSIBLE FOR HANDLE SEND MONEY TO CLIENT FUNCTION
 //======================================================================================//
 
-function handleSendMoneyClient() {
-    const sendMoneyBtn = document.getElementById('send-money');
-    const sendMoneyInput = document.getElementById('send-own-money');
 
-    sendMoneyBtn.onclick = () => { sendMoneyToClient() };
-
-    function sendMoneyToClient() {
-        let countSent = parseInt(sendMoneyInput.value)
-        sendMoneyInput.value = 0
-        if (countSent > stateGame.ownCompany.money) return console.log("Not enough money");
-
-        stateGame.ownCompany.money -= countSent
-        stateGame.clients[currentClient].money += countSent
-    }
-}
-handleSendMoneyClient()
 
 
 
@@ -642,7 +563,7 @@ handleSendMoneyClient()
 
 //ADD ITEMS TO WAREHOUSE(IF ITS A MATERIAL) OR SITE(IF ITS A WORKER/SERVICE)
 function buyItem(itemBought, categoryItem) {
-    const noClientSelected = stateGame.clients[currentClient] == null
+    const noClientSelected = stateGame.clients[stateGame.clientIndex] == null
     if (noClientSelected) return
 
     const getCount = document.getElementById(`${itemBought.name}-buyinput`);
@@ -672,7 +593,7 @@ function buyItem(itemBought, categoryItem) {
     // checkValidation ===================================================//
 
     function checkValidation() {
-        const hasClientMoney = stateGame.clients[currentClient].money > 0
+        const hasClientMoney = stateGame.clients[stateGame.clientIndex].money > 0
         const isValidInput = itemBought != null || getCount != null
         const isValidValue = getCount.value != null || getCount.value > 0
 
@@ -689,25 +610,25 @@ function buyItem(itemBought, categoryItem) {
 
     function checkWarehouseSpace() {
 
-        const volumeStored = stateGame.clients[currentClient].warehouse
+        const volumeStored = stateGame.clients[stateGame.clientIndex].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
         const totalVolume = volumeStored + countBought * itemBought.volume
-        const warehouseLimit = stateGame.clients[currentClient].warehouseLimit
+        const warehouseLimit = stateGame.clients[stateGame.clientIndex].warehouseLimit
 
         return isVolumeHigherThanWarehouseLimit = totalVolume > warehouseLimit
     }
 
     function handleBoughtMaterials() {
-        const notEnoughClientMoney = stateGame.clients[currentClient].money <= moneySpent
+        const notEnoughClientMoney = stateGame.clients[stateGame.clientIndex].money <= moneySpent
 
         if (notEnoughClientMoney) return deduceOwnAndClientMoney()
-        stateGame.clients[currentClient].money -= moneySpent
+        stateGame.clients[stateGame.clientIndex].money -= moneySpent
     }
 
     function deduceOwnAndClientMoney() {
-        stateGame.clients[currentClient].money -= moneySpent
-        stateGame.ownCompany.money += stateGame.clients[currentClient].money
-        stateGame.clients[currentClient].money = 0
+        stateGame.clients[stateGame.clientIndex].money -= moneySpent
+        stateGame.ownCompany.money += stateGame.clients[stateGame.clientIndex].money
+        stateGame.clients[stateGame.clientIndex].money = 0
     }
 
     function addItemBoughtToContainer() {
@@ -723,8 +644,8 @@ function buyItem(itemBought, categoryItem) {
     function checkContainer() {
         const isService = itemBought.service
 
-        if (isService) return stateGame.clients[currentClient].workers
-        return stateGame.clients[currentClient].warehouse
+        if (isService) return stateGame.clients[stateGame.clientIndex].workers
+        return stateGame.clients[stateGame.clientIndex].warehouse
     }
 
     function createItemObject(warehouseOrSiteContainer) {
@@ -739,7 +660,7 @@ function buyItem(itemBought, categoryItem) {
 }
 
 function discardWarehouseItem(materialStored) {
-    const warehouseContainer = stateGame.clients[currentClient].warehouse
+    const warehouseContainer = stateGame.clients[stateGame.clientIndex].warehouse
     const indexOfItemSelected = warehouseContainer.indexOf(materialStored)
     warehouseContainer.splice(indexOfItemSelected, 1)
     rendererDOM.all()

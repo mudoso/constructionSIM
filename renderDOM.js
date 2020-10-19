@@ -15,6 +15,7 @@ const rendererDOM = {
         rendererDOM.constructionTaskCards()
         rendererDOM.handleDisplayOwnMenu()
         rendererDOM.handleDisplayClientMenu()
+        rendererDOM.handleSendMoneyClient()
     },
 
     time() {
@@ -33,12 +34,12 @@ const rendererDOM = {
         ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
         clientMoneyDOM.innerHTML = 0
 
-        const hasClientSelected = stateGame.clients[currentClient]
+        const hasClientSelected = stateGame.clients[stateGame.clientIndex]
 
         !hasClientSelected
             ? clientMoneyDOM.innerHTML = 0
             : clientMoneyDOM.forEach(DOM =>
-                DOM.innerHTML = stateGame.clients[currentClient].money)
+                DOM.innerHTML = stateGame.clients[stateGame.clientIndex].money)
     },
 
     experience(showExperience) {
@@ -160,31 +161,31 @@ const rendererDOM = {
         const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')
         const clientRightArrowButtonDOM = document.getElementById('btn-clients-right')
 
-        if (stateGame.clients[currentClient] == null) {
+        if (stateGame.clients[stateGame.clientIndex] == null) {
             clientSelectedButtonDOM.onclick = () => { };
             return clientSelectedButtonDOM.innerHTML = "NONE"
         }
-        clientSelectedButtonDOM.innerHTML = stateGame.clients[currentClient].name
+        clientSelectedButtonDOM.innerHTML = stateGame.clients[stateGame.clientIndex].name
         clientLeftArrowButtonDOM.onclick = () => { rendererDOM.selectClientLeft() };
         clientRightArrowButtonDOM.onclick = () => { rendererDOM.selectClientRight() };
         clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn() };
     },
 
     selectClientRight() {
-        currentClient++
-        if (stateGame.clients[currentClient] != null)
+        stateGame.clientIndex++
+        if (stateGame.clients[stateGame.clientIndex] != null)
             return rendererDOM.all()
 
-        currentClient = 0
+        stateGame.clientIndex = 0
         rendererDOM.all()
     },
 
     selectClientLeft() {
-        currentClient--
-        if (stateGame.clients[currentClient] != null)
+        stateGame.clientIndex--
+        if (stateGame.clients[stateGame.clientIndex] != null)
             return rendererDOM.all()
 
-        currentClient = stateGame.clients.length - 1
+        stateGame.clientIndex = stateGame.clients.length - 1
         rendererDOM.all()
     },
 
@@ -192,6 +193,14 @@ const rendererDOM = {
         const menuClientBackgroundBlock = document.getElementById('menu-client-block');
 
         menuClientBackgroundBlock.style.display = "block"
+    },
+
+    handleSendMoneyClient() {
+        const sendMoneyBtn = document.getElementById('send-money');
+        const sendMoneyInput = document.getElementById('send-own-money');
+
+        if (!sendMoneyBtn || !sendMoneyInput) return //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        sendMoneyBtn.onclick = () => { sendMoneyToClient(sendMoneyInput) };
     },
 
 
@@ -329,7 +338,7 @@ const rendererDOM = {
         menuClientSendMoneyInput.innerHTML = ""
         menuClientMoney.innerHTML = clientMoneyDOM.innerHTML
 
-        let clientSelected = stateGame.clients[currentClient]
+        let clientSelected = stateGame.clients[stateGame.clientIndex]
         if (targetClientIsTrue) {
             clientSelected = targetClientIsTrue
             menuClientMoney.className = "";
@@ -359,7 +368,7 @@ const rendererDOM = {
                 step="100" 
                 value="0">
             <button id="send-money" class="btn">Send Money</button>`
-        handleSendMoneyClient()
+        rendererDOM.handleSendMoneyClient()
     },
 
     menuClientMaterialsNeeded(clientSelected) {
@@ -436,8 +445,8 @@ const rendererDOM = {
         const warehouseContainerDOM = document.getElementById('warehouse-container')
 
         warehouseContainerDOM.innerHTML = ""
-        if (stateGame.clients[currentClient] == null) return
-        stateGame.clients[currentClient].warehouse.forEach(itemStored => {
+        if (stateGame.clients[stateGame.clientIndex] == null) return
+        stateGame.clients[stateGame.clientIndex].warehouse.forEach(itemStored => {
             if (itemStored.count > 0) {
                 let button = document.createElement('button');
                 button.innerHTML =
@@ -457,7 +466,7 @@ const rendererDOM = {
     warehouseLimit() {
         const warehouseLimitDOM = document.getElementById('warehouse-limit')
 
-        if (stateGame.clients[currentClient] == null)
+        if (stateGame.clients[stateGame.clientIndex] == null)
             return warehouseLimitDOM.innerHTML = `SITE STORAGE`
 
         warehouseLimitDOM.style.color = "var(--text-base-color)"
@@ -467,13 +476,13 @@ const rendererDOM = {
     },
 
     warehouseDisplayLimit() {
-        const volumeStored = stateGame.clients[currentClient].warehouse
+        const volumeStored = stateGame.clients[stateGame.clientIndex].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
-        const stateWarehouseLimit = stateGame.clients[currentClient].warehouseLimit
+        const stateWarehouseLimit = stateGame.clients[stateGame.clientIndex].warehouseLimit
         const currentVolumeStored = Math.floor(volumeStored / stateWarehouseLimit * 1000) / 10
 
-        if (stateGame.clients[currentClient].warehouse[0] == null) return "EMPTY"
-        if (volumeStored >= stateGame.clients[currentClient].warehouseLimit) return "FULL"
+        if (stateGame.clients[stateGame.clientIndex].warehouse[0] == null) return "EMPTY"
+        if (volumeStored >= stateGame.clients[stateGame.clientIndex].warehouseLimit) return "FULL"
 
         if (currentVolumeStored >= 90) warehouseLimitDOM.style.color = "#ff2a1a"
 
@@ -540,8 +549,8 @@ const rendererDOM = {
 
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
-        if (stateGame.clients[currentClient] == null) return
-        for (let workerOrServiceStored of stateGame.clients[currentClient].workers) {
+        if (stateGame.clients[stateGame.clientIndex] == null) return
+        for (let workerOrServiceStored of stateGame.clients[stateGame.clientIndex].workers) {
             if (workerOrServiceStored.count > 0) {
                 workersAndServicesContainerDOM.style.display = 'grid'
                 let button = document.createElement('button');
@@ -560,11 +569,11 @@ const rendererDOM = {
         const costPerHourDOM = document.getElementById('cost-per-hour')
         costPerHourDOM.innerHTML = ""
 
-        if (stateGame.clients[currentClient] == null) return
+        if (stateGame.clients[stateGame.clientIndex] == null) return
         let button = document.createElement('button');
         button.innerHTML =
-            `Total Cost $<span id="costperhour-value">${stateGame.clients[currentClient].costPerHour}</span>/hour`
-        button.setAttribute('id', `${Object.keys(stateGame.clients[currentClient].costPerHour)}`);
+            `Total Cost $<span id="costperhour-value">${stateGame.clients[stateGame.clientIndex].costPerHour}</span>/hour`
+        button.setAttribute('id', `${Object.keys(stateGame.clients[stateGame.clientIndex].costPerHour)}`);
         button.setAttribute('class', `btn-darkblue`);
         button.onclick = () => { };
         costPerHourDOM.appendChild(button);
@@ -572,7 +581,7 @@ const rendererDOM = {
 
     costPerHourValue() {
         const costPerHourValueDOM = document.getElementById("costperhour-value")
-        costPerHourValueDOM.innerHTML = stateGame.clients[currentClient].costPerHour
+        costPerHourValueDOM.innerHTML = stateGame.clients[stateGame.clientIndex].costPerHour
     },
 
     //TASK CARDS
@@ -582,9 +591,9 @@ const rendererDOM = {
         const constructionContainerDOM = document.getElementById('construction-container')
         constructionContainerDOM.innerHTML = ""
 
-        if (stateGame.clients[currentClient] == null) return
+        if (stateGame.clients[stateGame.clientIndex] == null) return
 
-        const currentConstruction = stateGame.clients[currentClient].construction
+        const currentConstruction = stateGame.clients[stateGame.clientIndex].construction
         for (const constructionSiteStage of currentConstruction) {
             constructionSiteStage.forEach(constructionSiteElement => {
 
@@ -611,13 +620,13 @@ const rendererDOM = {
 
     taskCard({ stage, index, progress }, constructionContainerDOM) {
         let div = document.createElement('div');
-        const client = stateGame.clients[currentClient].name
+        const client = stateGame.clients[stateGame.clientIndex].name
         div.innerHTML =
             `<div id="${stage}-${client}-${index}-progressLoading" class="progressLoading"
             style="width: ${progress}%;">
             </div>
             <span id="${stage}-${index}">(${stage})</span>
-            <span id="${stage}-${currentClient}-${index}-progress">${progress} %</span>`
+            <span id="${stage}-${stateGame.clientIndex}-${index}-progress">${progress} %</span>`
         div.setAttribute('id', `${stage}-${index}`);
         div.setAttribute('class', `card center`);
         constructionContainerDOM.appendChild(div);
@@ -692,8 +701,8 @@ const rendererDOM = {
 
     finishClientCard(constructionContainerDOM) {
         let div = document.createElement('div');
-        div.innerHTML = `${stateGame.clients[currentClient].name.toUpperCase()}'s CONSTRUCTION COMPLETED`
-        div.setAttribute('id', `${stateGame.clients[currentClient]}-completed`);
+        div.innerHTML = `${stateGame.clients[stateGame.clientIndex].name.toUpperCase()}'s CONSTRUCTION COMPLETED`
+        div.setAttribute('id', `${stateGame.clients[stateGame.clientIndex]}-completed`);
         div.setAttribute('class', `card flex-col center`);
         constructionContainerDOM.appendChild(div);
 
@@ -701,8 +710,8 @@ const rendererDOM = {
         button.setAttribute('class', 'btn center');
         button.setAttribute('id', ``);
         button.onclick = () => { completeClientConstruction() };
-        button.innerHTML = `CLAIM <b>$${stateGame.clients[currentClient].money}</b>`
-        const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[currentClient]}-completed`)
+        button.innerHTML = `CLAIM <b>$${stateGame.clients[stateGame.clientIndex].money}</b>`
+        const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[stateGame.clientIndex]}-completed`)
         buttonWorkersNeeded.appendChild(button);
     },
 
