@@ -19,6 +19,9 @@ let stateGame = {
         }
     },
     "lookingForClients": {
+        "research": false,
+        "researchTime": 0,
+        "remainingTime": 0,
         "lookingAttempts": 1,
         "emojiText": '',
         "clientList": [
@@ -27,6 +30,7 @@ let stateGame = {
             // { ...new Client("Juliano") },
         ],
     },
+    "clientIndex": 0,
     "clients": [
         // { ...new Client("Jiraya") },
         // { ...new Client("Marcia") },

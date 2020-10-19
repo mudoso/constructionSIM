@@ -19,7 +19,6 @@
 
 //DEFINE ALL GLOBAL PATHS
 //==========NAV STATS PATH=============
-const clock = stateGame.clock
 
 
 //DEFINE ALL GLOBAL VARIABLES
@@ -30,23 +29,23 @@ var currentClient = 0
 //RESPONSIBLE FOR CLOCK RELATED FUNCTIONS
 //======================================================================================//
 
-let timeClockRules = setInterval(timeRules, clock.timeScale); //START CLOCK
+let timeClockRules = setInterval(timeRules, stateGame.clock.timeScale); //START CLOCK
 
 function timeRules() {
 
-    clock.minute++
-    clock.minuteAccumulated++
+    stateGame.clock.minute++
+    stateGame.clock.minuteAccumulated++
 
-    const minuteCycle = clock.minute >= 60
-    const dayCycle = clock.hour >= 16
+    const minuteCycle = stateGame.clock.minute >= 60
+    const dayCycle = stateGame.clock.hour >= 16
 
     if (minuteCycle) {
-        clock.minute = 0
-        clock.hour++
+        stateGame.clock.minute = 0
+        stateGame.clock.hour++
     }
     if (dayCycle) {
-        clock.hour = 8
-        clock.day++
+        stateGame.clock.hour = 8
+        stateGame.clock.day++
         getNewAvailableClients(0)
         getNewLookingAttempts()
         rendererDOM.all()
@@ -64,14 +63,19 @@ const changeListener = setInterval(updateDOM, 500)
 
 function updateDOM() {
 
+    checkResearchTime()
+    rendererDOM.updateNumberOfNewClients()
+
     getCurrentExperience()
     rendererDOM.companyStats()
     rendererDOM.money()
-    rendererDOM.updateNumberOfNewClients()
     rendererDOM.displayAvailableSkillPoints()
     rendererDOM.displaySkillBtn()
     rendererDOM.updateCurrentSkillPoints()
 }
+
+//======================================================================================//
+//END CLOCK FUNCTIONS
 
 
 function saveGame() {
@@ -90,6 +94,8 @@ function saveGame() {
         },
 
     })
+    const size = new TextEncoder().encode(savedGame).length
+    console.log("saveGame -> size", size)
 
     localStorage.setItem('save1', savedGame);
 }
@@ -102,10 +108,6 @@ function loadGame() {
     rendererDOM.all()
 }
 
-
-
-
-
 function stopTime(speedPlayBtn) {
     speedPlayBtn.innerHTML = '&#8213;'
     changeTimeSpeed(0)
@@ -116,7 +118,7 @@ function speedTime(speedPlayBtn) {
     const speedTwo = speedOne * 0.3
     const speedThree = speedTwo * 0.1
 
-    switch (clock.timeScale) {
+    switch (stateGame.clock.timeScale) {
         default:
             speedPlayBtn.innerHTML = '&#9658;'
             changeTimeSpeed(speedOne)
@@ -133,52 +135,121 @@ function speedTime(speedPlayBtn) {
 }
 
 function changeTimeSpeed(timeScale = 0) {
-    clock.timeScale = timeScale
+    stateGame.clock.timeScale = timeScale
     clearInterval(timeClockRules)
     if (timeScale > 0) {
-        timeClockRules = setInterval(timeRules, clock.timeScale);
+        timeClockRules = setInterval(timeRules, stateGame.clock.timeScale);
     }
 }
 
 
-function researchNewClients(targetHTML) {
-    if (clock.timeScale <= 0) return
 
-    const reticenceCounter = drawReticence(targetHTML)
+// function researchNewClients(targetHTML) {
+//     if (stateGame.clock.timeScale <= 0) return
 
+//     const reticenceCounter = drawReticence(targetHTML)
+
+//     const skillValue = stateGame.ownCompany.skills.network
+//     const researchTime = stateGame.clock.minuteAccumulated + (60 - skillValue * 2)
+
+//     const researchNewClients = setInterval(() => {
+//         if (stateGame.clock.minuteAccumulated < researchTime) return
+
+//         const hasSomeClient = stateGame.clients.length > 0
+//         const SkillDelta = Math.floor(120 * skillValue / 10)
+//         const remainingTime = stateGame.clock.minuteAccumulated + 60 + SkillDelta
+
+//         stateGame.lookingForClients.lookingAttempts--
+//         stateGame.lookingForClients.emojiText = ''
+//         hasSomeClient
+//             ? getNewAvailableClients()
+//             : getNewAvailableClients(1)
+//         clearNewClientsList(remainingTime)
+//         rendererDOM.newClientSelector()
+
+//         clearInterval(reticenceCounter)
+//         clearInterval(researchNewClients)
+//     }, 500)
+// }
+
+// function drawReticence(targetHTML) {
+//     targetHTML.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
+//     targetHTML.onclick = false
+//     let reticence = '...'
+
+//     return setInterval(() => {
+//         reticence = reticence + '.'
+//         if (reticence.length > 3) reticence = ''
+//         stateGame.lookingForClients.emojiText = `(🔍${reticence})`
+//     }, 500);
+// }
+
+// function getNewLookingAttempts() {
+//     const relatedSkill = stateGame.ownCompany.skills.network
+//     const skillDelta = Math.floor(relatedSkill / 3)
+//     stateGame.lookingForClients.lookingAttempts = 1 + skillDelta
+// }
+
+// function clearNewClientsList(remainingTime) {
+//     const clearNewClients = setInterval(() => {
+//         if (stateGame.clock.minuteAccumulated < remainingTime) return
+//         getNewAvailableClients(0)
+//         rendererDOM.newClientSelector()
+//         clearInterval(clearNewClients)
+//     }, 500);
+// }
+
+
+function researchNewClients() {
     const skillValue = stateGame.ownCompany.skills.network
-    const researchTime = clock.minuteAccumulated + (60 - skillValue * 2)
+    const researchTime = stateGame.clock.minuteAccumulated + (60 - skillValue * 2)
 
-    const researchNewClients = setInterval(() => {
-        if (clock.minuteAccumulated < researchTime) return
+    stateGame.lookingForClients.research = true
+    stateGame.lookingForClients.researchTime = researchTime
+
+    rendererDOM.drawReticence()
+    rendererDOM.newClientSelector()
+}
+
+function checkResearchTime() {
+    const isSearchActive = stateGame.lookingForClients.research
+    const researchTime = stateGame.lookingForClients.researchTime
+    const remainingTime = stateGame.lookingForClients.remainingTime
+    const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
+    const hasRemainingTime = remainingTime > stateGame.clock.minuteAccumulated
+
+    const hasAttempts = stateGame.lookingForClients.lookingAttempts > 0
+    const hasAvailableClient = stateGame.lookingForClients.clientList.length > 0
+
+    if (!hasRemainingTime && hasAvailableClient) {
+        getNewAvailableClients(0)
+        rendererDOM.newClientSelector()
+    }
+
+    if (!isSearchActive || hasResearchTime) return
+
+    if (hasAttempts && !hasAvailableClient) {
+        const skillValue = stateGame.ownCompany.skills.network
+        const SkillDelta = Math.floor(120 * skillValue / 10)
+        const setRemainingTime = stateGame.clock.minuteAccumulated + 60 + SkillDelta
+
+        stateGame.lookingForClients.remainingTime = setRemainingTime
+        stateGame.lookingForClients.lookingAttempts--
+
+        stateGame.lookingForClients.research = false
 
         const hasSomeClient = stateGame.clients.length > 0
-        const SkillDelta = Math.floor(120 * skillValue / 10)
-        const remainingTime = clock.minuteAccumulated + 60 + SkillDelta
-
-        stateGame.lookingForClients.lookingAttempts--
-        stateGame.lookingForClients.emojiText = ''
         hasSomeClient
             ? getNewAvailableClients()
             : getNewAvailableClients(1)
-        clearNewClientsList(remainingTime)
-        rendererDOM.newClientSelector()
-
-        clearInterval(reticenceCounter)
-        clearInterval(researchNewClients)
-    }, 500)
+        // rendererDOM.newClientSelector()
+    }
 }
 
-function drawReticence(targetHTML) {
-    targetHTML.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
-    targetHTML.onclick = false
-    let reticence = '...'
-
-    return setInterval(() => {
-        reticence = reticence + '.'
-        if (reticence.length > 3) reticence = ''
-        stateGame.lookingForClients.emojiText = `(🔍${reticence})`
-    }, 500);
+function clearNewClientsList(remainingTime) {
+    if (stateGame.clock.minuteAccumulated < remainingTime) return
+    getNewAvailableClients(0)
+    rendererDOM.newClientSelector()
 }
 
 function getNewLookingAttempts() {
@@ -187,13 +258,45 @@ function getNewLookingAttempts() {
     stateGame.lookingForClients.lookingAttempts = 1 + skillDelta
 }
 
-function clearNewClientsList(remainingTime) {
-    const clearNewClients = setInterval(() => {
-        if (clock.minuteAccumulated < remainingTime) return
-        getNewAvailableClients(0)
-        rendererDOM.newClientSelector()
-        clearInterval(clearNewClients)
-    }, 500);
+function randomNumberInteger(min = 0, max = 0) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
+    stateGame.lookingForClients.clientList = []
+
+    getNewClientList(numberOfClients).forEach(clientName =>
+        stateGame.lookingForClients.clientList
+            .push(new Client(clientName)))
+
+    rendererDOM.newClientSelector()
+}
+
+function getNewClientList(numberOfClients) {
+    return Array(numberOfClients).fill()
+        .map(() => {
+            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
+            return clientNames[randomIndex]
+        })
+}
+
+function newClientSelectorBudgetOffer(client, inputOfferClient) {
+    const index = stateGame.lookingForClients.clientList.indexOf(client)
+    const ownCompanyLevelDelta = (Math.random() * stateGame.ownCompany.level / 10) + 1
+    const maxClientBudget = client.money * ownCompanyLevelDelta
+    const minClientBudget = client.money * 0.5
+
+    if (client.attempt == null) client.attempt = randomCount(stateGame.ownCompany.level) + 1
+    if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
+        client.attempt -= 1
+
+        if (client.attempt <= 0) stateGame.lookingForClients.clientList.splice(index, 1)
+        return rendererDOM.newClientSelector()
+    }
+    client.money = parseInt(inputOfferClient.value)
+    stateGame.clients.unshift(client)
+    stateGame.lookingForClients.clientList.splice(index, 1);
+    rendererDOM.all()
 }
 
 
@@ -260,7 +363,7 @@ function handleWorkerTimer(targetClient, workersOnSite, costPerHourPerType) {
     workersOnSite.timer++
 
     const workerCompletedHourCycle =
-        workersOnSite.timer >= 60 || clock.hour == 16
+        workersOnSite.timer >= 60 || stateGame.clock.hour == 16
 
     if (workerCompletedHourCycle) {
         workersOnSite.timer = 0
@@ -320,8 +423,7 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
 }
 
 
-//======================================================================================//
-//END CLOCK FUNCTIONS
+
 
 
 
@@ -330,43 +432,7 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
 //======================================================================================//
 
 
-function randomNumberInteger(min = 0, max = 0) {
-    return Math.floor(Math.random() * (max - min + 1)) + min
-}
 
-function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
-    stateGame.lookingForClients.clientList = []
-
-    getNewClientList(numberOfClients).forEach(clientName => stateGame.lookingForClients.clientList
-        .push(new Client(clientName)))
-}
-
-function getNewClientList(numberOfClients) {
-    return Array(numberOfClients).fill()
-        .map(() => {
-            const randomIndex = randomNumberInteger(0, clientNames.length - 1)
-            return clientNames[randomIndex]
-        })
-}
-
-function newClientSelectorBudgetOffer(client, inputOfferClient) {
-    const index = stateGame.lookingForClients.clientList.indexOf(client)
-    const ownCompanyLevelDelta = (Math.random() * stateGame.ownCompany.level / 10) + 1
-    const maxClientBudget = client.money * ownCompanyLevelDelta
-    const minClientBudget = client.money * 0.5
-
-    if (client.attempt == null) client.attempt = randomCount(stateGame.ownCompany.level) + 1
-    if (inputOfferClient.value < minClientBudget || inputOfferClient.value > maxClientBudget) {
-        client.attempt -= 1
-
-        if (client.attempt <= 0) stateGame.lookingForClients.clientList.splice(index, 1)
-        return rendererDOM.newClientSelector()
-    }
-    client.money = parseInt(inputOfferClient.value)
-    stateGame.clients.unshift(client)
-    stateGame.lookingForClients.clientList.splice(index, 1);
-    rendererDOM.all()
-}
 
 
 //======================================================================================//

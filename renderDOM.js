@@ -21,9 +21,9 @@ const rendererDOM = {
         const timeSpan = document.getElementById('time');
         const dayDom = document.getElementById("day")
 
-        const min00 = ('0' + clock.minute).slice(-2)
-        timeSpan.textContent = `${clock.hour}:${min00}`
-        dayDom.innerHTML = clock.day
+        const min00 = ('0' + stateGame.clock.minute).slice(-2)
+        timeSpan.textContent = `${stateGame.clock.hour}:${min00}`
+        dayDom.innerHTML = stateGame.clock.day
     },
 
     money() {
@@ -200,45 +200,83 @@ const rendererDOM = {
 
     updateNumberOfNewClients() {
         const numberNewOfClientsDOM = document.querySelector(".new-span")
+        // const newClientSelectorDOM = document.getElementById("looking-for-client")
         const availableNewClients = stateGame.lookingForClients.clientList.length
+        const researchTime = stateGame.lookingForClients.researchTime
+        const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
         const emojiText = stateGame.lookingForClients.emojiText
+        const isSearchActive = stateGame.lookingForClients.research
 
-        if (availableNewClients < 1) {
-            return numberNewOfClientsDOM.innerHTML = emojiText
+        numberNewOfClientsDOM.innerHTML = ''
+
+        if (hasResearchTime) {
+            numberNewOfClientsDOM.innerHTML = emojiText
         }
-        numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
+
+        if (availableNewClients) {
+            numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
+        }
+    },
+
+    drawReticence() {
+        let reticence = '...'
+
+        const reticenceCounter = setInterval(() => {
+            const isSearchActive = stateGame.lookingForClients.research
+
+            reticence = reticence + '.'
+            if (reticence.length > 3) reticence = ''
+            stateGame.lookingForClients.emojiText = `(🔍${reticence})`
+
+            if (!isSearchActive) clearInterval(reticenceCounter)
+        }, 500);
     },
 
     newClientSelector() {
         const newClientSelectorDOM = document.getElementById("looking-for-client")
-        newClientSelectorDOM.innerHTML = ""
 
-        const areAvailableAttempts = stateGame.lookingForClients.lookingAttempts > 0
-        const areAvailableClient = stateGame.lookingForClients.clientList.length > 0
+        const researchTime = stateGame.lookingForClients.researchTime
+        const hasAvailableAttempts = stateGame.lookingForClients.lookingAttempts > 0
+        const hasAvailableClient = stateGame.lookingForClients.clientList.length > 0
+        const isSearchActive = stateGame.lookingForClients.research
+        const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
 
-        if (!areAvailableClient) {
+        rendererDOM.searchNewClientsBtn(newClientSelectorDOM, hasResearchTime)
+
+        if (!hasAvailableAttempts && !hasResearchTime && !hasAvailableClient) {
+            newClientSelectorDOM.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
+            newClientSelectorDOM.onclick = false
+        }
+
+        if (!hasAvailableAttempts && !hasResearchTime && !hasAvailableClient) {
             newClientSelectorDOM.innerHTML = `<h4>NO MORE CLIENTS FOUND TODAY</h4>`
         }
 
-        if (areAvailableAttempts && !areAvailableClient) {
-            rendererDOM.searchNewClientsBtn(newClientSelectorDOM)
+        if (hasAvailableClient) {
+            rendererDOM.newClientsList()
         }
-
-        rendererDOM.newClientsList(newClientSelectorDOM)
     },
 
-    searchNewClientsBtn(newClientSelectorDOM) {
+    searchNewClientsBtn(newClientSelectorDOM, hasResearchTime) {
         newClientSelectorDOM.innerHTML = ''
 
-        let button = document.createElement('button');
+        const button = document.createElement('button');
         button.innerHTML = `LOOK FOR NEW CLIENTS`
+
         button.setAttribute('class', "btn");
-        button.onclick = event => { researchNewClients(event.target) }
+        button.onclick = () => { researchNewClients() }
+        if (hasResearchTime) {
+            button.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
+            button.onclick = false
+        }
         newClientSelectorDOM.appendChild(button);
     },
 
-    newClientsList(newClientSelectorDOM) {
-        for (let client of stateGame.lookingForClients.clientList) {
+    newClientsList() {
+        const newClientSelectorDOM = document.getElementById("looking-for-client")
+        newClientSelectorDOM.innerHTML = ''
+
+        for (const client of stateGame.lookingForClients.clientList) {
             let div = document.createElement('div');
             let btnClass = "btn"
             let attempt = "???"
