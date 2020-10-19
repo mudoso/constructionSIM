@@ -63,7 +63,7 @@ const rendererDOM = {
         const menuOwnClients = document.querySelector('.menu-own-company-clients')
 
         menuOwnClients.innerHTML = ""
-        for (let clients of stateGame.clients) {
+        for (const clients of stateGame.clients) {
             const stageItemsProgressList = clients.construction
                 .map(stage => stage.map(itemStage => itemStage.progress))
                 .flat()
@@ -471,11 +471,11 @@ const rendererDOM = {
 
         warehouseLimitDOM.style.color = "var(--text-base-color)"
 
-        const warehouseLimit = rendererDOM.warehouseDisplayLimit()
+        const warehouseLimit = rendererDOM.warehouseDisplayLimit(warehouseLimitDOM)
         warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseLimit})`
     },
 
-    warehouseDisplayLimit() {
+    warehouseDisplayLimit(warehouseLimitDOM) {
         const volumeStored = stateGame.clients[stateGame.clientIndex].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
         const stateWarehouseLimit = stateGame.clients[stateGame.clientIndex].warehouseLimit
@@ -497,7 +497,7 @@ const rendererDOM = {
         const storeCategoryContainerDOM = document.getElementById('store-category')
 
         storeCategoryContainerDOM.innerHTML = ""
-        for (let categoryItem of store) {
+        for (const categoryItem of store) {
             let button = document.createElement('button');
             button.innerHTML = categoryItem.name
             button.setAttribute('id', categoryItem.name);
@@ -550,7 +550,7 @@ const rendererDOM = {
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
         if (stateGame.clients[stateGame.clientIndex] == null) return
-        for (let workerOrServiceStored of stateGame.clients[stateGame.clientIndex].workers) {
+        for (const workerOrServiceStored of stateGame.clients[stateGame.clientIndex].workers) {
             if (workerOrServiceStored.count > 0) {
                 workersAndServicesContainerDOM.style.display = 'grid'
                 let button = document.createElement('button');
