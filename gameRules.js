@@ -6,8 +6,6 @@
 // MAKE CLIENT DUE DATE WITH FINE IF DUE DATE IS NOT ACCOMPLISHED
 // MAKES SKILLS IMPACT IN THE GAME
 // CHANGE TASK PROGRESS FORMULA TO WORK IN ACCORD WITH SKILLS AND DIFFICULT OF THE TASK
-// getNewAvailableClients() SHOW "NO CLIENT WHEN THERE IS NO CLIENT IN THAT DAY"
-// ?? MAKE MATERIALS AND SERVICES TAKE TIME TO COME TO WORK SITE
 // ?? CHANGE CLOCK FUNCTION TO SHOW MORNING, EVENING, AFTERNOON
 // ?? MAKE THREE.JS LIGHTs TO CHANGE ACCORDING TO TIME OF THE DAY
 // ?? MAKE THREE.JS MeshToonMaterial SHADE EFFECT WORK
@@ -534,13 +532,19 @@ function completeClientConstruction() {
 
     getCurrentExperience(200)
 
-    const clientName = stateGame.clients[stateGame.clientIndex].name
+    const clientId = stateGame.clients[stateGame.clientIndex].id
     const THREE = stateGame.THREEmodels
-    THREE.deletedModels.push(THREE.clients[clientName].THREEmodel)
-    THREE.deletedModels.push(THREE.clients[clientName].THREEsite)
+
+    THREE.deletedModels.push(THREE.clients[clientId].THREEmodel)
+    THREE.deletedModels.push(THREE.clients[clientId].THREEsite)
+    THREE.clients[clientId] = null
+    delete THREE.clients[clientId]
+
     stateGame.clients[stateGame.clientIndex] = null
     stateGame.clients.splice(stateGame.clientIndex, 1)
+
     if (stateGame.clientIndex > 0) stateGame.clientIndex--
+
     rendererDOM.all()
 }
 
@@ -552,7 +556,7 @@ function completeClientConstruction() {
 
 
 function buyItem(itemBought, categoryItem) {
-    const noClientSelected = stateGame.clients[stateGame.clientIndex] == null
+    const noClientSelected = stateGame.clients.length == 0
     if (noClientSelected) return
 
     const getCount = document.getElementById(`${itemBought.name}-buyinput`);
