@@ -45,6 +45,7 @@ function main() {
 
     //CAMERA POSITION
     camera.position.set(50, 50, 50); // (x, y, z) => (y = height)
+    console.log("main -> camera", camera)
 
     //ORBIT FUNCTION
     const controls = new OrbitControls(camera, canvas);
@@ -92,7 +93,15 @@ function main() {
 
 
 
-    let loadingManager = new THREE.LoadingManager()
+    const loadingManager = new THREE.LoadingManager()
+
+    // loadingManager.onProgress = (loaded, total) =>
+    //     console.log(loaded, total);
+
+    // loadingManager.onLoad = () =>
+    // console.log(`Loading complete!`)
+
+    const colladaLoader = new ColladaLoader(loadingManager)
 
 
 
@@ -109,157 +118,184 @@ function main() {
         return stats;
     }
 
-    //TARGET CANVAS, RENDERER AND CAMERA
-    //======================================================================================//
+
+
+
+
+    //========================================================================//
+    //RENDER FUNCTION
+    //========================================================================//
+
+
+    function checkDeleteTHREEModels() {
+        const hasModelsToBeDeleted = THREEPath.deletedModels.length > 0
+
+        if (hasModelsToBeDeleted) {
+            for (let THREEmodel of THREEPath.deletedModels) {
+                console.log("DELETED", THREEmodel);
+                scene.remove(THREEmodel)
+                THREEPath.deletedModels.splice(THREEmodel, 1)
+                THREEmodel = null
+            }
+        }
+    }
+
+    function createTHREEModel() {
+        for (const client of stateGame.clients) {
+
+            const hasClient = Object.keys(THREEPath.clients)
+                .find(item => item == client.id)
+
+            if (!hasClient) THREEPath.clients[client.id] = {}
+
+            const hasSiteModel = THREEPath.clients[client.id].THREEsite
+            const hasTHREEModel = THREEPath.clients[client.id].THREEmodel
+
+            if (!hasSiteModel && !hasTHREEModel) {
+                const roadSiteFile = `https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`
+                const THREEmodelFile = `models/${client.constructionType}.dae`
+                // const THREEmodelFile = `https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`
+
+                THREEPath.clients[client.id].THREEsite = {}
+                THREEPath.clients[client.id].THREEmodel = {}
+
+                // loadSiteModel(client, roadSiteFile)
+                loadTHREEModel(client, roadSiteFile, 'THREEsite')
+                loadTHREEModel(client, THREEmodelFile, 'THREEmodel')
+            }
+        }
+    }
+
+    function loadTHREEModel(client, THREEmodelFile, THREEmodel) {
+        colladaLoader.load(THREEmodelFile, collada => {
+            console.log(`CREATE THREEmodel (${client.name})`)
+            THREEPath.clients[client.id][THREEmodel] = collada.scene
+            THREEPath.clients[client.id][THREEmodel].position.set(0, 0, 0);
+            THREEPath.clients[client.id][THREEmodel].name = `${client.name}`
+
+            scene.add(THREEPath.clients[client.id][THREEmodel])
+
+        }, load => {
+            if (!load.lengthComputable) return
+
+            const loadProgress = Math.round(load.loaded / load.total * 100, 2)
+
+            console.log(`${client.id} (${loadProgress}% loaded)`)
+
+            if (loadProgress >= 100) {
+                THREEPath.clients[client.id].loaded = true
+            }
+        })
+    }
+
+    function hideAllTHREEModels() {
+        for (const clientId in THREEPath.clients) {
+
+            const isLoaded = THREEPath.clients[clientId].loaded
+
+            if (!isLoaded)
+                return console.log(`${clientId} not loaded`);
+
+            const sketchUpModels = THREEPath.clients[clientId].THREEmodel.children[0].children
+
+            for (const fullGroup of sketchUpModels) {
+                fullGroup.children
+                    .forEach(colladaModel => colladaModel.visible = false)
+            }
+        }
+    }
+
+    function controlVisibility() {
+        const currentId = stateGame.clients[stateGame.clientIndex].id
+        const isLoaded = THREEPath.clients[currentId].loaded
+
+        if (!isLoaded)
+            return console.log(`${currentId} not loaded`);
+
+        const ModelInProgress = THREEPath.clients[currentId].THREEmodel.children[0].children
+            .find(item => item.name == "constructionInProgress")
+        const ModelDone = THREEPath.clients[currentId].THREEmodel.children[0].children
+            .find(item => item.name == "constructionDone")
+        const THREETerrain = THREEPath.clients[currentId].THREEmodel.children[0].children
+            .find(item => item.name == "terrainSite")
+
+        THREETerrain.visible = false
+
+        const currentClient = stateGame.clients[stateGame.clientIndex]
+
+        for (const constructionStage of currentClient.construction) {
+            for (const { stage, progress } of constructionStage) {
+
+                const currentSite = THREEPath.clients[currentId].THREEsite
+                currentSite.visible = true
+
+                const THREEInProgress = ModelInProgress.children
+                    .find(item => item.name.replace(/_/g, " ") == stage)
+
+                const THREEDone = ModelDone.children
+                    .find(item => item.name.replace(/_/g, " ") == `${stage}Done`)
+
+                {
+                    //EXCEPTIONS
+                    if (stage == "Land Clearing" && progress == 0)
+                        THREEInProgress.visible = true
+
+                    if (stage == "Excavation")
+                        progress > 0
+                            ? THREETerrain.visible = false
+                            : THREETerrain.visible = true
+                }
+
+                const isInProgress = progress > 0 && progress < 100
+                const isInProgressVisible = THREEInProgress.visible == true
+
+                if (isInProgress && !isInProgressVisible) {
+                    THREEInProgress.visible = true
+                    THREEDone.visible = false
+                }
+
+                const isTaskDone = progress >= 100
+                const isTaskDoneVisible = THREEDone.visible == true
+
+                if (isTaskDone && !isTaskDoneVisible) {
+                    THREEInProgress.visible = false
+                    THREEDone.visible = true
+                }
+            }
+        }
+    }
+
+
+    //========================================================================//
+    //RENDER
+    //========================================================================//
+
 
     function fps() {
         requestAnimationFrame(fps)
         stats.update();
     }
 
-
     function render() {
+        const hasClients = stateGame.clients.length > 0
 
+        checkDeleteTHREEModels()
 
-        for (const client of stateGame.clients) {
-
-            if (stateGame.clients.length == 0)
-                return effect.render(scene, camera)
-
-            const hasClient = Object.keys(THREEPath.clients)
-                .find(item => item == client.name)
-            if (!hasClient) THREEPath.clients[client.name] = {}
-
-            function createTHREEModel(client) {
-                if (THREEPath.clients[client.name].THREEsite == null) {
-                    const roadSiteUrl = `https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/roadSite.dae`
-                    const THREEmodelUrl = `models/${client.constructionType}.dae`
-                    // const THREEmodelUrl = `https://raw.githubusercontent.com/mudoso/constructionSIM/master/models/${client.constructionType}.dae`
-
-                    loadSiteModel(client, roadSiteUrl)
-                    loadTHREEModel(client, THREEmodelUrl)
-
-                    function loadSiteModel(client, roadSiteUrl) {
-                        new ColladaLoader(loadingManager).load(roadSiteUrl, collada => {
-                            console.log(`CREATE roadSite (${client.name})`)
-                            THREEPath.clients[client.name].THREEsite = collada.scene
-                            THREEPath.clients[client.name].THREEsite.position.set(0, 0, 0);
-                            THREEPath.clients[client.name].THREEsite.name = `${client.name}-roadSite`
-                            scene.add(THREEPath.clients[client.name].THREEsite)
-                        })
-                    }
-                    function loadTHREEModel(client, THREEmodelUrl) {
-                        new ColladaLoader(loadingManager).load(THREEmodelUrl, collada => {
-                            console.log(`CREATE THREEmodel (${client.name})`)
-                            THREEPath.clients[client.name].THREEmodel = collada.scene
-                            THREEPath.clients[client.name].THREEmodel.position.set(0, 0, 0);
-                            THREEPath.clients[client.name].THREEmodel.name = `${client.name}`
-                            scene.add(THREEPath.clients[client.name].THREEmodel)
-                        })
-                    }
-                }
-            }
-            createTHREEModel(client)
-
-
-            if (!THREEPath.clients[client.name].THREEsite) return console.log(`LOADING roadSite.dae (${client.name})`);
-            if (!THREEPath.clients[client.name].THREEmodel) return console.log(`LOADING ${client.constructionType}.dae (${client.name})`);
-
-            const sketchUpModels = THREEPath.clients[client.name].THREEmodel.children[0].children
-            for (let construction of sketchUpModels) {
-                //HIDE ALL constructionDone
-                if (construction.name == "constructionDone") {
-                    construction.children.forEach(colladaModel => colladaModel.visible = false)
-                }
-                //HIDE ALL constructionInProgress
-                if (construction.name == "constructionInProgress") {
-                    construction.children.forEach(colladaModel => colladaModel.visible = false)
-                }
-                //HIDE ALL terrainSite
-                if (construction.name == "terrainSite") construction.visible = false
-            }
-            //HIDE ALL ROAD
-            THREEPath.clients[client.name].THREEsite.visible = false
-        }
-
-
-        if (THREEPath.deletedModels.length > 0) {
-            for (let THREEmodel of THREEPath.deletedModels) {
-                console.log("DELETED", THREEmodel);
-                scene.remove(THREEmodel)
-                THREEPath.deletedModels.splice(THREEmodel, 1)
-            }
-        }
-
-
-        if (stateGame.clients.length == 0)
+        if (!hasClients)
             return effect.render(scene, camera)
 
-        const THREEclient = stateGame.clients[stateGame.clientIndex].name
+        createTHREEModel()
+        hideAllTHREEModels()
+        controlVisibility()
 
-        if (!THREEPath.clients[THREEclient].THREEmodel) return effect.render(scene, camera)
-
-        //FIND THREE IN PROGRESS GROUP OF ELEMENTS
-        let THREEInProgress = THREEPath.clients[THREEclient].THREEmodel.children[0].children
-            .find(item => item.name == "constructionInProgress")
-        //FIND THREE DONE GROUP OF ELEMENTS
-        let THREEDone = THREEPath.clients[THREEclient].THREEmodel.children[0].children
-            .find(item => item.name == "constructionDone")
-        //FIND THREE TERRAIN ELEMENT
-        let THREETerrain = THREEPath.clients[THREEclient].THREEmodel.children[0].children
-            .find(item => item.name == "terrainSite")
-
-        THREETerrain.visible = false
-        if (THREETerrain.visible) THREETerrain.visible = false
-
-
-
-        for (let constructionSiteStage of stateGame.clients[stateGame.clientIndex].construction) {
-            for (let constructionSiteElement of constructionSiteStage) {
-                //SHOW ROAD
-                THREEPath.clients[THREEclient].THREEsite.visible = true
-
-                //FIND THREE IN PROGRESS ELEMENTS
-                let THREEConstructionElementInProgress = THREEInProgress.children
-                    .find((item) => { return item.name.replace(/_/g, " ") == constructionSiteElement.stage })
-                //FIND THREE DONE ELEMENTS
-                let THREEConstructionElementDone = THREEDone.children
-                    .find((item) => { return item.name.replace(/_/g, " ") == `${constructionSiteElement.stage}Done` })
-                //CATCH THREE.JS MODELS ERRORS
-                if (THREEConstructionElementDone == undefined || THREEConstructionElementDone == null) {
-                    console.log(constructionSiteElement.stage, "NO THREE JS ###########");
-                }
-
-                //EXCEPTIONS
-                if (constructionSiteElement.stage == "Land Clearing" && constructionSiteElement.progress <= 0) {
-                    THREEConstructionElementInProgress.visible = true
-                }
-                if (constructionSiteElement.stage == "Excavation") {
-                    THREETerrain.visible = true
-                    if (constructionSiteElement.progress > 0) THREETerrain.visible = false
-                }
-
-                //TOGGLE ON CURRENT CONSTRUCTION TASK WHEN 0% < PROGRESS < 100%
-                if ((constructionSiteElement.progress > 0 && constructionSiteElement.progress < 100) &&
-                    THREEConstructionElementInProgress.visible != true) {
-
-                    THREEConstructionElementInProgress.visible = true
-                    THREEConstructionElementDone.visible = false
-                }
-
-                //TOGGLE OFF CURRENT CONSTRUCTION TASK AND ADD THE "DONE" ONE WHEN PROGRESS REACHES 100%
-                if (constructionSiteElement.progress >= 100 && THREEConstructionElementDone.visible != true) {
-
-                    THREEConstructionElementInProgress.visible = false
-                    THREEConstructionElementDone.visible = true
-                }
-            }
-        }
-
-        //RENDER THE SCENE
         effect.render(scene, camera);
     }
+    // requestAnimationFrame(render)
     setInterval(render, 2000)
     fps()
 }
 main();
+
+
+
+
