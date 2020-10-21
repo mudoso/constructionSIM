@@ -160,8 +160,9 @@ const rendererDOM = {
         const clientSelectedButtonDOM = document.getElementById('btn-clients')
         const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')
         const clientRightArrowButtonDOM = document.getElementById('btn-clients-right')
+        const noClientSelected = stateGame.clients.length == 0
 
-        if (stateGame.clients[stateGame.clientIndex] == null) {
+        if (noClientSelected) {
             clientSelectedButtonDOM.onclick = () => { };
             return clientSelectedButtonDOM.innerHTML = "NONE"
         }
@@ -443,10 +444,11 @@ const rendererDOM = {
 
     warehouseBtn() {
         const warehouseContainerDOM = document.getElementById('warehouse-container')
+        const noClientSelected = stateGame.clients.length == 0
 
         warehouseContainerDOM.innerHTML = ""
-        if (stateGame.clients[stateGame.clientIndex] == null) return
-        // stateGame.clients[stateGame.clientIndex].warehouse.forEach(itemStored => {
+
+        if (noClientSelected) return
         for (const itemStored of stateGame.clients[stateGame.clientIndex].warehouse) {
 
             const isTransporting = itemStored.transport.length > 0
@@ -457,7 +459,6 @@ const rendererDOM = {
                     .reduce((acc, worker) => acc + worker.count, 0)
 
                 let emoji = ''
-
                 isTransporting
                     ? emoji = ` [${materialComing}...🚚]`
                     : emoji = ''
@@ -478,16 +479,15 @@ const rendererDOM = {
 
                 warehouseContainerDOM.appendChild(button)
             }
-            // })
         }
-
         rendererDOM.warehouseLimit()
     },
 
     warehouseLimit() {
         const warehouseLimitDOM = document.getElementById('warehouse-limit')
+        const noClientSelected = stateGame.clients.length == 0
 
-        if (stateGame.clients[stateGame.clientIndex] == null)
+        if (noClientSelected)
             return warehouseLimitDOM.innerHTML = `SITE STORAGE`
 
         warehouseLimitDOM.style.color = "var(--text-base-color)"
@@ -567,10 +567,12 @@ const rendererDOM = {
 
     idleWorkersAndServices() {
         const workersAndServicesContainerDOM = document.getElementById('workers-services')
+        const noClientSelected = stateGame.clients.length == 0
 
         workersAndServicesContainerDOM.innerHTML = ""
         workersAndServicesContainerDOM.style.display = 'none'
-        if (stateGame.clients[stateGame.clientIndex] == null) return
+
+        if (noClientSelected) return
         for (const workerOrServiceStored of stateGame.clients[stateGame.clientIndex].workers) {
 
             const isTransporting = workerOrServiceStored.transport.length > 0
@@ -608,9 +610,11 @@ const rendererDOM = {
 
     costPerHourBtn() {
         const costPerHourDOM = document.getElementById('cost-per-hour')
+        const noClientSelected = stateGame.clients.length == 0
+
         costPerHourDOM.innerHTML = ""
 
-        if (stateGame.clients[stateGame.clientIndex] == null) return
+        if (noClientSelected) return
         let button = document.createElement('button');
         button.innerHTML =
             `Total Cost $<span id="costperhour-value">${stateGame.clients[stateGame.clientIndex].costPerHour}</span>/hour`
@@ -630,9 +634,11 @@ const rendererDOM = {
 
     constructionTaskCards() {
         const constructionContainerDOM = document.getElementById('construction-container')
+        const noClientSelected = stateGame.clients.length == 0
+
         constructionContainerDOM.innerHTML = ""
 
-        if (stateGame.clients[stateGame.clientIndex] == null) return
+        if (noClientSelected) return
 
         const currentConstruction = stateGame.clients[stateGame.clientIndex].construction
         for (const constructionSiteStage of currentConstruction) {
