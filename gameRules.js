@@ -9,7 +9,6 @@
 // ?? CHANGE CLOCK FUNCTION TO SHOW MORNING, EVENING, AFTERNOON
 // ?? MAKE THREE.JS LIGHTs TO CHANGE ACCORDING TO TIME OF THE DAY
 // ?? MAKE THREE.JS MeshToonMaterial SHADE EFFECT WORK
-// REFACTORING THE CODE AND GET RID OF EXCESSIVE COMMENTS
 
 
 //============================================================================//
@@ -30,6 +29,7 @@ function timeRules() {
     if (minuteCycle) {
         stateGame.clock.minute = 0
         stateGame.clock.hour++
+        // saveGame()
     }
     if (dayCycle) {
         stateGame.clock.hour = 8
@@ -44,6 +44,12 @@ function timeRules() {
         checkCostPerHour()
         handleTaskProgress()
     }
+
+    const isMorning = stateGame.clock.hour < 12
+
+    isMorning
+        ? stateGame.clock.spanTime = 'Morning'
+        : stateGame.clock.spanTime = 'Afternoon'
 }
 
 
@@ -71,6 +77,8 @@ function listener() {
 
 
 function saveGame() {
+    const startTime = Date.now();
+
     const savedGame = JSON.stringify({
         clock: {
             ...stateGame.clock
@@ -87,9 +95,11 @@ function saveGame() {
         },
     })
     const size = new TextEncoder().encode(savedGame).length
-    console.log("saveGame -> size", size)
+    console.log("saveGame -> size", size / 1000, 'kB')
 
     localStorage.setItem('save1', savedGame);
+
+    console.log(`${(Date.now() - startTime) / 1000} seconds`);
 }
 
 function loadGame() {
@@ -176,9 +186,9 @@ function researchNewClients() {
 }
 
 function checkResearchTime() {
-    const isSearchActive = stateGame.lookingForClients.research
     const researchTime = stateGame.lookingForClients.researchTime
     const remainingTime = stateGame.lookingForClients.remainingTime
+    const isSearchActive = stateGame.lookingForClients.research
     const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
     const hasRemainingTime = remainingTime > stateGame.clock.minuteAccumulated
 
@@ -472,9 +482,6 @@ function handleCompletedTask(constructionSiteElement, targetClient) {
 
 function sendBackWorkerOrService(workerOrServiceStored) {
     stateGame.clients[stateGame.clientIndex].costPerHour -= workerOrServiceStored.price
-
-    remainingCost = workerOrServiceStored.timer / 60
-    console.log(workerOrServiceStored.timer)
     stateGame.clients[stateGame.clientIndex].money -= workerOrServiceStored.price
     workerOrServiceStored.count--
 
@@ -526,11 +533,13 @@ function assignMaterial(materialNeeded) {
 }
 
 function completeClientConstruction() {
-    stateGame.clients[stateGame.clientIndex].money
-    stateGame.ownCompany.money += stateGame.clients[stateGame.clientIndex].money
+    const currentCompanyMoney = stateGame.clients[stateGame.clientIndex].money
+    stateGame.ownCompany.money += currentCompanyMoney
     stateGame.clients[stateGame.clientIndex].money = 0
 
-    getCurrentExperience(200)
+    const experiencePoints = getExperiencePoints()
+
+    getCurrentExperience(experiencePoints)
 
     const clientId = stateGame.clients[stateGame.clientIndex].id
     const THREE = stateGame.THREEmodels
@@ -546,6 +555,18 @@ function completeClientConstruction() {
     if (stateGame.clientIndex > 0) stateGame.clientIndex--
 
     rendererDOM.all()
+}
+
+function getExperiencePoints() {
+    const currentClient = stateGame.clients[stateGame.clientIndex]
+    const clientArea = currentClient.area
+    const clientCountStages = currentClient.construction.length
+    const skillPrimary = stateGame.ownCompany.skills.construction
+    const skillSecondary = stateGame.ownCompany.skills.management
+    const skillMax = skillPrimary + skillSecondary
+    const skillCoef = (1 + skillMax / 10)
+
+    return clientArea * clientCountStages * skillCoef
 }
 
 
