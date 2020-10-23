@@ -6,16 +6,17 @@ class Client {
     constructor(clientName) {
         console.log(this);
         this.name = clientName
-        this.id = this.name + Math.floor(Math.random() * 100000)
-        // this.attempt = randomCount(stateGame.ownCompany.level) + 1
+        this.id = getClientId(this.name)
         this.area = randomCount(50) + 50
-        this.money = clientBudgetFormula(this.area)
+        this.money = getClientBudget(this.area)
         this.costPerHour = 0
         this.warehouse = []
         this.warehouseLimit = this.area * .4
         this.workers = []
         this.constructionType = buildTypeList()
         this.construction = eval(`${this.constructionType}( ${this.area} )`)
+        this.dueDate = getDueDate(this.area, this.construction)
+        this.dueFee = getDueFee(this.money)
     }
 }
 
@@ -23,12 +24,40 @@ class Client {
 //BUILD CONSTRUCTOR TYPE LIST
 //======================================================================================//
 
-function clientBudgetFormula(area) {
+function getClientId(name) {
+    return name + Math.floor(Math.random() * 100000)
+}
+
+function getClientBudget(area) {
     let budget = 0
     budget = Math.floor((Math.random() * 0.3 + 0.9) * 1000 * area / 100) * 100
     return budget
 }
 
+function getDueDate(area, construction) {
+    const skill1 = stateGame.ownCompany.skills.management
+    const skill2 = stateGame.ownCompany.skills.network / 3
+    const stages = construction.length
+
+    const SkillDelta = 1 + (skill1 + skill2) / 10
+    const daysPerArea = Math.floor(area / 10)
+    const daysPerStage = Math.floor(stages * 3 * SkillDelta)
+    const setDueTime = stateGame.clock.day + daysPerStage + daysPerArea
+    console.log("getDueDate -> setDueTime", setDueTime)
+    return setDueTime
+}
+
+function getDueFee(money) {
+    let skill = stateGame.ownCompany.skills.network
+    if (skill > 40)
+        skill = 40
+    const reducedPercentage = 1 - skill / 100
+    const rawPercentage = randomNumberInteger(1, 5) / 100
+
+    const dueFee = Math.floor(money * rawPercentage * reducedPercentage)
+    console.log(dueFee, money, rawPercentage, reducedPercentage)
+    return dueFee
+}
 
 function buildTypeList() {
     return randomIndex([
@@ -91,59 +120,91 @@ function createStageItem(stageItemName, stage, area) {
 
 
 function createServiceNeed(stage, area) {
-    let serviceNeeded = [] //FINAL SERVICES ARRAY
-    let calledStage = [] //CALLED SERVICES RELATED TO STAGE
-    //PREVENT INFINITE LOOP
-    if (stage == undefined || stage == null) { return [] }
-    //LOOK FOR ITEMS IN THE STORE THAT MATCH CALLED STAGE
+    const serviceNeeded = [] //FINAL SERVICES ARRAY
+    const calledStage = [] //CALLED SERVICES RELATED TO STAGE
+    const isInvalidStage = stage == null
+
+    if (isInvalidStage) return []
+
     for (let storeCategory of store) {
-        if (storeCategory.service == true) {
+        const isService = storeCategory.service == true
+
+        if (isService) {
             for (let itemOnStock of storeCategory.stock) {
-                if (itemOnStock.stage != undefined && itemOnStock.stage.includes(stage) == true) {
+                const hasStage = itemOnStock.stage != undefined
+                const isValidStage = itemOnStock.stage.includes(stage) == true
+
+                if (hasStage && isValidStage)
                     calledStage.push(itemOnStock.name)
-                }
+
             }
         }
     }
     //FOR EACH SERVICE COMPATIBLE WITH CALLED STAGE MAKE A RANDOM COUNT AND ADD TO FINAL ARRAY
     for (let singleService of calledStage) {
-        let minimum = area / 50
-        let countNumber = randomCount(minimum) // DEFAULT
+
+        const countNumber = getFilteredCount(stage, singleService, area) // DEFAULT
         //SPECIAL RULES
         //======================================================================================//
 
-        if (stage == "excavation") {
-            if (singleService == "Excavator") { countNumber = 1 }
-            if (singleService == "Articulated truck") { countNumber = 0 }
-        }
-        if (singleService == "Builder" ||
-            singleService == "Carpenter" ||
-            singleService == "Bricklayer" ||
-            singleService == "Roofer" ||
-            singleService == "Welder") {
-            countNumber = randomCount(minimum) + 1
-        }
-        if (stage == "clearing" && singleService == "Dumpster") { countNumber = 1 }
-        if (stage == "slab" && singleService == "Builder") { countNumber = randomCount(minimum) + 1 }
-        if (stage == "roof" || stage == "roof-ceramic") { countNumber = randomCount(minimum) + 1 }
 
 
         //======================================================================================//
 
-        //ADD TO FINAL ARRAY IF > 0
-        if (countNumber > 0) {
-            singleService = { "type": singleService, "count": countNumber, "assigned": false }
+        const hasService = countNumber > 0
+        if (hasService) {
+            singleService = {
+                "type": singleService,
+                "count": countNumber,
+                "assigned": false
+            }
             serviceNeeded.push(singleService)
         }
-        if (countNumber == undefined || countNumber == null) { return console.log(singleService, countNumber, "error") }
+
+        const isInvalidCount = countNumber == null
+        if (isInvalidCount)
+            return console.log(singleService, countNumber, "error")
     }
 
-    //IF NO SERVICE (EMPTY ARRAY) REDO THE FUNCTION
-    if (serviceNeeded.length < 1 || serviceNeeded == undefined) {
+    const hasNoService = serviceNeeded.length < 1
+    if (hasNoService)
         createServiceNeed(stage, area)
-    }
-    // else (console.log("ERROR, SERVICE CANNOT GET AT LEAST VALUE OF 1", stage))
+
     return serviceNeeded
+}
+
+function getFilteredCount(stage, singleService, area) {
+    const minimum = area / 50
+
+    switch (true) {
+        case singleService == "Builder":
+        case singleService == "Carpenter":
+        case singleService == "Bricklayer":
+        case singleService == "Roofer":
+        case singleService == "Welder":
+        case stage == "roof":
+        case stage == "roof-ceramic":
+        case stage == "slab" && singleService == "Builder":
+            countNumber = randomCount(minimum) + 1
+            break
+
+        case stage == "clearing" && singleService == "Dumpster":
+            countNumber = 1
+            break
+
+        case stage == "excavation" && singleService == "Excavator":
+            countNumber = 1
+            break
+        case stage == "excavation" && singleService == "Articulated":
+            countNumber = 0
+            break
+
+        default:
+            console.log(stage, "default");
+            countNumber = randomCount(minimum)
+            break
+    }
+    return countNumber
 }
 
 
