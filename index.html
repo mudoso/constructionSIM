@@ -30,7 +30,10 @@
 
                         <div class="money-div layout">
                             <header>OWN MONEY:&nbsp;</header>
-                            <p>$<span class="own-money">0</span></p>
+                            <p>
+                                $<span class="own-money">0</span>
+                                <span class="due-fee-ownMoney"></span>
+                            </p>
                         </div>
 
                         <div class="layout">
@@ -83,15 +86,21 @@
 
                     <div class="grid-row">
 
-                        <section class="margin flex-between">
-                            <div class="money-div">
-                                <header>CLIENT BUDGET:&nbsp;</header>
-                                <p class="transfer-money">$<span id="client-money-menu" class="">0</span></p>
+                        <section class="margin">
+                            <div class="flex-between">
+                                <div class="money-div">
+                                    <header>CLIENT BUDGET:&nbsp;</header>
+                                    <p class="transfer-money">$<span id="client-money-menu" class="">0</span></p>
+                                </div>
+                                <div id="send-money-input" class="send-money">
+                                    <input class="form money-div" type="number" name="send-own-money"
+                                        id="send-own-money" min="0" max="10000" placeholder="0" step="100" value="0">
+                                    <button id="send-money" class="btn">Send Money</button>
+                                </div>
                             </div>
-                            <div id="send-money-input" class="send-money">
-                                <input class="form money-div" type="number" name="send-own-money" id="send-own-money"
-                                    min="0" max="10000" placeholder="0" step="100" value="0">
-                                <button id="send-money" class="btn">Send Money</button>
+                            <div id="due-client" class="flex-between">
+                                <p class="due-date">DUE DATE:</p>
+                                <p class="due-fee">DUE FEE:</p>
                             </div>
                         </section>
 
@@ -119,11 +128,15 @@
             <nav class="layout nav-flex">
                 <div>
                     <p>COMPANY:</p>
-                    <button id="menu-own-company" class="btn btn-focus"><span id="own-company-name">NONE</span>'S
-                        COMPANY</button>
+                    <button id="menu-own-company" class="btn btn-focus">
+                        <span id="own-company-name">NONE</span>
+                    </button>
                     <div class="money-div">
                         <header>MONEY:&nbsp;</header>
-                        <p>$<span class="own-money">0</span></p>
+                        <p>
+                            $<span class="own-money">0</span>
+                            <span class="due-fee-ownMoney">()</span>
+                        </p>
                     </div>
                     <div class="menu-own-lvl">COMPANY LEVEL: <span class="own-lvl">1</span>
                         <div class="menu-own-lvl-progress"></div>
@@ -131,19 +144,23 @@
                 </div>
 
                 <div class="time-div">
-                    <div id="clock" class="clock">
-                        Day <span id="day">1</span><br>
-                        Time <span id="time">1:00</span>
-                    </div>
-                    <div class="flex-between">
-                        <button id="pause-btn" class="btn">&#9632;</button>
-                        <button id="speed-btn" class="btn">&#9658;</button>
+                    <div class="clock">DAY <span id="day">1</span></div>
+                    <div class="clock">TIME <span id="time">1:00</span></div>
+                    <div>
+                        <div class="flex-between">
+                            <button id="pause-btn" class="btn">&#9632;</button>
+                            <button id="speed-btn" class="btn">&#9658;</button>
+                        </div>
                     </div>
                 </div>
             </nav>
 
             <nav class="layout select-client">
-                <p>SELECTED CLIENT:</p>
+                <div class="flex-between">
+                    <p>SELECTED CLIENT:</p>
+                    <p class="due-date">DUE DATE:</span></p>
+                </div>
+
                 <nav class="nav-stats-client">
                     <button id="btn-clients-left" class="btn">&#9668;</button>
                     <button id="btn-clients" class="btn">NONE</button>
