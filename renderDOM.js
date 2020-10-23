@@ -1,6 +1,7 @@
 const rendererDOM = {
     all() {
         rendererDOM.money()
+        rendererDOM.due()
         rendererDOM.clientSelectorMenu()
         rendererDOM.newClientSelector()
         rendererDOM.categoryStoreBtn()
@@ -42,6 +43,55 @@ const rendererDOM = {
                 DOM.innerHTML = stateGame.clients[stateGame.clientIndex].money)
     },
 
+    due() {
+        const dueDateDOM = document.querySelectorAll(".due-date")
+        const dueFeeDOM = document.querySelectorAll(".due-fee")
+        const dueFeeOwnMoneyDOM = document.querySelectorAll(".due-fee-ownMoney")
+        const clientSelected = stateGame.clients[stateGame.clientIndex]
+        const costPerDay = stateGame.clients
+            .filter(client => stateGame.clock.day > client.dueDate)
+            .reduce((acc, client) => acc + client.dueFee, 0)
+
+        const nodeGroup = [
+            dueFeeOwnMoneyDOM,
+            dueDateDOM,
+            dueFeeDOM
+        ]
+
+        for (const nodeList of nodeGroup)
+            nodeList.forEach(DOM => {
+                DOM.innerHTML = ''
+                DOM.style.color = ''
+                DOM.style.fontWeight = ''
+            })
+
+        if (!clientSelected) return
+
+        dueDateDOM.forEach(DOM => DOM.innerHTML = `DUE DATE: DAY ${clientSelected.dueDate}`)
+        dueFeeDOM.forEach(DOM => DOM.innerHTML = `DUE FEE: $${clientSelected.dueFee}`)
+
+        const isDueDate = stateGame.clock.day > clientSelected.dueDate
+
+        if (isDueDate) {
+            dueDateDOM.forEach(DOM => {
+                DOM.style.color = '#ff2a1a'
+                DOM.style.fontWeight = 'bold'
+            })
+            dueFeeDOM.forEach(DOM => {
+                DOM.style.color = '#ff2a1a'
+                DOM.style.fontWeight = 'bold'
+            })
+        }
+        if (costPerDay > 0) {
+            dueFeeOwnMoneyDOM.forEach(DOM => {
+                DOM.innerHTML = `($${costPerDay}/day)`
+                DOM.style.color = '#ff2a1a'
+                DOM.style.fontWeight = 'bold'
+            })
+        }
+
+    },
+
     experience(showExperience) {
         const ownExperience = document.querySelectorAll(".menu-own-lvl-progress")
         ownExperience.forEach(DOM => DOM.style.width = `${showExperience}%`)
@@ -74,7 +124,9 @@ const rendererDOM = {
             const taskPercentage = Math.floor(completedTasks.length / stageItemsProgressList.length * 1000) / 10
 
             let button = document.createElement('button')
-            button.innerHTML = `<div>${clients.name}</div><div>${taskProgression} Completed Tasks   (${taskPercentage}%)</div>`
+            button.innerHTML =
+                `<div>${clients.name.toUpperCase()}</div>
+                <div>${taskProgression} Completed Tasks  (${taskPercentage}%)</div>`
             button.setAttribute('id', clients.name)
             button.setAttribute('class', "flex-between btn")
             button.setAttribute('style', "display: flex")
@@ -163,10 +215,12 @@ const rendererDOM = {
         const noClientSelected = stateGame.clients.length == 0
 
         if (noClientSelected) {
-            clientSelectedButtonDOM.onclick = () => { };
+            clientSelectedButtonDOM.onclick = false;
             return clientSelectedButtonDOM.innerHTML = "NONE"
         }
-        clientSelectedButtonDOM.innerHTML = stateGame.clients[stateGame.clientIndex].name
+        const clientName = stateGame.clients[stateGame.clientIndex].name
+
+        clientSelectedButtonDOM.innerHTML = clientName.toUpperCase()
         clientLeftArrowButtonDOM.onclick = () => { rendererDOM.selectClientLeft() };
         clientRightArrowButtonDOM.onclick = () => { rendererDOM.selectClientRight() };
         clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn() };
@@ -192,8 +246,8 @@ const rendererDOM = {
 
     menuClientOn: () => {
         const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-
         menuClientBackgroundBlock.style.display = "block"
+        rendererDOM.menuClient()
     },
 
     handleSendMoneyClient() {
@@ -201,7 +255,7 @@ const rendererDOM = {
         const sendMoneyInput = document.getElementById('send-own-money');
 
         if (!sendMoneyBtn || !sendMoneyInput) return //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        sendMoneyBtn.onclick = () => { sendMoneyToClient(sendMoneyInput) };
+        sendMoneyBtn.onclick = () => { sendMoneyToClient() };
     },
 
 
@@ -283,7 +337,7 @@ const rendererDOM = {
     },
 
     newClientsList() {
-        const newClientSelectorDOM = document.getElementById("looking-for-client")
+        const newClientSelectorDOM = document.getElementById('looking-for-client')
         newClientSelectorDOM.innerHTML = ''
 
         for (const client of stateGame.lookingForClients.clientList) {
@@ -296,7 +350,9 @@ const rendererDOM = {
             }
             div.innerHTML =
                 `<section id="${client.name}-looking-client" class="looking-client">
-                    <button id="${client.name}-newClient-menu" class="btn">${client.name}</button>
+                    <button id="${client.name}-newClient-menu" class="btn">
+                    ${client.name.toUpperCase()}
+                    </button>
                     <div>
                         <input id="${client.id}input" class="form" type="number" name="quantities" 
                             min="${client.money}" 
@@ -309,8 +365,7 @@ const rendererDOM = {
                         </button>
                     </div>
                 </section>`
-            newClientSelectorDOM.appendChild(div);
-            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            newClientSelectorDOM.appendChild(div)
 
             const buttonNewClientMenu = document.getElementById(`${client.name}-newClient-menu`)
             const buttonOfferClient = document.getElementById(`${client.name}-offer-client-btn`)
@@ -323,53 +378,62 @@ const rendererDOM = {
         }
     },
 
-    menuNewClient(client) {
+    menuNewClient(lookingClient) {
         const menuClientBackgroundBlock = document.getElementById('menu-client-block');
 
         menuClientBackgroundBlock.style.display = "block"
-        rendererDOM.menuClient(client)
+        rendererDOM.menuClient(lookingClient)
     },
 
-    menuClient(targetClientIsTrue) {
-        let clientMoneyDOM = document.querySelectorAll(".client-money")
+    menuClient(client = undefined) {
         const menuClientName = document.getElementById('menu-client-name')
         const menuClientMoney = document.getElementById('client-money-menu')
+        const menuClientDue = document.getElementById('due-client')
+
+        let clientSelected
+
+        client
+            ? clientSelected = client
+            : clientSelected = stateGame.clients[stateGame.clientIndex]
+
+        if (clientSelected) {
+            menuClientName.innerHTML = clientSelected.name.toUpperCase()
+            menuClientMoney.innerHTML = clientSelected.money
+
+            let hasDateClass
+            let hasFeeClass
+
+            client
+                ? (hasDateClass = '', hasFeeClass = '')
+                : (hasDateClass = 'due-date', hasFeeClass = 'due-fee')
+
+            menuClientDue.innerHTML =
+                `<p class=${hasDateClass}>DUE DATE: DAY ${clientSelected.dueDate}</p>
+                <p class=${hasFeeClass}>DUE FEE: $${clientSelected.dueFee}</p>`
+
+            rendererDOM.sendMoneyInput(client)
+            rendererDOM.menuClientMaterialsNeeded(clientSelected)
+        }
+    },
+
+    sendMoneyInput(lookingClient) {
         const menuClientSendMoneyInput = document.getElementById('send-money-input')
 
         menuClientSendMoneyInput.innerHTML = ""
-        menuClientMoney.innerHTML = clientMoneyDOM.innerHTML
 
-        let clientSelected = stateGame.clients[stateGame.clientIndex]
-        if (targetClientIsTrue) {
-            clientSelected = targetClientIsTrue
-            menuClientMoney.className = "";
-            clientMoneyDOM = document.querySelectorAll(".client-money")
-            menuClientMoney.innerHTML = clientSelected.money
+        if (!lookingClient) {
+            menuClientSendMoneyInput.innerHTML =
+                `<input class="form money-div" 
+                    type="number" 
+                    name="send-own-money" id="send-own-money" 
+                    min="0"
+                    max="10000" 
+                    placeholder="0" 
+                    step="100" 
+                    value="0">
+                <button id="send-money" class="btn">Send Money</button>`
+            rendererDOM.handleSendMoneyClient()
         }
-        if (clientSelected != targetClientIsTrue) {
-            rendererDOM.sendMoneyInput(menuClientSendMoneyInput)
-            menuClientMoney.className = "client-money";
-            clientMoneyDOM = document.querySelectorAll(".client-money")
-        }
-        if (clientSelected == null) return
-
-        menuClientName.innerHTML = clientSelected.name.toUpperCase()
-
-        rendererDOM.menuClientMaterialsNeeded(clientSelected)
-    },
-
-    sendMoneyInput(menuClientSendMoneyInput) {
-        menuClientSendMoneyInput.innerHTML =
-            `<input class="form money-div" 
-                type="number" 
-                name="send-own-money" id="send-own-money" 
-                min="0"
-                max="10000" 
-                placeholder="0" 
-                step="100" 
-                value="0">
-            <button id="send-money" class="btn">Send Money</button>`
-        rendererDOM.handleSendMoneyClient()
     },
 
     menuClientMaterialsNeeded(clientSelected) {
@@ -642,8 +706,8 @@ const rendererDOM = {
 
         const currentConstruction = stateGame.clients[stateGame.clientIndex].construction
         for (const constructionSiteStage of currentConstruction) {
-            constructionSiteStage.forEach(constructionSiteElement => {
 
+            constructionSiteStage.forEach(constructionSiteElement => {
                 if (constructionSiteElement.progress < 100) {
                     rendererDOM.taskCard(constructionSiteElement, constructionContainerDOM)
                     rendererDOM.workersOrServicesBtn(constructionSiteElement)
@@ -743,7 +807,7 @@ const rendererDOM = {
         const cardTaskPercentage = document.getElementById(cardId)
 
         if (cardTaskPercentage == null) return console.log('Card not found / or hidden');
-        cardTaskPercentage.innerHTML = `${constructionSiteElement.progress} %`
+        cardTaskPercentage.innerHTML = `${constructionSiteElement.progress.toFixed(2)} %`
     },
 
     finishClientCard(constructionContainerDOM) {
