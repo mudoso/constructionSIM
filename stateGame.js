@@ -7,10 +7,11 @@ let stateGame = {
         "minuteAccumulated": 0
     },
     "ownCompany": {
-        "name": "TERNERO",
+        "name": "TERNERO Ltda.",
         "level": 1,
         "experience": 0,
         "money": 20000,
+        "costPerDay": 0,
         "skillPoints": 0,
         "skills": {
             "construction": 1,
