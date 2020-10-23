@@ -36,11 +36,14 @@ function timeRules() {
         stateGame.clock.day++
         getNewAvailableClients(0)
         getNewLookingAttempts()
+        checkDueCost()
         rendererDOM.all()
     }
     rendererDOM.time()
 
-    if (stateGame.clients[stateGame.clientIndex] != null) {
+    const hasClientSelected = stateGame.clients[stateGame.clientIndex] != null
+
+    if (hasClientSelected) {
         checkCostPerHour()
         handleTaskProgress()
     }
@@ -61,9 +64,10 @@ function listener() {
     checkResearchTime()
     rendererDOM.updateNumberOfNewClients()
 
-    getCurrentExperience()
+    setCurrentExperience()
     rendererDOM.companyStats()
     rendererDOM.money()
+    rendererDOM.due()
     rendererDOM.displayAvailableSkillPoints()
     rendererDOM.displaySkillBtn()
     rendererDOM.updateCurrentSkillPoints()
@@ -157,13 +161,14 @@ function addSkillPoint(skillName) {
     const isSkillPointAvailable = stateGame.ownCompany.skillPoints > 0
 
     if (isSkillPointAvailable) {
+        const skillSelected = skillName.toLowerCase()
+
         stateGame.ownCompany.skillPoints--
-        stateGame.ownCompany.skills[skillName.toLowerCase()]++
+        stateGame.ownCompany.skills[skillSelected]++
 
         rendererDOM.displayAvailableSkillPoints()
         rendererDOM.displaySkillBtn()
         rendererDOM.updateCurrentSkillPoints()
-
     }
 }
 
@@ -236,6 +241,9 @@ function randomNumberInteger(min = 0, max = 0) {
 function getNewAvailableClients(numberOfClients = randomNumberInteger(0, 3)) {
     stateGame.lookingForClients.clientList = []
 
+    if (numberOfClients > 0)
+        numberOfClients += getExtraClientWithSkill()
+
     getNewClientList(numberOfClients).forEach(clientName =>
         stateGame.lookingForClients.clientList
             .push(new Client(clientName)))
@@ -249,6 +257,15 @@ function getNewClientList(numberOfClients) {
             const randomIndex = randomNumberInteger(0, clientNames.length - 1)
             return clientNames[randomIndex]
         })
+}
+
+function getExtraClientWithSkill() {
+    const relatedSkill = stateGame.ownCompany.skills.network
+    const skillDelta1 = (relatedSkill + 11) / 10
+    const skillDelta2 = Math.random() + relatedSkill / 50
+    const extraClient = Math.floor(skillDelta2 * skillDelta1)
+
+    return extraClient
 }
 
 function newClientSelectorBudgetOffer(client, inputOfferClient) {
@@ -271,7 +288,7 @@ function newClientSelectorBudgetOffer(client, inputOfferClient) {
     rendererDOM.all()
 }
 
-function getCurrentExperience(addExperience = 0) {
+function setCurrentExperience(addExperience = 0) {
 
     stateGame.ownCompany.experience += addExperience
     let currentExperience = stateGame.ownCompany.experience
@@ -377,6 +394,15 @@ function checkAssignedWorkers(targetClient, workersOnSite) {
     return workersAssignedCount
 }
 
+function checkDueCost() {
+    for (const targetClient of stateGame.clients) {
+        const isDueDate = stateGame.clock.day > targetClient.dueDate
+        if (isDueDate) {
+            stateGame.ownCompany.money -= targetClient.dueFee
+        }
+    }
+}
+
 
 
 //============================================================================//
@@ -394,8 +420,8 @@ function handleTaskProgress() {
             const hasConstructionInProgress = verifyConstructionInProgress(constructionSiteStage)
             if (hasConstructionInProgress) break
         }
-        const hasStageInProgress = verifyStageInProgress(targetClient)
-        if (!hasStageInProgress)
+        const hasStagesInProgress = verifyStageInProgress(targetClient)
+        if (!hasStagesInProgress)
             sendBackAllWorkerOrService(targetClient)
     }
 }
@@ -453,7 +479,23 @@ function verifyAssignedMaterials(constructionSiteElement) {
 function startTask(constructionSiteElement, targetClient) {
     if (constructionSiteElement.progress < 100) {
 
-        constructionSiteElement.progress += 1
+        function getProgress(constructionSiteElement, targetClient) {
+            const area = targetClient.area
+            const workersQuantity = constructionSiteElement.workersNeeded
+                .reduce((acc, service) => acc + service.count, 0)
+
+            const skill1 = stateGame.ownCompany.skills.construction
+            const skill2 = stateGame.ownCompany.skills.management
+
+            const mainValue = workersQuantity / area * 10
+            const skillDelta1 = (skill1 / area)
+            const skillDelta2 = (skill2 / area) / 2
+
+            const rawPercentage = mainValue + skillDelta1 + skillDelta2
+            return rawPercentage
+        }
+        constructionSiteElement.progress += getProgress(constructionSiteElement, targetClient)
+        constructionSiteElement.progress = parseFloat(constructionSiteElement.progress.toFixed(2))
 
         rendererDOM.progressTaskLoading(constructionSiteElement, targetClient)
         rendererDOM.progressTaskPercentage(constructionSiteElement, targetClient)
@@ -539,7 +581,7 @@ function completeClientConstruction() {
 
     const experiencePoints = getExperiencePoints()
 
-    getCurrentExperience(experiencePoints)
+    setCurrentExperience(experiencePoints)
 
     const clientId = stateGame.clients[stateGame.clientIndex].id
     const THREE = stateGame.THREEmodels
