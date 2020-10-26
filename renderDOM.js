@@ -216,46 +216,50 @@ const rendererDOM = {
 
         if (noClientSelected) {
             clientSelectedButtonDOM.onclick = false;
-            return clientSelectedButtonDOM.innerHTML = "NONE"
+            clientSelectedButtonDOM.innerHTML = "NONE"
+            return
         }
         const clientName = stateGame.clients[stateGame.clientIndex].name
 
         clientSelectedButtonDOM.innerHTML = clientName.toUpperCase()
-        clientLeftArrowButtonDOM.onclick = () => { rendererDOM.selectClientLeft() };
-        clientRightArrowButtonDOM.onclick = () => { rendererDOM.selectClientRight() };
-        clientSelectedButtonDOM.onclick = () => { rendererDOM.menuClientOn() };
+        clientLeftArrowButtonDOM.onclick = () => rendererDOM.selectClientArrow('left')
+        clientRightArrowButtonDOM.onclick = () => rendererDOM.selectClientArrow('right')
+        clientSelectedButtonDOM.onclick = () => rendererDOM.menuClientOn()
     },
 
-    selectClientRight() {
-        stateGame.clientIndex++
-        if (stateGame.clients[stateGame.clientIndex] != null)
-            return rendererDOM.all()
+    selectClientArrow(arrow) {
+        switch (arrow) {
+            case 'left':
+                stateGame.clientIndex--
+                break
+            case 'right':
+                stateGame.clientIndex++
+                break
+        }
+        const isNegativeIndex = stateGame.clientIndex < 0
+        const isEndOfClientList = stateGame.clientIndex > stateGame.clients.length - 1
 
-        stateGame.clientIndex = 0
-        rendererDOM.all()
-    },
+        if (isNegativeIndex)
+            stateGame.clientIndex = stateGame.clients.length - 1
 
-    selectClientLeft() {
-        stateGame.clientIndex--
-        if (stateGame.clients[stateGame.clientIndex] != null)
-            return rendererDOM.all()
+        if (isEndOfClientList)
+            stateGame.clientIndex = 0
 
-        stateGame.clientIndex = stateGame.clients.length - 1
         rendererDOM.all()
     },
 
     menuClientOn: () => {
-        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block')
         menuClientBackgroundBlock.style.display = "block"
         rendererDOM.menuClient()
     },
 
     handleSendMoneyClient() {
-        const sendMoneyBtn = document.getElementById('send-money');
-        const sendMoneyInput = document.getElementById('send-own-money');
+        const sendMoneyBtn = document.getElementById('send-money')
+        const sendMoneyInput = document.getElementById('send-own-money')
 
         if (!sendMoneyBtn || !sendMoneyInput) return //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        sendMoneyBtn.onclick = () => { sendMoneyToClient() };
+        sendMoneyBtn.onclick = () => sendMoneyToClient()
     },
 
 
@@ -294,52 +298,46 @@ const rendererDOM = {
 
             if (!isSearchActive) clearInterval(reticenceCounter)
         }, 500);
+        console.log("reticenceCounter -> reticenceCounter", reticenceCounter)
     },
 
     newClientSelector() {
         const newClientSelectorDOM = document.getElementById("looking-for-client")
-
-        const researchTime = stateGame.lookingForClients.researchTime
         const hasAvailableAttempts = stateGame.lookingForClients.lookingAttempts > 0
         const hasAvailableClient = stateGame.lookingForClients.clientList.length > 0
-        const isSearchActive = stateGame.lookingForClients.research
-        const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
 
-        rendererDOM.searchNewClientsBtn(newClientSelectorDOM, hasResearchTime)
+        newClientSelectorDOM.innerHTML = `<h4>NO MORE CLIENTS FOUND TODAY</h4>`
 
-        if (!hasAvailableAttempts && !hasResearchTime && !hasAvailableClient) {
-            newClientSelectorDOM.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
-            newClientSelectorDOM.onclick = false
-        }
+        if (hasAvailableAttempts) {
+            const researchBtn = rendererDOM.getSearchNewClientsBtn()
 
-        if (!hasAvailableAttempts && !hasResearchTime && !hasAvailableClient) {
-            newClientSelectorDOM.innerHTML = `<h4>NO MORE CLIENTS FOUND TODAY</h4>`
+            newClientSelectorDOM.innerHTML = ''
+            newClientSelectorDOM.appendChild(researchBtn)
         }
 
         if (hasAvailableClient) {
-            rendererDOM.newClientsList()
+            newClientSelectorDOM.innerHTML = ''
+            rendererDOM.newClientsList(newClientSelectorDOM)
         }
     },
 
-    searchNewClientsBtn(newClientSelectorDOM, hasResearchTime) {
-        newClientSelectorDOM.innerHTML = ''
+    getSearchNewClientsBtn() {
+        const researchTime = stateGame.lookingForClients.researchTime
+        const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
 
         const button = document.createElement('button');
         button.innerHTML = `LOOK FOR NEW CLIENTS`
-
         button.setAttribute('class', "btn");
-        button.onclick = () => { researchNewClients() }
+        button.onclick = () => researchNewClients()
+
         if (hasResearchTime) {
             button.innerHTML = `(SEARCHING FOR NEW CLIENTS... 🔍)`
             button.onclick = false
         }
-        newClientSelectorDOM.appendChild(button);
+        return button
     },
 
-    newClientsList() {
-        const newClientSelectorDOM = document.getElementById('looking-for-client')
-        newClientSelectorDOM.innerHTML = ''
-
+    newClientsList(newClientSelectorDOM) {
         for (const client of stateGame.lookingForClients.clientList) {
             let div = document.createElement('div');
             let btnClass = "btn"
