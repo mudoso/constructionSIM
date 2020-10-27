@@ -3,7 +3,6 @@
 // ADDED A FRONT PAGE TO INPUT COMPANY NAME, START NEW GAME OR LOAD GAME
 // MAKE A SAVE SYSTEM TO LocalStorage
 // MAKE A HELP TOOLTIP TO SHOW INFORMATION ABOUT THE COMPONENTS
-// MAKE CLIENT DUE DATE WITH FINE IF DUE DATE IS NOT ACCOMPLISHED
 // MAKES SKILLS IMPACT IN THE GAME
 // CHANGE TASK PROGRESS FORMULA TO WORK IN ACCORD WITH SKILLS AND DIFFICULT OF THE TASK
 // ?? CHANGE CLOCK FUNCTION TO SHOW MORNING, EVENING, AFTERNOON
@@ -150,11 +149,15 @@ function changeTimeSpeed(timeScale = 0) {
 
 function sendMoneyToClient(sendMoneyInput) {
     const countSent = parseInt(sendMoneyInput.value)
-    sendMoneyInput.value = 0
-    if (countSent > stateGame.ownCompany.money) return console.log("Not enough money");
+    const isNumber = typeof countSent == 'number'
+    const hasCompanyMoney = countSent > stateGame.ownCompany.money
 
-    stateGame.ownCompany.money -= countSent
-    stateGame.clients[stateGame.clientIndex].money += countSent
+    sendMoneyInput.value = 0
+
+    if (isNumber || hasCompanyMoney) {
+        stateGame.ownCompany.money -= countSent
+        stateGame.clients[stateGame.clientIndex].money += countSent
+    }
 }
 
 function addSkillPoint(skillName) {
@@ -197,7 +200,7 @@ function checkResearchTime() {
     const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
     const hasRemainingTime = remainingTime > stateGame.clock.minuteAccumulated
 
-    const hasAttempts = stateGame.lookingForClients.lookingAttempts > 0
+    const hasAvailableAttempts = stateGame.lookingForClients.lookingAttempts > 0
     const hasAvailableClient = stateGame.lookingForClients.clientList.length > 0
 
     if (!hasRemainingTime && hasAvailableClient) {
@@ -206,7 +209,7 @@ function checkResearchTime() {
 
     if (!isSearchActive || hasResearchTime) return
 
-    if (hasAttempts && !hasAvailableClient) {
+    if (hasAvailableAttempts && !hasAvailableClient && !hasResearchTime) {
         const skillValue = stateGame.ownCompany.skills.network
         const SkillDelta = Math.floor(120 * skillValue / 10)
         const setRemainingTime = stateGame.clock.minuteAccumulated + 60 + SkillDelta
