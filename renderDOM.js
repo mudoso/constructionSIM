@@ -109,6 +109,26 @@ const rendererDOM = {
     //COMPANY MENU
     //======================================================================================//
 
+    handleDisplayOwnMenu() {
+        const menuOwnCompanyButton = document.getElementById('menu-own-company')
+        const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block')
+
+        menuOwnCompanyButton.onclick = () => rendererDOM.menuCompanyOn(menuOwnCompanyButtonOut)
+
+        menuOwnCompanyButtonOut.addEventListener('click', event => {
+            const closeTarget = event.target.id
+            if (closeTarget == 'menu-own-company-block') {
+                menuOwnCompanyButtonOut.style.opacity = '0'
+                menuOwnCompanyButtonOut.style.pointerEvents = 'none'
+            }
+        })
+    },
+
+    menuCompanyOn(menuOwnCompanyButtonOut) {
+        menuOwnCompanyButtonOut.style.opacity = '1'
+        menuOwnCompanyButtonOut.style.pointerEvents = 'all'
+    },
+
     ownCompanyMenuClients() {
         const menuOwnClients = document.querySelector('.menu-own-company-clients')
 
@@ -208,6 +228,26 @@ const rendererDOM = {
     //CLIENT MENU
     //======================================================================================//
 
+    handleDisplayClientMenu() {
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
+
+        menuClientBackgroundBlock.addEventListener('click', event => {
+            const closeTarget = event.target.id
+            if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
+                menuClientBackgroundBlock.style.opacity = '0'
+                menuClientBackgroundBlock.style.pointerEvents = 'none'
+            }
+        })
+    },
+
+    menuClientOn() {
+        const menuClientBackgroundBlock = document.getElementById('menu-client-block')
+
+        menuClientBackgroundBlock.style.opacity = '1'
+        menuClientBackgroundBlock.style.pointerEvents = 'all'
+        rendererDOM.menuClient()
+    },
+
     clientSelectorMenu() {
         const clientSelectedButtonDOM = document.getElementById('btn-clients')
         const clientLeftArrowButtonDOM = document.getElementById('btn-clients-left')
@@ -248,18 +288,16 @@ const rendererDOM = {
         rendererDOM.all()
     },
 
-    menuClientOn: () => {
-        const menuClientBackgroundBlock = document.getElementById('menu-client-block')
-        menuClientBackgroundBlock.style.display = "block"
-        rendererDOM.menuClient()
-    },
-
     handleSendMoneyClient() {
         const sendMoneyBtn = document.getElementById('send-money')
         const sendMoneyInput = document.getElementById('send-own-money')
+        const hasSendMoneyId = sendMoneyBtn || sendMoneyInput
 
-        if (!sendMoneyBtn || !sendMoneyInput) return //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        sendMoneyBtn.onclick = () => sendMoneyToClient()
+        if (hasSendMoneyId)
+            sendMoneyBtn.onclick = () => {
+                console.log(object);
+                sendMoneyToClient(sendMoneyInput)
+            }
     },
 
 
@@ -273,17 +311,15 @@ const rendererDOM = {
         const researchTime = stateGame.lookingForClients.researchTime
         const hasResearchTime = researchTime > stateGame.clock.minuteAccumulated
         const emojiText = stateGame.lookingForClients.emojiText
-        const isSearchActive = stateGame.lookingForClients.research
+        // const isSearchActive = stateGame.lookingForClients.research
 
         numberNewOfClientsDOM.innerHTML = ''
 
-        if (hasResearchTime) {
+        if (hasResearchTime)
             numberNewOfClientsDOM.innerHTML = emojiText
-        }
 
-        if (availableNewClients) {
+        if (availableNewClients)
             numberNewOfClientsDOM.innerHTML = `(${availableNewClients} NEW)`
-        }
     },
 
     drawReticence() {
@@ -369,17 +405,18 @@ const rendererDOM = {
             const buttonOfferClient = document.getElementById(`${client.name}-offer-client-btn`)
             const inputOfferClient = document.getElementById(`${client.id}input`)
 
-            buttonNewClientMenu.onclick = () => rendererDOM.menuNewClient(client)
+            buttonNewClientMenu.onclick = () => rendererDOM.menuNewClientOn(client)
             buttonOfferClient.onclick = () => {
                 newClientSelectorBudgetOffer(client, inputOfferClient)
             }
         }
     },
 
-    menuNewClient(lookingClient) {
+    menuNewClientOn(lookingClient) {
         const menuClientBackgroundBlock = document.getElementById('menu-client-block');
 
-        menuClientBackgroundBlock.style.display = "block"
+        menuClientBackgroundBlock.style.opacity = '1'
+        menuClientBackgroundBlock.style.pointerEvents = 'all'
         rendererDOM.menuClient(lookingClient)
     },
 
@@ -552,24 +589,33 @@ const rendererDOM = {
         if (noClientSelected)
             return warehouseLimitDOM.innerHTML = `SITE STORAGE`
 
-        warehouseLimitDOM.style.color = "var(--text-base-color)"
-
         const warehouseLimit = rendererDOM.warehouseDisplayLimit(warehouseLimitDOM)
         warehouseLimitDOM.innerHTML = `SITE STORAGE (${warehouseLimit})`
     },
 
     warehouseDisplayLimit(warehouseLimitDOM) {
+
         const volumeStored = stateGame.clients[stateGame.clientIndex].warehouse
             .reduce((acc, item) => { return acc + (item.count * item.volume) }, 0)
         const stateWarehouseLimit = stateGame.clients[stateGame.clientIndex].warehouseLimit
         const currentVolumeStored = Math.floor(volumeStored / stateWarehouseLimit * 1000) / 10
 
-        if (stateGame.clients[stateGame.clientIndex].warehouse[0] == null) return "EMPTY"
-        if (volumeStored >= stateGame.clients[stateGame.clientIndex].warehouseLimit) return "FULL"
+        const isWarehouseEmpty = stateGame.clients[stateGame.clientIndex].warehouse.length == 0
+        const isWarehouseFull = volumeStored >= stateGame.clients[stateGame.clientIndex].warehouseLimit
+        const isWarehouse90PercentFull = currentVolumeStored >= 90
 
-        if (currentVolumeStored >= 90) warehouseLimitDOM.style.color = "#ff2a1a"
+        isWarehouse90PercentFull
+            ? warehouseLimitDOM.style.color = "#ff2a1a"
+            : warehouseLimitDOM.style.color = "var(--text-base-color)"
 
-        return `${currentVolumeStored}%`
+        switch (true) {
+            case isWarehouseEmpty:
+                return "EMPTY"
+            case isWarehouseFull:
+                return "FULL"
+            default:
+                return `${currentVolumeStored}%`
+        }
     },
 
 
@@ -598,7 +644,6 @@ const rendererDOM = {
 
         storeBuyContainerDOM.innerHTML = ""
         categoryItem.stock.forEach(item => {
-            //DRAW </li> FIRST
             let li = document.createElement('li');
             li.innerHTML = `
                     <header>${item.name}</header>
@@ -613,7 +658,7 @@ const rendererDOM = {
                     </section>
                     `
             storeBuyContainerDOM.appendChild(li);
-            //THAN DRAW </button>
+
             let button = document.createElement('button');
             button.innerHTML = `$${item.price}`
             button.setAttribute('id', item.name);
@@ -823,36 +868,6 @@ const rendererDOM = {
         const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[stateGame.clientIndex]}-completed`)
         buttonWorkersNeeded.appendChild(button);
     },
-
-    handleDisplayOwnMenu() {
-        const menuOwnCompanyButton = document.getElementById('menu-own-company');
-        const menuOwnCompanyButtonOut = document.getElementById('menu-own-company-block');
-
-        menuOwnCompanyButton.onclick = () => { rendererDOM.menuCompanyOn(menuOwnCompanyButtonOut) };
-
-        menuOwnCompanyButtonOut.addEventListener('click', event => {
-            const closeTarget = event.target.id
-            if (closeTarget == 'menu-own-company-block') {
-                menuOwnCompanyButtonOut.style.display = "none"
-            }
-        })
-    },
-
-    menuCompanyOn: (menuOwnCompanyButtonOut) => {
-        menuOwnCompanyButtonOut.style.display = "block"
-    },
-
-    handleDisplayClientMenu() {
-        const menuClientBackgroundBlock = document.getElementById('menu-client-block');
-
-        menuClientBackgroundBlock.addEventListener('click', event => {
-            const closeTarget = event.target.id
-            if (closeTarget == 'menu-client-block' || closeTarget == 'menu-client-close') {
-                menuClientBackgroundBlock.style.display = "none"
-            }
-        })
-    },
-
 }
 
 //======================================================================================//
