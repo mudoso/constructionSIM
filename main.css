@@ -107,7 +107,9 @@ body::before {
 /*==========HIDDEN MENU============*/
 
 #menu-own-company-block {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    /* display: none; */
     position: absolute;
     left: 0px;
     top: 0px;
@@ -140,7 +142,9 @@ body::before {
     padding: 1rem 0;
 }
 #menu-client-block {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    /* display: none; */
     position: absolute;
     left: 0px;
     top: 0px;
@@ -476,13 +480,24 @@ body::before {
 
 .layout-site-construction {
     position: fixed;
-    display: block;
+    display: flex;
+    flex-direction: column;
+
     left: 3rem;
     width: 27rem;
     height: 58rem;
-    flex-direction: column;
-    overflow: auto;
 }
+#construction-container {
+    flex-grow: 1;
+    overflow: auto;
+    height: 46rem;
+    padding: 1rem;
+    margin: 0 -1rem -1rem -1rem;
+}
+.title-task-move {
+    display: none;
+}
+
 
 .side-menu {
     position: fixed;
@@ -493,30 +508,31 @@ body::before {
     right: -47rem;
     padding-left: 5rem;
     transition:
-    ease-out 400ms;
+    ease-out 500ms;
     min-height: 50rem;
 }
 .side-menu:hover {
     right: 0%;
     padding-left: 1rem;
     transition:
-    ease-out 400ms;
+    ease-out 500ms;
 }
 
-
-/* .title-move {
-    position: fixed;
-    width: 20rem;
-    transform: rotate(-90deg) translate(-21rem, -13rem);
-    transition:
-    ease-out 000ms;
+.title-move {
+    position: absolute;
+    transform: rotate(-90deg) translate(-110%, -11.5rem);
 }
 .side-menu:hover>.title-move {
-    width: 100%;
-    transform: rotate(0deg);
-    position: relative;
-    right: 0;
-} */
+    transition: opacity 300ms ease-in-out;
+    opacity: 0;
+    background: var(--layout-bg-color);
+    border-radius: 3px;
+    padding: 1rem;
+}
+
+
+
+
 .side-menu-title,
 .side-menu-items {
     padding: 1rem;
@@ -606,6 +622,7 @@ input:focus {
 .btn-sendback::after {
     font-size: inherit;
     position: fixed;
+    width: fit-content;
     margin-top: -1px;
     margin-left: 1rem;
     content: attr(btn-sudocontent);
@@ -816,7 +833,8 @@ input:focus {
         top: 2rem;
         height: calc(100% - 4rem);
 
-        left: -24rem;
+        width: 33rem;
+        left: -30rem;
         padding-right: 5rem;
     }
     .layout-site-construction:hover {
@@ -824,18 +842,18 @@ input:focus {
         width: calc(100% - 6rem);
         padding-right: 1rem;
     }
-
-    /* .title-move {
-        position: fixed;
-        width: 20rem;
-        transform: rotate(-90deg) translate(-21rem, -13rem);
-        transition:
-        ease-out 000ms;
+    .title-task-move {
+        display: block;
+        padding: 1rem;
+        position: absolute;
+        transform: rotate(-90deg) translate(-150%, 25rem);
     }
-    .side-menu:hover>.title-move {
-        width: 100%;
-        transform: rotate(0deg);
-        position: relative;
-        right: 0;
-    } */
+    .layout-site-construction:hover>.title-task-move {
+        /* display: none; */
+        transition: opacity 300ms ease-in-out;
+        opacity: 0;
+        background: var(--layout-bg-color);
+        border-radius: 3px;
+        padding: 1rem;
+    }
   }
