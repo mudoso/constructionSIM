@@ -421,6 +421,9 @@ body::before {
 /* ==============WAREHOUSE============== */
 
 .layout-warehouse {
+    opacity: 0;
+    pointer-events: none;
+
     position: fixed;
     width: 27rem;
     padding: 1rem;
@@ -479,6 +482,9 @@ body::before {
 /* ==============SIDE MENU============== */
 
 .layout-site-construction {
+    opacity: 0;
+    pointer-events: none;
+
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -500,6 +506,9 @@ body::before {
 
 
 .side-menu {
+    opacity: 0;
+    pointer-events: none;
+    
     position: fixed;
     display: block;
     width: 50rem;
@@ -846,7 +855,7 @@ input:focus {
         display: block;
         padding: 1rem;
         position: absolute;
-        transform: rotate(-90deg) translate(-150%, 25rem);
+        transform: rotate(-90deg) translate(-210%, 25rem);
     }
     .layout-site-construction:hover>.title-task-move {
         /* display: none; */

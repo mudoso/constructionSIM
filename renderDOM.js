@@ -19,6 +19,17 @@ const rendererDOM = {
         rendererDOM.handleSendMoneyClient()
     },
 
+    listener() {
+        rendererDOM.handleDisplayWindows()
+        rendererDOM.updateNumberOfNewClients()
+        rendererDOM.companyStats()
+        rendererDOM.money()
+        rendererDOM.due()
+        rendererDOM.displayAvailableSkillPoints()
+        rendererDOM.displaySkillBtn()
+        rendererDOM.updateCurrentSkillPoints()
+    },
+
     time() {
         const timeSpan = document.getElementById('time');
         const dayDom = document.getElementById("day")
@@ -30,7 +41,7 @@ const rendererDOM = {
 
     money() {
         const ownMoneyDOM = document.querySelectorAll(".own-money")
-        let clientMoneyDOM = document.querySelectorAll(".client-money")
+        const clientMoneyDOM = document.querySelectorAll(".client-money")
 
         ownMoneyDOM.forEach(DOM => DOM.innerHTML = stateGame.ownCompany.money)
         clientMoneyDOM.innerHTML = 0
@@ -38,7 +49,7 @@ const rendererDOM = {
         const hasClientSelected = stateGame.clients[stateGame.clientIndex]
 
         !hasClientSelected
-            ? clientMoneyDOM.innerHTML = 0
+            ? clientMoneyDOM.forEach(DOM => DOM.innerHTML = 0)
             : clientMoneyDOM.forEach(DOM =>
                 DOM.innerHTML = stateGame.clients[stateGame.clientIndex].money)
     },
@@ -333,8 +344,7 @@ const rendererDOM = {
             stateGame.lookingForClients.emojiText = `(🔍${reticence})`
 
             if (!isSearchActive) clearInterval(reticenceCounter)
-        }, 500);
-        console.log("reticenceCounter -> reticenceCounter", reticenceCounter)
+        }, 500)
     },
 
     newClientSelector() {
@@ -868,8 +878,29 @@ const rendererDOM = {
         const buttonWorkersNeeded = document.getElementById(`${stateGame.clients[stateGame.clientIndex]}-completed`)
         buttonWorkersNeeded.appendChild(button);
     },
+
+    handleDisplayWindows() {
+        const noClientSelected = stateGame.clients.length == 0
+        const windowTasks = document.querySelector('.layout-site-construction')
+        const windowStore = document.querySelector('.side-menu')
+        const windowWarehouse = document.querySelector('.layout-warehouse')
+
+        const windowsList = [windowTasks, windowStore, windowWarehouse,]
+
+        windowsList.forEach(window => {
+            window.style.opacity = '1'
+            window.style.pointerEvents = 'all'
+
+            if (noClientSelected) {
+                window.style.opacity = '0'
+                window.style.pointerEvents = 'none'
+            }
+        })
+    },
 }
 
 //======================================================================================//
 rendererDOM.all() //CALL UPDATE  AFTER ALL CODE IS LOADED
+setInterval(rendererDOM.listener, 500)
 //======================================================================================//
+

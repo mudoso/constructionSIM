@@ -8,6 +8,7 @@ import * as THREE from 'https://unpkg.com/three@0.120.1/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.120.1/examples/jsm/controls/OrbitControls.js';
 import { ColladaLoader } from 'https://unpkg.com/three@0.120.1/examples/jsm/loaders/ColladaLoader.js';
 import { OutlineEffect } from 'https://unpkg.com/three@0.120.1/examples/jsm/effects/OutlineEffect.js';
+import { GUI } from 'https://unpkg.com/three@0.120.1/examples//jsm/libs/dat.gui.module.js';
 import Stats from 'https://unpkg.com/three@0.120.1/examples/jsm/libs/stats.module.js';
 
 
@@ -21,7 +22,9 @@ function main() {
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
-    renderer.setClearColor("#bed2ab"); // BACKGROUND COLOR
+    // renderer.setClearColor("#bed2ab"); // BACKGROUND COLOR
+    renderer.setClearColor("#a2caa7"); // BACKGROUND COLOR
+    // renderer.setClearColor("#a9cacf"); // BACKGROUND COLOR
     renderer.setPixelRatio(window.devicePixelRatio * 1); // CONTROLS RESOLUTION
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.sortObjects = false;
@@ -44,18 +47,20 @@ function main() {
     const camera = new THREE.OrthographicCamera(aspectSize / - 2, aspectSize / 2, frustumSize / 2, frustumSize / - 2, near, far);
 
     //CAMERA POSITION
-    camera.position.set(50, 50, 50); // (x, y, z) => (y = height)
-    console.log("main -> camera", camera)
+    camera.position.set(40, 50, 50); // (x, y, z) => (y = height)
 
     //ORBIT FUNCTION
     const controls = new OrbitControls(camera, canvas);
-    controls.target.set(-7.5, 0, -7.5);
+
+    controls.target.set(0, 0, 0);
     controls.enabled = true
     controls.enableKeys = false
     controls.enablePan = false
     controls.minZoom = 1
     controls.maxZoom = 1.5
     controls.maxPolarAngle = Math.PI / 3
+    controls.maxAzimuthAngle = Math.PI / 3
+    controls.minAzimuthAngle = - Math.PI / 3
     controls.update();
 
     //LISTEN TO ORBIT CHANGES
@@ -69,7 +74,43 @@ function main() {
     scene.add(ambientLight);
     const light = new THREE.DirectionalLight(0xbbbbbb);
     light.position.set(10, 30, 15);
-    scene.add(light);
+
+    // light.castShadow = true
+    // renderer.shadowMap.enabled = true
+    // renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+    // const settings = {
+    //     'near': 0.5,
+    //     'far': 300,
+    //     'left': -500,
+    //     'bottom': -500,
+    //     'right': 1024,
+    //     'top': 500,
+    // }
+
+    // light.shadow.camera.near = settings.near
+    // light.shadow.camera.far = settings.far
+    // light.shadow.camera.left = settings.left
+    // light.shadow.camera.bottom = settings.bottom
+    // light.shadow.camera.right = settings.right
+    // light.shadow.camera.top = settings.top
+    // light.shadow.mapSize.width = 1024
+    // light.shadow.mapSize.height = 1024
+
+    scene.add(light)
+
+    //PANEL
+    // const panel = new GUI({ width: 310 })
+    // const folder1 = panel.addFolder('Visibility')
+
+    // folder1.add(settings, 'near', 0, 1, .05)
+    // folder1.add(settings, 'far', 0, 1000, 1)
+    // folder1.add(settings, 'left', 0, 1000, 1)
+    // folder1.add(settings, 'bottom', 0, 1000, 1)
+    // folder1.add(settings, 'right', 0, 1000, 1)
+    // folder1.add(settings, 'top', 0, 1000, 1)
+
+
 
 
     //RESIZE FUNCTION
@@ -83,14 +124,13 @@ function main() {
         camera.top = frustumSize / 2;
         camera.bottom = - frustumSize / 2;
 
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
         render()
     }
 
     //LISTEN TO RESIZE WINDOW
     window.addEventListener('resize', onWindowResize, false);
-
 
 
     const loadingManager = new THREE.LoadingManager()
@@ -102,7 +142,6 @@ function main() {
     // console.log(`Loading complete!`)
 
     const colladaLoader = new ColladaLoader(loadingManager)
-
 
 
     //DISPLAY FRAMES PER SECOND
@@ -117,6 +156,8 @@ function main() {
         stats.domElement.style.top = '0';
         return stats;
     }
+
+
 
 
 
@@ -188,6 +229,24 @@ function main() {
         })
     }
 
+    function loadNoClient(THREEmodelFile) {
+        colladaLoader.load(THREEmodelFile, collada => {
+            console.log(`CREATE THREEmodel (${THREEmodelFile})`)
+            THREEPath.office = collada.scene
+            THREEPath.office.position.set(0, 0, 0);
+            THREEPath.office.name = `Office`
+
+            scene.add(collada.scene)
+
+        }, load => {
+            if (!load.lengthComputable) return
+
+            const loadProgress = Math.round(load.loaded / load.total * 100, 2)
+
+            console.log(`Office (${loadProgress}% loaded)`)
+        })
+    }
+
     function hideAllTHREEModels() {
         for (const clientId in THREEPath.clients) {
 
@@ -218,6 +277,13 @@ function main() {
             .find(item => item.name == "constructionDone")
         const THREETerrain = THREEPath.clients[currentId].THREEmodel.children[0].children
             .find(item => item.name == "terrainSite")
+
+        camera.zoom = 1
+        controls.enableZoom = true
+        // controls.maxAzimuthAngle = Infinity
+        // controls.minAzimuthAngle = - Infinity
+        THREEPath.office.visible = false
+        camera.updateProjectionMatrix()
 
         THREETerrain.visible = false
 
@@ -265,6 +331,16 @@ function main() {
         }
     }
 
+    function setShadows() {
+        scene.traverse(child => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        })
+    }
+
+
 
     //========================================================================//
     //RENDER
@@ -276,21 +352,39 @@ function main() {
         stats.update();
     }
 
+    loadNoClient(`models/noClient.dae`)
+
     function render() {
-        const hasClients = stateGame.clients.length > 0
+        // console.log("controls", controls)
+        // console.log("render -> camera", camera)
+
+        const noClientSelected = stateGame.clients.length == 0
 
         checkDeleteTHREEModels()
 
-        if (!hasClients)
-            return effect.render(scene, camera)
+        if (noClientSelected) {
+            THREEPath.office.visible = true
 
+            camera.zoom = 22
+
+            controls.enableZoom = false
+            controls.minPolarAngle = Math.PI / 5
+            controls.maxAzimuthAngle = Math.PI / 5
+            controls.minAzimuthAngle = - Math.PI / 5
+            // controls.enableRotate = false
+
+            camera.updateProjectionMatrix()
+
+            return effect.render(scene, camera)
+        }
+
+        setShadows()
         createTHREEModel()
         hideAllTHREEModels()
         controlVisibility()
 
         effect.render(scene, camera);
     }
-    // requestAnimationFrame(render)
     setInterval(render, 2000)
     fps()
 }

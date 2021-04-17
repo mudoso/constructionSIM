@@ -8,7 +8,9 @@
 // ?? CHANGE CLOCK FUNCTION TO SHOW MORNING, EVENING, AFTERNOON
 // ?? MAKE THREE.JS LIGHTs TO CHANGE ACCORDING TO TIME OF THE DAY
 // ?? MAKE THREE.JS MeshToonMaterial SHADE EFFECT WORK
-
+// RESOLVE SEND MONEY PROBLEM
+// MAKE CLIENT RUNNING OUT OF MONEY MORE VISIBLE AND FLASHABLE
+// MAKE MONEY SPENT / EARN ANIMATION
 
 //============================================================================//
 //CLOCK RELATED FUNCTIONS
@@ -55,21 +57,12 @@ function timeRules() {
 }
 
 
-const changeListener = setInterval(listener, 500)
+setInterval(rulesListener, 500)
 
-function listener() {
+function rulesListener() {
     transportItemToContainer()
-
     checkResearchTime()
-    rendererDOM.updateNumberOfNewClients()
-
     setCurrentExperience()
-    rendererDOM.companyStats()
-    rendererDOM.money()
-    rendererDOM.due()
-    rendererDOM.displayAvailableSkillPoints()
-    rendererDOM.displaySkillBtn()
-    rendererDOM.updateCurrentSkillPoints()
 }
 
 

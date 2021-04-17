@@ -43,7 +43,6 @@ function getDueDate(area, construction) {
     const daysPerArea = Math.floor(area / 10)
     const daysPerStage = Math.floor(stages * 3 * SkillDelta)
     const setDueTime = stateGame.clock.day + daysPerStage + daysPerArea
-    console.log("getDueDate -> setDueTime", setDueTime)
     return setDueTime
 }
 
@@ -200,7 +199,6 @@ function getFilteredCount(stage, singleService, area) {
             break
 
         default:
-            console.log(stage, "default");
             countNumber = randomCount(minimum)
             break
     }
